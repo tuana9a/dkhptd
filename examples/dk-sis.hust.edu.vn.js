@@ -1,6 +1,6 @@
 const LOGIN_URL = "http://dk-sis.hust.edu.vn/Users/Login.aspx";
 const LOGOUT_URL = "http://dk-sis.hust.edu.vn/Users/Logout.aspx";
-const SAVE_CAPTCHA_SCREENSHOT_TO = "./.tmp/temp.png";
+const SAVE_CAPTCHA_SCREENSHOT_TO = "./tmp/temp.png";
 const MAX_TRY_CAPTCHA_COUNT = 10;
 
 class Output {
@@ -45,6 +45,24 @@ async function captcha2text(filepath, ctx) {
   throw new Error("No endpoints available");
 }
 
+async function captcha2textV2(filepath, ctx) {
+  // get lib
+  const { fs, axios, FormData, captcha2textUrl } = ctx;
+
+  try {
+    const data = new FormData();
+    data.append("file", fs.createReadStream(filepath));
+    const headers = data.getHeaders();
+    const result = await axios
+      .post(captcha2textUrl, data, { headers })
+      .then((res) => String(res.data).trim());
+    return result;
+  } catch (err) {
+    // ignore
+  }
+  return null;
+}
+
 async function gotoLoginPage(ctx) {
   const { page } = ctx;
   // EXPLAIN: vẫn phải try catch vì goto có thể đã failed
@@ -60,7 +78,7 @@ async function loginOnce(ctx) {
   const $captchaImg = "#ccCaptcha_IMG";
   const captchaImgElement = await page.$($captchaImg);
   await captchaImgElement.screenshot({ path: captchaPath, type: "png" });
-  const captchaToTextResult = await captcha2text(captchaPath, ctx);
+  const captchaToTextResult = await captcha2textV2(captchaPath, ctx);
   const $inputUsername = "#tbUserName";
   await page.click($inputUsername, { clickCount: 3 });
   await page.type($inputUsername, entry.username);
@@ -125,12 +143,9 @@ async function autoRegisterClasses(ctx) {
   const output = new Output();
   const responseMessages = [];
   // EXPLAIN: main function
-  const $inputClassId =
-    "#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_tbDirectClassRegister_I";
-  const $sendClassIdButton =
-    "#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_btDirectClassRegister_CD";
-  const $responseClassIdMessage =
-    "#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_lbKQ";
+  const $inputClassId = "#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_tbDirectClassRegister_I";
+  const $sendClassIdButton = "#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_btDirectClassRegister_CD";
+  const $responseClassIdMessage = "#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_lbKQ";
   for await (const classId of classIds) {
     // click vào ô nhập mã lớp 3 lần
     await page.click($inputClassId, { clickCount: 3 });
@@ -144,13 +159,11 @@ async function autoRegisterClasses(ctx) {
     responseMessages.push({ classId, message: msg });
   }
   // ấn nút gửi đăng ký
-  const $submitAllButton =
-    "#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_btSendRegister_CD";
+  const $submitAllButton = "#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_btSendRegister_CD";
   await page.click($submitAllButton);
   await page.waitForTimeout(1000);
   // xác nhận gửi đăng ký
-  const $submitAllConfirmYes =
-    "#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_pcYesNo_pcYesNoBody1_ASPxRoundPanel1_btnYes";
+  const $submitAllConfirmYes = "#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_pcYesNo_pcYesNoBody1_ASPxRoundPanel1_btnYes";
   await page.click($submitAllConfirmYes);
   await page.waitForTimeout(1000);
   // note: premium feature: screen shot after automation
@@ -165,8 +178,7 @@ async function crawlRegisterResult(ctx) {
   const statusOfClasses = await page.evaluate(() => {
     // note: browser scope not nodejs scope
     const classes = [];
-    const selector =
-      "ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_gvRegisteredList_DXMainTable";
+    const selector = "ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_gvRegisteredList_DXMainTable";
     // eslint-disable-next-line no-undef
     const table = document.getElementById(selector);
     // lấy data html đăng kí lớp
