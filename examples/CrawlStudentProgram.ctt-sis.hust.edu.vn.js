@@ -19,7 +19,7 @@ const {
 
 const LOGIN_URL = "https://ctt-sis.hust.edu.vn/Account/Login.aspx";
 const LOGOUT_URL = "https://ctt-sis.hust.edu.vn/Account/Logout.aspx";
-const STUDENT_TIMETABLE_URL = "https://ctt-sis.hust.edu.vn/Students/Timetables.aspx";
+const STUDENT_PROGRAM_URL = "https://ctt-sis.hust.edu.vn/Students/StudentProgram.aspx";
 const SAVE_CAPTCHA_TO = "./tmp/temp.png";
 
 function HustCaptchaToText(imgPath, captchaSolverEndpoint) {
@@ -42,33 +42,35 @@ function HustCaptchaToText(imgPath, captchaSolverEndpoint) {
   });
 }
 
-const CrawlTimeTableHandler = () => {
+const CrawlProgramHandler = () => {
   // note: browser scope not nodejs scope
-  const $table = "#ctl00_ctl00_contentPane_MainPanel_MainContent_gvStudentRegister_DXMainTable";
+  const selector = "#ctl00_ctl00_contentPane_MainPanel_MainContent_ProgramCoursePanel_gvStudentProgram_DXMainTable";
   // eslint-disable-next-line no-undef
-  const table = document.querySelector($table);
-  const rows = table.querySelectorAll(".dxgvDataRow_Mulberry");
+  const table = document.querySelector(selector);
+  const rows = table.querySelectorAll(".dxgvDataRow");
   const result = Array.from(rows).map((row) => {
     const values = Array.from(row.querySelectorAll(".dxgv"))
       .map((col) => col.textContent)
       .map((col) => col.trim().replace(/\s{2,}/g, " "));
     return {
-      ThoiGianHoc: values[0],
-      HocVaoCacTuan: values[1],
-      PhongHoc: values[2],
-      MaLop: values[3],
-      LoaiLop: values[4],
-      Nhom: values[5],
-      MaHocPhan: values[6],
-      TenHocPhan: values[7],
-      GhiChu: values[8],
+      MaHocPhan: values[2],
+      TenHocPhan: values[3],
+      KyHoc: values[4],
+      BatBuoc: values[5],
+      TinChiDaoTao: values[6],
+      TinChiHoc: values[7],
+      MaHocPhanHoc: values[8],
+      LoaiHocPhan: values[9],
+      DiemChu: values[10],
+      DiemSo: values[11],
+      KhoaVien: values[12],
     };
   });
   return result;
 };
 
 module.exports = new Job({
-  name: "CrawlStudentTimeTable",
+  name: "CrawlStudentProgram",
   actions: [
     BringToFront(),
     GoTo(LOGIN_URL),
@@ -85,10 +87,11 @@ module.exports = new Job({
       GetTextContent("#ctl00_ctl00_contentPane_MainPanel_MainContent_FailureText"), /* sai tai khoan */
       GetTextContent("#ctl00_ctl00_contentPane_MainPanel_MainContent_ASPxCaptcha1_TB_EC"), /* sai captcha */
       BreakPoint(),
+    ]).Else([
+      GoTo(STUDENT_PROGRAM_URL),
+      PageEval(CrawlProgramHandler),
+      GoTo(LOGOUT_URL),
+      BreakPoint(),
     ]),
-    GoTo(STUDENT_TIMETABLE_URL),
-    PageEval(CrawlTimeTableHandler),
-    GoTo(LOGOUT_URL),
-    BreakPoint(),
   ],
 });
