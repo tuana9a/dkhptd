@@ -185,7 +185,7 @@ async function crawlRegisterResult(ctx) {
     const rows = Array.from(table.querySelectorAll("tr.dxgvDataRow_Moderno"));
     rows.forEach((row) => {
       const values = Array.from(row.querySelectorAll("td"))
-        .map(textContent)
+        .map((e) => e.textContent)
         .map((col) => col.trim().replace(/\s{2,}/g, " "));
       classes.push({
         MaLop: values[0],

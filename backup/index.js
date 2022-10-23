@@ -24,6 +24,7 @@ server.get("/api/http-worker-config", auth, (req, resp) => {
   resp.send({
     pollJobUrl: "http://localhost:8080/api/jobs/poll",
     submitJobResultUrl: "http://localhost:8080/api/jobs/result",
+    repeatPollJobAfter: 5000,
   });
 });
 
