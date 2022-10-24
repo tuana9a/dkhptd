@@ -3,11 +3,9 @@
         ".git",
         "node_modules/**/node_modules"
     ],
-    "verbose": true,
     "watch": [
-        "index.js",
+        "app/**/*.js",
         ".env",
-        "*.conf.*",
         "nodemon.json"
     ]
 }
