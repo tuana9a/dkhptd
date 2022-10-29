@@ -5,6 +5,7 @@ dotenv.config();
 const SECRET = process.env.SECRET || String(Math.random() * Date.now());
 const BIND = process.env.BIND || "127.0.0.1";
 const PORT = process.env.PORT || 8080;
+const LOG_DIR = process.env.LOG_DIR || "./logs";
 const RABBITMQ_CONNECTION_STRING = process.env.RABBITMQ_CONNECTION_STRING || "amqp://localhost:5672";
 const MONGODB_CONNECTION_STRING = process.env.MONGODB_CONNECTION_STRING || "mongodb://localhost:27017";
 const NEW_JOB = "jobs.new";
@@ -20,6 +21,7 @@ module.exports = {
   SECRET,
   BIND,
   PORT,
+  LOG_DIR,
   RABBITMQ_CONNECTION_STRING,
   MONGODB_CONNECTION_STRING,
   NEW_JOB,

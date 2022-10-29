@@ -12,6 +12,8 @@ const PickProps = require("../modifiers/PickProps");
 const SetProp = require("../dto/SetProp");
 const isValidHocKy = require("../validations/isValidHocKy");
 const InvalidHocKyError = require("../exceptions/InvalidHocKyError");
+const NormalizeIntProp = require("../modifiers/NormalizeIntProp");
+const NormalizeStringProp = require("../modifiers/NormalizeStringProp");
 
 module.exports = (db, collectionName) => {
   const router = express.Router();
@@ -45,6 +47,18 @@ module.exports = (db, collectionName) => {
             "GhiChu",
             "HocKy",
           ]),
+          NormalizeIntProp("MaLop"),
+          NormalizeIntProp("MaLopKem"),
+          NormalizeStringProp("MaHocPhan"),
+          NormalizeStringProp("TenHocPhan"),
+          NormalizeStringProp("LoaiLop"),
+          NormalizeIntProp("BuoiHocSo"),
+          NormalizeIntProp("HocVaoThu"),
+          NormalizeStringProp("ThoiGianHoc"),
+          NormalizeStringProp("PhongHoc"),
+          NormalizeStringProp("HocVaoCacTuan"),
+          NormalizeStringProp("GhiChu"),
+          NormalizeStringProp("HocKy"),
           SetProp("createdAt", Date.now()),
         ]).apply(entry);
 

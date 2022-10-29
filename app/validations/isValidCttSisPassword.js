@@ -1,1 +1,5 @@
-module.exports = (password) => password && !password.match(/^\s+$/);
+module.exports = (password) => {
+  if (!password) return false;
+  if (password.match(/^\s+$/)) return false;
+  return true;
+};
