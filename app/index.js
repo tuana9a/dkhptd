@@ -145,4 +145,5 @@ amqp.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
 appEvent.on(config.DOING, (doing) => logger.info(`Doing: ${toJson(doing)}`));
 appEvent.on(config.PING, (ping) => logger.info(`Ping: ${toJson(ping, null)}`));
 
+logger.info(config);
 server.listen(config.PORT, config.BIND);
