@@ -1,4 +1,1 @@
-module.exports = (input) => {
-  const keys = Object.keys(input);
-  return keys.reduce((agg, cur) => (`${agg + cur} = ${input[cur]}\n`), "");
-};
+module.exports = (input) => Object.keys(input).reduce((agg, cur) => (`${agg + cur} = ${input[cur]}\n`), "").trim();

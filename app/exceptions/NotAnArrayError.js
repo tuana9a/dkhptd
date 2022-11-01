@@ -1,10 +1,10 @@
 const InvalidValueError = require("./InvalidValueError");
 
-class NotAndArrayError extends InvalidValueError {
+class NotAnArrayError extends InvalidValueError {
   constructor(value) {
     super("NOT_AN_ARRAY");
     this.withValue(value);
   }
 }
 
-module.exports = NotAndArrayError;
+module.exports = NotAnArrayError;

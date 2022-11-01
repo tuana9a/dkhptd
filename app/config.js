@@ -15,6 +15,7 @@ module.exports.JOB_RESULT = "jobs.result";
 module.exports.JOB_RESULT_COLLECTION_NAME = "jobResult";
 module.exports.DKHPTD_JOB_COLLECTION_NAME = "dkhptdJob";
 module.exports.ACCOUNT_COLLECTION_NAME = "account";
+module.exports.LOP_DANG_KY_COLLECTION_NAME = "lopDangKy";
 module.exports.DOING = "doing";
 module.exports.PING = "ping";
 module.exports.APP_ID = `dkhptd${Date.now()}`;
