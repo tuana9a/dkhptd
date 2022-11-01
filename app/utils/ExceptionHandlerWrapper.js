@@ -5,8 +5,8 @@ module.exports = (handler) => async (req, resp) => {
   try {
     await handler(req, resp);
   } catch (err) {
-    if (err.__isInvalidValueError) {
-      resp.status(400).send(new BaseResponse().failed(err.value).withMessage(err.message));
+    if (err.__isSafeError) {
+      resp.status(200).send(err.toBaseResponse());
       return;
     }
     logger.error(err);

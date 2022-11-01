@@ -115,17 +115,13 @@ new mongodb.MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client
   }));
 
   app.post("/api/accounts/current/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
-    const data = req.body?.data;
+    const data = req.body;
     if (!data) {
       throw new MissingRequestBodyDataError();
     }
 
-    if (!Array.isArray(data)) {
-      throw new NotAnArrayError(data);
-    }
-
     const ownerAccountId = new mongodb.ObjectId(req.__accountId);
-    const jobConstruct = new ObjectModifer([
+    const safeData = new ObjectModifer([
       PickProps(["username", "password", "classIds", "timeToStart"]),
       NormalizeStringProp("username"),
       NormalizeStringProp("password"),
@@ -136,7 +132,7 @@ new mongodb.MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client
       SetProp("ownerAccountId", ownerAccountId),
     ]).apply(data);
 
-    const job = new DangKyHocPhanTuDongJob(jobConstruct);
+    const job = new DangKyHocPhanTuDongJob(safeData);
 
     if (!isValidCttSisUsername(job.username)) {
       throw new InvalidCttSisUsernameError(job.username);
@@ -169,7 +165,7 @@ new mongodb.MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client
 
     for (const entry of data) {
       try {
-        const jobConstruct = new ObjectModifer([
+        const safeEntry = new ObjectModifer([
           PickProps(["username", "password", "classIds", "timeToStart"]),
           NormalizeStringProp("username"),
           NormalizeStringProp("password"),
@@ -180,7 +176,7 @@ new mongodb.MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client
           SetProp("ownerAccountId", ownerAccountId),
         ]).apply(entry);
 
-        const job = new DangKyHocPhanTuDongJob(jobConstruct);
+        const job = new DangKyHocPhanTuDongJob(safeEntry);
 
         if (!isValidCttSisUsername(job.username)) {
           throw new InvalidCttSisUsernameError(job.username);
@@ -197,16 +193,33 @@ new mongodb.MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client
         jobsToInsert.push(job);
         result.push(new BaseResponse().ok(job));
       } catch (err) {
-        if (err.__isInvalidValueError) {
-          result.push(new BaseResponse().failed(err.value).withMessage(err.message));
+        if (err.__isSafeError) {
+          result.push(err.toBaseResponse());
         } else {
           result.push(new BaseResponse().failed(err).withMessage(err.message));
         }
       }
     }
 
-    await db.collection(config.DKHPTD_JOB_COLLECTION_NAME).insertMany(jobsToInsert);
+    if (jobsToInsert.length !== 0) {
+      await db.collection(config.DKHPTD_JOB_COLLECTION_NAME).insertMany(jobsToInsert);
+    }
     resp.send(new BaseResponse().ok(result));
+  }));
+
+  app.post("/api/accounts/current/dkhptd-s/:jobId/retry", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const accountId = req.__accountId;
+    const filter = { _id: new mongodb.ObjectId(req.params.jobId), ownerAccountId: new mongodb.ObjectId(accountId) };
+    const record = await db.collection(config.DKHPTD_JOB_COLLECTION_NAME).findOne(filter);
+    const newJob = new DangKyHocPhanTuDongJob(record).toRetry();
+    await db.collection(config.DKHPTD_JOB_COLLECTION_NAME).insertOne(newJob);
+    resp.send(new BaseResponse().ok(req.params.jobId));
+  }));
+  app.put("/api/accounts/current/dkhptd-s/:jobId/cancel", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const accountId = req.__accountId;
+    const filter = { _id: new mongodb.ObjectId(req.params.jobId), ownerAccountId: new mongodb.ObjectId(accountId) };
+    await db.collection(config.DKHPTD_JOB_COLLECTION_NAME).findOneAndUpdate(filter, { $set: { status: JobStatus.CANCELED } });
+    resp.send(new BaseResponse().ok(req.params.jobId));
   }));
 
   app.delete("/api/accounts/current/dkhptd-s/:jobId", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
@@ -268,8 +281,8 @@ new mongodb.MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client
         lopDangKysToInsert.push(lopDangKy);
         result.push(new BaseResponse().ok(lopDangKy));
       } catch (err) {
-        if (err.__isInvalidValueError) {
-          result.push(new BaseResponse().failed(err.value).withMessage(err.message));
+        if (err.__isSafeError) {
+          result.push(err.toBaseResponse());
         } else {
           result.push(new BaseResponse().failed(err).withMessage(err.message));
         }
@@ -423,7 +436,12 @@ new mongodb.MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client
             classIds: job.classIds,
           },
         });
-        await db.collection(config.DKHPTD_JOB_COLLECTION_NAME).updateOne({ _id: new mongodb.ObjectId(job._id) }, { $set: { status: JobStatus.DOING } });
+        await db.collection(config.DKHPTD_JOB_COLLECTION_NAME).updateOne({ _id: new mongodb.ObjectId(job._id) }, {
+          $set: {
+            status: JobStatus.DOING,
+            doingAt: Date.now(),
+          },
+        });
       }
     } catch (err) {
       logger.error(err);
