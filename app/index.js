@@ -15,6 +15,8 @@ const loop = require("./utils/loop");
 const JobStatus = require("./entities/JobStatus");
 const DangKyHocPhanTuDongJob = require("./entities/DangKyHocPhanTuDongJob");
 const logger = require("./loggers/logger");
+const LoginAndSignup = require("./routes/LoginAndSignup");
+const toKeyValueString = require("./dto/toKeyValueString");
 
 const app = express();
 const server = http.createServer(app);
@@ -25,10 +27,8 @@ app.use("/", express.static("./static", { maxAge: String(7 * 24 * 60 * 60 * 1000
 app.use("/examples", express.static("./examples"));
 app.post("/api/test/jobs/new", SecretAuth(config.SECRET), (req, resp) => {
   try {
-    const { body: job } = req;
-    job.id = String(Date.now());
-    appEvent.emit(config.NEW_JOB, job);
-    resp.send(job);
+    appEvent.emit(config.NEW_JOB, req.body);
+    resp.send(req.body);
   } catch (err) {
     logger.error(err);
     resp.status(500).send(err);
@@ -36,10 +36,11 @@ app.post("/api/test/jobs/new", SecretAuth(config.SECRET), (req, resp) => {
 });
 
 new mongodb.MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
-  const db = client.db("test");
+  const db = client.db(config.DATABASE_NAME);
   app.use(FindDangKyHocPhanTuDongJobs(db, config.DKHPTD_JOB_COLLECTION_NAME));
   app.use(NewDangKyHocPhanTuDongJob(db, config.DKHPTD_JOB_COLLECTION_NAME));
   app.use(DeleteDangKyHocPhanTuDongJob(db, config.DKHPTD_JOB_COLLECTION_NAME));
+  app.use(LoginAndSignup(db, config.ACCOUNT_COLLECTION_NAME));
 
   appEvent.on(config.JOB_RESULT, async (result) => logger.info(result));
   appEvent.on(config.JOB_RESULT, async (result) => db.collection(config.JOB_RESULT_COLLECTION_NAME).insertOne(result));
@@ -145,5 +146,5 @@ amqp.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
 appEvent.on(config.DOING, (doing) => logger.info(`Doing: ${toJson(doing)}`));
 appEvent.on(config.PING, (ping) => logger.info(`Ping: ${toJson(ping, null)}`));
 
-logger.info(config);
+logger.info(toKeyValueString(config));
 server.listen(config.PORT, config.BIND);

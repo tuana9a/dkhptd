@@ -105,4 +105,4 @@ dist
 
 # @tuana9a
 *.local*
-*.tmp*
+*tmp*

@@ -16,7 +16,7 @@ class DangKyHocPhanTuDongJob extends EntityWithObjectId {
     this.password = toSafeString(password);
     this.classIds = toSafeArray(classIds);
     this.timeToStart = toSafeInt(timeToStart);
-    this.status = status;
+    this.status = parseInt(status);
     this.createdAt = toSafeInt(createdAt);
     this.logs = toSafeArray(logs); // log result
   }

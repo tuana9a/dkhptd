@@ -1,3 +1,4 @@
+const logger = require("../loggers/logger");
 const BaseResponse = require("../payloads/BaseResponse");
 
 module.exports = (handler) => async (req, resp) => {
@@ -8,6 +9,7 @@ module.exports = (handler) => async (req, resp) => {
       resp.status(400).send(new BaseResponse().failed(err.value).withMessage(err.message));
       return;
     }
+    logger.error(err);
     resp.status(500).send(new BaseResponse().failed(err).withMessage(err.message));
   }
 };

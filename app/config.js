@@ -2,34 +2,19 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-const SECRET = process.env.SECRET || String(Math.random() * Date.now());
-const BIND = process.env.BIND || "127.0.0.1";
-const PORT = process.env.PORT || 8080;
-const LOG_DIR = process.env.LOG_DIR || "./logs";
-const RABBITMQ_CONNECTION_STRING = process.env.RABBITMQ_CONNECTION_STRING || "amqp://localhost:5672";
-const MONGODB_CONNECTION_STRING = process.env.MONGODB_CONNECTION_STRING || "mongodb://localhost:27017";
-const NEW_JOB = "jobs.new";
-const WORKER_FEEDBACK = "worker.feedback";
-const JOB_RESULT = "jobs.result";
-const JOB_RESULT_COLLECTION_NAME = "jobResult";
-const DKHPTD_JOB_COLLECTION_NAME = "dkhptdJob";
-const DOING = "doing";
-const PING = "ping";
-const APP_ID = `dkhptd${Date.now()}`;
-
-module.exports = {
-  SECRET,
-  BIND,
-  PORT,
-  LOG_DIR,
-  RABBITMQ_CONNECTION_STRING,
-  MONGODB_CONNECTION_STRING,
-  NEW_JOB,
-  WORKER_FEEDBACK,
-  JOB_RESULT,
-  JOB_RESULT_COLLECTION_NAME,
-  DKHPTD_JOB_COLLECTION_NAME,
-  DOING,
-  PING,
-  APP_ID,
-};
+module.exports.SECRET = process.env.SECRET || String(Math.round(Math.random() * Date.now()));
+module.exports.BIND = process.env.BIND || "127.0.0.1";
+module.exports.PORT = process.env.PORT || 8080;
+module.exports.LOG_DIR = process.env.LOG_DIR || "./logs";
+module.exports.RABBITMQ_CONNECTION_STRING = process.env.RABBITMQ_CONNECTION_STRING || "amqp://localhost:5672";
+module.exports.MONGODB_CONNECTION_STRING = process.env.MONGODB_CONNECTION_STRING || "mongodb://localhost:27017";
+module.exports.DATABASE_NAME = "dkhptd";
+module.exports.NEW_JOB = "jobs.new";
+module.exports.WORKER_FEEDBACK = "worker.feedback";
+module.exports.JOB_RESULT = "jobs.result";
+module.exports.JOB_RESULT_COLLECTION_NAME = "jobResult";
+module.exports.DKHPTD_JOB_COLLECTION_NAME = "dkhptdJob";
+module.exports.ACCOUNT_COLLECTION_NAME = "account";
+module.exports.DOING = "doing";
+module.exports.PING = "ping";
+module.exports.APP_ID = `dkhptd${Date.now()}`;

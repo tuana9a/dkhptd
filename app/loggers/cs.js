@@ -7,7 +7,7 @@ module.exports = {
       msg = JSON.stringify(data, null, 2);
     }
     // eslint-disable-next-line no-console
-    console.log(`${moment().format("YYYY-MM-dd hh:mm:ss")} [INFO] ${msg}\n`);
+    console.log(`${moment().format("YYYY-MM-DD hh:mm:ss")} [INFO] ${msg}\n`);
   },
   warn: (data) => {
     let msg = data;
@@ -15,7 +15,7 @@ module.exports = {
       msg = JSON.stringify(data, null, 2);
     }
     // eslint-disable-next-line no-console
-    console.log(`${moment().format("YYYY-MM-dd hh:mm:ss")} [WARN] ${msg}\n`);
+    console.log(`${moment().format("YYYY-MM-DD hh:mm:ss")} [WARN] ${msg}\n`);
   },
   error: (error) => {
     const msg = {
@@ -24,6 +24,6 @@ module.exports = {
       stack: error.stack.split("\n"),
     };
     // eslint-disable-next-line no-console
-    console.log(`${moment().format("YYYY-MM-dd hh:mm:ss")} [ERROR] ${JSON.stringify(msg, null, 2)}\n`);
+    console.log(`${moment().format("YYYY-MM-DD hh:mm:ss")} [ERROR] ${JSON.stringify(msg, null, 2)}\n`);
   },
 };

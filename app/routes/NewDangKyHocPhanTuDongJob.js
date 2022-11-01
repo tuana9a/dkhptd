@@ -1,4 +1,5 @@
 const express = require("express");
+const { ObjectId } = require("mongodb");
 const isValidCttSisUsername = require("../validations/isValidCttSisUsername");
 const isValidCttSisPassword = require("../validations/isValidCttSisPassword");
 const isValidClassIds = require("../validations/isValidClassIds");
@@ -19,10 +20,12 @@ const BaseResponse = require("../payloads/BaseResponse");
 const ExceptionHandler = require("./ExceptionHandler");
 const RateLimit = require("../middlewares/RateLimit");
 const isFalsy = require("../validations/isFalsy");
+const JwtFilter = require("../middlewares/JwtFilter");
+const config = require("../config");
 
 module.exports = (db, collectionName) => {
   const router = express.Router();
-  router.post("/dkhptd-s", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionHandler(async (req, resp) => {
+  router.post("/api/accounts/current/dkhptd-s", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), JwtFilter(config.SECRET), ExceptionHandler(async (req, resp) => {
     const data = req.body?.data;
     if (isFalsy(data)) {
       throw new MissingRequestBodyDataError();
@@ -32,6 +35,7 @@ module.exports = (db, collectionName) => {
       throw new NotAndArrayError(data);
     }
 
+    const ownerAccountId = new ObjectId(req.__accountId);
     const result = [];
     const jobsToInsert = [];
 
@@ -45,7 +49,7 @@ module.exports = (db, collectionName) => {
           NormalizeIntProp("timeToStart"),
           SetProp("createdAt", Date.now()),
           SetProp("status", JobStatus.READY),
-          // TODO: inject ownerAccountId
+          SetProp("ownerAccountId", ownerAccountId),
         ]).apply(entry);
 
         const job = new DangKyHocPhanTuDongJob(jobConstruct);
@@ -77,7 +81,7 @@ module.exports = (db, collectionName) => {
     resp.send(new BaseResponse().ok(result));
   }));
 
-  router.post("/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), ExceptionHandler(async (req, resp) => {
+  router.post("/api/accounts/current/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), JwtFilter(config.SECRET), ExceptionHandler(async (req, resp) => {
     const data = req.body?.data;
     if (!data) {
       throw new MissingRequestBodyDataError();
@@ -87,6 +91,7 @@ module.exports = (db, collectionName) => {
       throw new NotAndArrayError(data);
     }
 
+    const ownerAccountId = new ObjectId(req.__accountId);
     const jobConstruct = new ObjectModifer([
       PickProps(["username", "password", "classIds", "timeToStart"]),
       NormalizeStringProp("username"),
@@ -95,7 +100,7 @@ module.exports = (db, collectionName) => {
       NormalizeIntProp("timeToStart"),
       SetProp("createdAt", Date.now()),
       SetProp("status", JobStatus.READY),
-      // TODO: inject ownerAccountId
+      SetProp("ownerAccountId", ownerAccountId),
     ]).apply(data);
 
     const job = new DangKyHocPhanTuDongJob(jobConstruct);
