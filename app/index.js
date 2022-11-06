@@ -44,6 +44,7 @@ const LopDangKy = require("./entities/LopDangKy");
 const isValidHocKy = require("./validations/isValidHocKy");
 const InvalidHocKyError = require("./exceptions/InvalidHocKyError");
 const toNormalizedString = require("./dto/toNormalizedString");
+const DKHPTDJobLogs = require("./entities/DKHPTDJobLogs");
 
 const app = express();
 const server = http.createServer(app);
@@ -54,7 +55,7 @@ app.use("/", express.static("./static", { maxAge: String(7 * 24 * 60 * 60 * 1000
 app.use("/examples", express.static("./examples"));
 app.post("/api/test/jobs/new", SecretAuth(config.SECRET), (req, resp) => {
   try {
-    emitter.emit(config.NEW_JOB, req.body);
+    emitter.emit(config.NEW_JOB_EVENT_NAME, req.body);
     resp.send(req.body);
   } catch (err) {
     logger.error(err);
@@ -103,7 +104,19 @@ new mongodb.MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client
     const jobs = await db.collection(config.DKHPTD_JOB_COLLECTION_NAME).find(filter).toArray();
     resp.send(new BaseResponse().ok(jobs.map((x) => new DangKyHocPhanTuDongJob(x).toClient())));
   }));
-  app.get("/api/accounts/:otherAccountId/current/dkhptd-s", SecretAuth(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.get("/api/accounts/current/dkhptd-s/:jobId/logs", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const query = new ObjectModifer([
+      PickProps(["workerId", "createdAt"], { dropFalsy: true }),
+    ]).apply(req.query);
+    const accountId = req.__accountId;
+
+    const filter = query.q ? resolveFilter(query.q.split(",")) : {};
+    filter.ownerAccountId = new mongodb.ObjectId(accountId);
+    filter.jobId = new mongodb.ObjectId(req.params.jobId);
+    const logs = await db.collection(config.DKHPTD_JOB_LOGS_COLLECTION_NAME).find(filter).toArray();
+    resp.send(new BaseResponse().ok(logs.map((x) => new DKHPTDJobLogs(x).toClient())));
+  }));
+  app.get("/api/accounts/:otherAccountId/dkhptd-s", SecretAuth(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const query = new ObjectModifer([
       PickProps(["status", "timeToStart", "username"], { dropFalsy: true }),
     ]).apply(req.query);
@@ -416,8 +429,27 @@ new mongodb.MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client
     resp.send(new BaseResponse().ok(deletedCount));
   }));
 
-  emitter.on(config.JOB_RESULT, async (result) => logger.info(result));
-  emitter.on(config.JOB_RESULT, async (result) => db.collection(config.JOB_RESULT_COLLECTION_NAME).insertOne(result));
+  emitter.on(config.NEW_JOB_RESULT_EVENT_NAME, async (result) => {
+    try {
+      logger.info(`Received Job Result: ${result.id}`);
+      const jobId = new mongodb.ObjectId(result.id);
+      const job = await db.collection(config.DKHPTD_JOB_COLLECTION_NAME).findOne({ _id: jobId });
+
+      if (job) {
+        await db.collection(config.DKHPTD_JOB_COLLECTION_NAME).updateOne({ _id: jobId }, { $set: { status: JobStatus.DONE } });
+        const logs = new DKHPTDJobLogs({
+          jobId,
+          workerId: result.workerId,
+          ownerAccountId: job.ownerAccountId,
+          logs: result.logs,
+          createdAt: Date.now(),
+        });
+        await db.collection(config.DKHPTD_JOB_LOGS_COLLECTION_NAME).insertOne(logs);
+      }
+    } catch (err) {
+      logger.error(err);
+    }
+  });
 
   loop.infinity(async () => {
     try {
@@ -428,7 +460,7 @@ new mongodb.MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client
       while (await cursor.hasNext()) {
         const entry = await cursor.next();
         const job = new DangKyHocPhanTuDongJob(entry);
-        emitter.emit(config.NEW_JOB, {
+        emitter.emit(config.NEW_JOB_EVENT_NAME, {
           name: "DangKyHocPhanTuDong",
           params: {
             username: job.username,
@@ -459,13 +491,14 @@ amqp.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
       logger.error(error1);
       return;
     }
-    emitter.on(config.NEW_JOB, (job) => channel.sendToQueue(config.NEW_JOB, toBuffer(job)));
+    emitter.on(config.NEW_JOB_EVENT_NAME, (job) => channel.sendToQueue(config.DKHPTD_JOBS_QUEUE_NAME, toBuffer(job)));
 
-    channel.assertQueue(config.NEW_JOB);
-    channel.assertExchange(config.WORKER_FEEDBACK, "topic", { durable: false });
+    channel.assertQueue(config.DKHPTD_JOBS_QUEUE_NAME);
+    channel.assertExchange(config.DKHPTD_WORKER_DOING_EXCHANGE_NAME, "fanout", { durable: false });
+    channel.assertExchange(config.DKHPTD_WORKER_PING_EXCHANGE_NAME, "fanout", { durable: false });
 
     // result queue
-    channel.assertQueue(config.JOB_RESULT, null, (error2, q) => {
+    channel.assertQueue(config.DKHPTD_JOB_RESULT_QUEUE_NAME, null, (error2, q) => {
       if (error2) {
         logger.error(error2);
         return;
@@ -474,7 +507,7 @@ amqp.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
       channel.consume(q.queue, async (msg) => {
         try {
           const result = JSON.parse(msg.content.toString());
-          emitter.emit(config.JOB_RESULT, result);
+          emitter.emit(config.NEW_JOB_RESULT_EVENT_NAME, result);
         } catch (err) {
           logger.error(err);
         }
@@ -482,18 +515,17 @@ amqp.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
       }, { noAck: false });
     });
 
-    // ping queue
-    channel.assertQueue(`${config.APP_ID}.${config.PING}`, { exclusive: true }, (error2, q) => {
+    channel.assertQueue("", { exclusive: true }, (error2, q) => {
       if (error2) {
         logger.error(error2);
         return;
       }
 
-      channel.bindQueue(q.queue, config.WORKER_FEEDBACK, config.PING);
+      channel.bindQueue(q.queue, config.DKHPTD_WORKER_PING_EXCHANGE_NAME, "");
       channel.consume(q.queue, async (msg) => {
         try {
           const ping = JSON.parse(msg.content.toString());
-          emitter.emit(config.PING, ping);
+          emitter.emit(config.PING_EVENT_NAME, ping);
         } catch (err) {
           logger.error(err);
         }
@@ -501,18 +533,17 @@ amqp.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
       }, { noAck: false });
     });
 
-    // TODO: doing queue
-    channel.assertQueue(`${config.APP_ID}.${config.DOING}`, { exclusive: true }, (error2, q) => {
+    channel.assertQueue("", { exclusive: true }, (error2, q) => {
       if (error2) {
         logger.error(error2);
         return;
       }
 
-      channel.bindQueue(q.queue, config.WORKER_FEEDBACK, config.DOING);
+      channel.bindQueue(q.queue, config.DKHPTD_WORKER_DOING_EXCHANGE_NAME);
       channel.consume(q.queue, async (msg) => {
         try {
           const doing = JSON.parse(msg.content.toString());
-          emitter.emit(config.DOING, doing);
+          emitter.emit(config.DOING_EVENT_NAME, doing);
         } catch (err) {
           logger.error(err);
         }
@@ -522,8 +553,8 @@ amqp.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
   });
 });
 
-emitter.on(config.DOING, (doing) => logger.info(`Doing: ${toJson(doing)}`));
-emitter.on(config.PING, (ping) => logger.info(`Ping: ${toJson(ping, null)}`));
+emitter.on(config.DOING_EVENT_NAME, (doing) => logger.info(`Doing: ${toJson(doing)}`));
+emitter.on(config.PING_EVENT_NAME, (ping) => logger.info(`Ping: ${toJson(ping, null)}`));
 
 logger.info(`Config: \n${toKeyValueString(config)}`);
 server.listen(config.PORT, config.BIND);
