@@ -1,6 +1,6 @@
-const isValidClassIds = require("../app/validations/isValidClassIds");
-const isValidCttSisUsername = require("../app/validations/isValidCttSisUsername");
-const isValidHocKy = require("../app/validations/isValidHocKy");
+const isValidClassIds = require("../dist/validations/isValidClassIds").default;
+const isValidCttSisUsername = require("../dist/validations/isValidCttSisUsername").default;
+const isValidTermId = require("../dist/validations/isValidTermId").default;
 
 describe("validations", () => {
   test("username is null", () => {
@@ -36,22 +36,22 @@ describe("validations", () => {
   });
 
   test("hoc ky is null", () => {
-    expect(isValidHocKy(null)).toBeFalsy();
+    expect(isValidTermId(null)).toBeFalsy();
   });
 
   test("hoc ky is undefined", () => {
-    expect(isValidHocKy(undefined)).toBeFalsy();
+    expect(isValidTermId(undefined)).toBeFalsy();
   });
 
   test("hoc ky is empty", () => {
-    expect(isValidHocKy("")).toBeFalsy();
+    expect(isValidTermId("")).toBeFalsy();
   });
 
   test("hoc ky is not started with number", () => {
-    expect(isValidHocKy("notanumber1234a")).toBeFalsy();
+    expect(isValidTermId("notanumber1234a")).toBeFalsy();
   });
 
   test("hoc ky is valid", () => {
-    expect(isValidHocKy("20192")).toBeTruthy();
+    expect(isValidTermId("20192")).toBeTruthy();
   });
 });
