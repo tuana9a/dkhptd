@@ -1,6 +1,6 @@
 export default class ObjectModifer {
   private input: any;
-  private modifiers: ((input: any) => any)[]; // TODO
+  private modifiers: ((input: any) => any)[];
   private opts: any;
 
   constructor(input: any) {

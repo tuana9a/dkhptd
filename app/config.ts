@@ -4,6 +4,7 @@ dotenv.config();
 
 const config = {
   SECRET: process.env.SECRET || String(Math.round(Math.random() * Date.now())),
+  JOB_ENCRYPTION_KEY: process.env.JOB_ENCRYPTION_KEY,
   BIND: process.env.BIND || "127.0.0.1",
   PORT: process.env.PORT || 8080,
   LOG_DIR: process.env.LOG_DIR || "./logs",
@@ -24,6 +25,8 @@ const config = {
   DKHPTD_JOB_RESULT_QUEUE_NAME: "dkhptd.jobs.result",
 
   DKHPTD_JOB_COLLECTION_NAME: "dkhptdJob",
+  DKHPTD_JOB_V1_COLLECTION_NAME: "dkhptdJobV1",
+  DKHPTD_JOB_V1_LOGS_COLLECTION_NAME: "dkhptdJobV1Logs",
   DKHPTD_JOB_LOGS_COLLECTION_NAME: "dkhptdJobLogs",
   ACCOUNT_COLLECTION_NAME: "account",
   CLASS_TO_REGISTER_COLLECTION_NAME: "classToRegister",

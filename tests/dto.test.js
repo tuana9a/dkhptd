@@ -18,7 +18,6 @@ describe("dto", () => {
       NormalizeIntProp("timeToStart"),
       SetProp("createdAt", now.getTime()),
       SetProp("status", JobStatus.READY),
-      // TODO: inject ownerAccountId
     ]).apply({
       propWillBeDrop: "hello",
       username: "u ",

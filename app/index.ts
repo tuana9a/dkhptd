@@ -8,7 +8,7 @@ import EventEmitter from "events";
 
 import toJson from "./dto/toJson";
 import toBuffer from "./dto/toBuffer";
-import SecretAuth from "./middlewares/SecretAuth";
+import SecretFilter from "./middlewares/SecretFilter";
 import ObjectModifer from "./modifiers/ObjectModifier";
 import config from "./config";
 import loop from "./utils/loop";
@@ -47,6 +47,7 @@ import toNormalizedString from "./dto/toNormalizedString";
 import DKHPTDJobLogs from "./entities/DKHPTDJobLogs";
 import toSafeInt from "./dto/toSafeInt";
 import getRequestAccountId from "./utils/getRequestAccountId";
+import DangKyHocPhanTuDongJobV1 from "./entities/DangKyHocPhanTuDongJobV1";
 
 const app = express();
 const server = createServer(app);
@@ -55,7 +56,7 @@ const emitter = new EventEmitter();
 app.use(express.json());
 app.use("/", express.static("./static", { maxAge: String(7 * 24 * 60 * 60 * 1000) /* 7 day */ }));
 app.use("/examples", express.static("./examples"));
-app.post("/api/test/jobs/new", SecretAuth(config.SECRET), (req, resp) => {
+app.post("/api/test/jobs/new", SecretFilter(config.SECRET), (req, resp) => {
   try {
     emitter.emit(config.NEW_JOB_EVENT_NAME, req.body);
     resp.send(req.body);
@@ -114,7 +115,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const logs = await db.collection(config.DKHPTD_JOB_LOGS_COLLECTION_NAME).find(filter).toArray();
     resp.send(new BaseResponse().ok(logs.map((x) => new DKHPTDJobLogs(x).toClient())));
   }));
-  app.get("/api/accounts/:otherAccountId/dkhptd-s", SecretAuth(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.get("/api/accounts/:otherAccountId/dkhptd-s", SecretFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const query = new ObjectModifer(req.query).modify(PickProps(["status", "timeToStart", "username"], { dropFalsy: true })).collect();
     // TODO: check privilege of account
     const filter: any = query.q ? resolveFilter(query.q.split(",")) : {};
@@ -238,7 +239,162 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     resp.send(new BaseResponse().ok(req.params.jobId));
   }));
 
-  app.post("/api/class-to-registers", SecretAuth(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.get("/api/accounts/current/dkhptdv1-s", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const query = new ObjectModifer(req.query).modify(PickProps(["status", "timeToStart", "username"], { dropFalsy: true })).collect();
+    const accountId = getRequestAccountId(req);
+
+    const filter: any = query.q ? resolveFilter(query.q.split(",")) : {};
+    filter.ownerAccountId = new ObjectId(accountId);
+    const jobs = await db.collection(config.DKHPTD_JOB_V1_COLLECTION_NAME).find(filter).toArray();
+    resp.send(new BaseResponse().ok(jobs.map((x) => new DangKyHocPhanTuDongJobV1(x).toClient())));
+  }));
+  app.get("/api/accounts/current/d/dkhptdv1-s", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const query = new ObjectModifer(req.query).modify(PickProps(["status", "timeToStart", "username"], { dropFalsy: true })).collect();
+    const accountId = getRequestAccountId(req);
+
+    const filter: any = query.q ? resolveFilter(query.q.split(",")) : {};
+    filter.ownerAccountId = new ObjectId(accountId);
+    const jobs = await db.collection(config.DKHPTD_JOB_V1_COLLECTION_NAME).find(filter).toArray();
+    resp.send(new BaseResponse().ok(jobs.map((x) => new DangKyHocPhanTuDongJobV1(x).decrypt().toClient())));
+  }));
+  app.get("/api/accounts/current/dkhptdv1-s/:jobId/logs", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const query = new ObjectModifer(req.query).modify(PickProps(["workerId", "createdAt"], { dropFalsy: true })).collect();
+    const accountId = getRequestAccountId(req);
+
+    const filter: any = query.q ? resolveFilter(query.q.split(",")) : {};
+    filter.ownerAccountId = new ObjectId(accountId);
+    filter.jobId = new ObjectId(req.params.jobId);
+    const logs = await db.collection(config.DKHPTD_JOB_V1_COLLECTION_NAME).find(filter).toArray();
+    resp.send(new BaseResponse().ok(logs.map((x) => new DKHPTDJobLogs(x).toClient())));
+  }));
+  app.get("/api/accounts/:otherAccountId/dkhptdv1-s", SecretFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const query = new ObjectModifer(req.query).modify(PickProps(["status", "timeToStart", "username"], { dropFalsy: true })).collect();
+    // TODO: check privilege of account
+    const filter: any = query.q ? resolveFilter(query.q.split(",")) : {};
+    filter.ownerAccountId = new ObjectId(req.params.otherAccountId);
+    const jobs = await db.collection(config.DKHPTD_JOB_V1_COLLECTION_NAME).find(filter).toArray();
+    resp.send(new BaseResponse().ok(jobs.map((x) => new DangKyHocPhanTuDongJobV1(x).toClient())));
+  }));
+
+  app.post("/api/accounts/current/dkhptdv1", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const data = req.body;
+    if (!data) {
+      throw new MissingRequestBodyDataError();
+    }
+
+    const ownerAccountId = new ObjectId(getRequestAccountId(req));
+    const safeData = new ObjectModifer(data)
+      .modify(PickProps(["username", "password", "classIds", "timeToStart"]))
+      .modify(NormalizeStringProp("username"))
+      .modify(NormalizeStringProp("password"))
+      .modify(NormalizeArrayProp("classIds", "string", ""))
+      .modify(NormalizeIntProp("timeToStart"))
+      .modify(SetProp("createdAt", Date.now()))
+      .modify(SetProp("status", JobStatus.READY))
+      .modify(SetProp("ownerAccountId", ownerAccountId))
+      .collect();
+
+    const job = new DangKyHocPhanTuDongJobV1(safeData);
+
+    if (!isValidCttSisUsername(job.username)) {
+      throw new InvalidCttSisUsernameError(job.username);
+    }
+
+    if (!isValidCttSisPassword(job.password)) {
+      throw new InvalidCttSisPassswordError(job.password);
+    }
+
+    if (!isValidClassIds(job.classIds)) {
+      throw new InvalidClassIdsError(job.classIds);
+    }
+
+    const eJob = job.encrypt();
+    await db.collection(config.DKHPTD_JOB_V1_COLLECTION_NAME).insertOne(eJob);
+    resp.send(new BaseResponse().ok(job));
+  }));
+  app.post("/api/accounts/current/dkhptdv1-s", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const data = req.body?.data;
+    if (isFalsy(data)) {
+      throw new MissingRequestBodyDataError();
+    }
+
+    if (!Array.isArray(data)) {
+      throw new NotAnArrayError(data);
+    }
+
+    const ownerAccountId = new ObjectId(getRequestAccountId(req));
+    const result = [];
+    const jobsToInsert = [];
+
+    for (const entry of data) {
+      try {
+        const safeEntry = new ObjectModifer(entry)
+          .modify(PickProps(["username", "password", "classIds", "timeToStart"]))
+          .modify(NormalizeStringProp("username"))
+          .modify(NormalizeStringProp("password"))
+          .modify(NormalizeArrayProp("classIds", "string", ""))
+          .modify(NormalizeIntProp("timeToStart"))
+          .modify(SetProp("createdAt", Date.now()))
+          .modify(SetProp("status", JobStatus.READY))
+          .modify(SetProp("ownerAccountId", ownerAccountId))
+          .collect();
+
+        const job = new DangKyHocPhanTuDongJobV1(safeEntry);
+
+        if (!isValidCttSisUsername(job.username)) {
+          throw new InvalidCttSisUsernameError(job.username);
+        }
+
+        if (!isValidCttSisPassword(job.password)) {
+          throw new InvalidCttSisPassswordError(job.password);
+        }
+
+        if (!isValidClassIds(job.classIds)) {
+          throw new InvalidClassIdsError(job.classIds);
+        }
+
+        jobsToInsert.push(job);
+        result.push(new BaseResponse().ok(job));
+      } catch (err) {
+        if (err.__isSafeError) {
+          result.push(err.toBaseResponse());
+        } else {
+          result.push(new BaseResponse().failed(err).withMessage(err.message));
+        }
+      }
+    }
+
+    if (jobsToInsert.length !== 0) {
+      const eJobsToInsert = jobsToInsert.map((x) => x.encrypt());
+      await db.collection(config.DKHPTD_JOB_V1_COLLECTION_NAME).insertMany(eJobsToInsert);
+    }
+    resp.send(new BaseResponse().ok(result));
+  }));
+
+  app.post("/api/accounts/current/dkhptdv1-s/:jobId/retry", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const accountId = getRequestAccountId(req);
+    const filter = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
+    const record = await db.collection(config.DKHPTD_JOB_V1_COLLECTION_NAME).findOne(filter);
+    const newJob = new DangKyHocPhanTuDongJobV1(record).toRetry();
+    const eNewJob = newJob.encrypt();
+    await db.collection(config.DKHPTD_JOB_V1_COLLECTION_NAME).insertOne(eNewJob);
+    resp.send(new BaseResponse().ok(req.params.jobId));
+  }));
+  app.put("/api/accounts/current/dkhptdv1-s/:jobId/cancel", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const accountId = getRequestAccountId(req);
+    const filter = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
+    await db.collection(config.DKHPTD_JOB_V1_COLLECTION_NAME).findOneAndUpdate(filter, { $set: { status: JobStatus.CANCELED } });
+    resp.send(new BaseResponse().ok(req.params.jobId));
+  }));
+
+  app.delete("/api/accounts/current/dkhptdv1-s/:jobId", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const accountId = getRequestAccountId(req);
+    const filter = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
+    await db.collection(config.DKHPTD_JOB_V1_COLLECTION_NAME).deleteOne(filter);
+    resp.send(new BaseResponse().ok(req.params.jobId));
+  }));
+
+  app.post("/api/class-to-registers", SecretFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const data = req.body?.data;
     if (isFalsy(data)) {
       throw new MissingRequestBodyDataError();
@@ -384,7 +540,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     resp.send(new BaseResponse().ok(classToRegister));
   }));
 
-  app.delete("/api/class-to-registers", SecretAuth(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.delete("/api/class-to-registers", SecretFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const query = new ObjectModifer(req.query)
       .modify(PickProps([
         "classId",
@@ -411,7 +567,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const deleteResult = await db.collection(config.CLASS_TO_REGISTER_COLLECTION_NAME).deleteMany(filter);
     resp.send(new BaseResponse().ok(deleteResult.deletedCount));
   }));
-  app.delete("/api/class-to-registers", SecretAuth(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.delete("/api/class-to-registers", SecretFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const query = new ObjectModifer(req.query)
       .modify(PickProps([
         "classId",
@@ -437,7 +593,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const deleteResult = await db.collection(config.CLASS_TO_REGISTER_COLLECTION_NAME).deleteMany(filter);
     resp.send(new BaseResponse().ok(deleteResult.deletedCount));
   }));
-  app.delete("/api/duplicate-class-to-registers", SecretAuth(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.delete("/api/duplicate-class-to-registers", SecretFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const cursor = db.collection(config.CLASS_TO_REGISTER_COLLECTION_NAME).find();
     const ids = new Set<string>();
     const delimiter = "::";
@@ -514,6 +670,8 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     }
   }, 10_000);
 });
+
+// TODO: loop in dkhptd v1
 
 amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
   if (error0) {

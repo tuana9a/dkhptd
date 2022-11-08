@@ -1,6 +1,5 @@
 import { ObjectId } from "mongodb";
 import toObjectId from "../dto/toObjectId";
-import DropProps from "../modifiers/DropProps";
 import ObjectModifer from "../modifiers/ObjectModifier";
 import EntityWithObjectId from "./EntityWithObjectId";
 import JobStatus from "./JobStatus";
@@ -15,7 +14,17 @@ export default class DangKyHocPhanTuDongJob extends EntityWithObjectId {
   createdAt: number;
   doingAt: number;
 
-  constructor({ _id, username, password, classIds, timeToStart, ownerAccountId, status, createdAt, doingAt }: any) {
+  constructor({ _id, username, password, classIds, timeToStart, ownerAccountId, status, createdAt, doingAt }: {
+    _id?: ObjectId;
+    ownerAccountId?: ObjectId;
+    username?: string;
+    password?: string;
+    classIds?: string[];
+    timeToStart?: number;
+    status?: number;
+    createdAt?: number;
+    doingAt?: number;
+  }) {
     super();
     this._id = _id;
     this.ownerAccountId = ownerAccountId;
@@ -34,10 +43,7 @@ export default class DangKyHocPhanTuDongJob extends EntityWithObjectId {
   }
 
   toClient() {
-    const output = new ObjectModifer(this)
-      .modify(DropProps(["password"]))
-      .collect();
-    return output;
+    return new ObjectModifer(this).collect();
   }
 
   toRetry() {
