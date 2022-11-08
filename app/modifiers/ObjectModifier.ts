@@ -1,9 +1,16 @@
 export default class ObjectModifer {
-  modifiers: ((input: any) => any)[]; // TODO
-  opts: any;
+  private input: any;
+  private modifiers: ((input: any) => any)[]; // TODO
+  private opts: any;
 
-  constructor(modifiers = []) {
-    this.modifiers = modifiers;
+  constructor(input: any) {
+    this.input = input;
+    this.modifiers = [];
+  }
+
+  modify(modifier: (input: any) => any) {
+    this.modifiers.push(modifier);
+    return this;
   }
 
   withOpts(opts = {}) {
@@ -11,8 +18,8 @@ export default class ObjectModifer {
     return this;
   }
 
-  apply(input: any) {
-    let output = input;
+  collect() {
+    let output = this.input;
     for (const modifier of this.modifiers) {
       output = modifier(output);
     }

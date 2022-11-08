@@ -34,7 +34,9 @@ export default class DangKyHocPhanTuDongJob extends EntityWithObjectId {
   }
 
   toClient() {
-    const output = new ObjectModifer([DropProps(["password"])]).apply(this);
+    const output = new ObjectModifer(this)
+      .modify(DropProps(["password"]))
+      .collect();
     return output;
   }
 

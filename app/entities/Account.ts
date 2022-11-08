@@ -15,6 +15,8 @@ export default class Account extends EntityWithObjectId {
   }
 
   toClient() {
-    return new ObjectModifer([DropProps(["password"])]).apply(this);
+    return new ObjectModifer(this)
+      .modify(DropProps(["password"]))
+      .collect();
   }
 }

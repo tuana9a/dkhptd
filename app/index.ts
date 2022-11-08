@@ -68,11 +68,11 @@ app.post("/api/test/jobs/new", SecretAuth(config.SECRET), (req, resp) => {
 new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
   const db = client.db(config.DATABASE_NAME);
   app.post("/api/login", ExceptionHandlerWrapper(async (req, resp) => {
-    const body = new LoginWithUsernamePasswordRequest(new ObjectModifer([
-      PickProps(["username", "password"]),
-      NormalizeStringProp("username"),
-      NormalizeStringProp("password"),
-    ]).apply(req.body));
+    const body = new LoginWithUsernamePasswordRequest(new ObjectModifer(req.body)
+      .modify(PickProps(["username", "password"]))
+      .modify(NormalizeStringProp("username"))
+      .modify(NormalizeStringProp("password"))
+      .collect());
     const hashedPassword = createHash("sha256").update(body.password).digest("hex");
     const record = await db.collection(config.ACCOUNT_COLLECTION_NAME).findOne({ username: body.username, password: hashedPassword });
     const account = new Account(record).withId(record._id);
@@ -80,12 +80,12 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     resp.send(new BaseResponse().ok(new LoginResponse(token)));
   }));
   app.post("/api/signup", ExceptionHandlerWrapper(async (req, resp) => {
-    const body = new LoginWithUsernamePasswordRequest(new ObjectModifer([
-      PickProps(["username", "password"]),
-      NormalizeStringProp("username"),
-      NormalizeStringProp("password"),
-      ReplaceCurrentPropValueWith("password", (oldValue) => createHash("sha256").update(oldValue).digest("hex")),
-    ]).apply(req.body));
+    const body = new LoginWithUsernamePasswordRequest(new ObjectModifer(req.body)
+      .modify(PickProps(["username", "password"]))
+      .modify(NormalizeStringProp("username"))
+      .modify(NormalizeStringProp("password"))
+      .modify(ReplaceCurrentPropValueWith("password", (oldValue) => createHash("sha256").update(oldValue).digest("hex")))
+      .collect());
     const isUsernameExists = await db.collection(config.ACCOUNT_COLLECTION_NAME).findOne({ username: body.username });
     if (isUsernameExists) {
       throw new UsernameExistedError(body.username);
@@ -96,9 +96,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
   }));
 
   app.get("/api/accounts/current/dkhptd-s", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
-    const query = new ObjectModifer([
-      PickProps(["status", "timeToStart", "username"], { dropFalsy: true }),
-    ]).apply(req.query);
+    const query = new ObjectModifer(req.query).modify(PickProps(["status", "timeToStart", "username"], { dropFalsy: true })).collect();
     const accountId = getRequestAccountId(req);
 
     const filter: any = query.q ? resolveFilter(query.q.split(",")) : {};
@@ -107,9 +105,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     resp.send(new BaseResponse().ok(jobs.map((x) => new DangKyHocPhanTuDongJob(x).toClient())));
   }));
   app.get("/api/accounts/current/dkhptd-s/:jobId/logs", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
-    const query = new ObjectModifer([
-      PickProps(["workerId", "createdAt"], { dropFalsy: true }),
-    ]).apply(req.query);
+    const query = new ObjectModifer(req.query).modify(PickProps(["workerId", "createdAt"], { dropFalsy: true })).collect();
     const accountId = getRequestAccountId(req);
 
     const filter: any = query.q ? resolveFilter(query.q.split(",")) : {};
@@ -119,9 +115,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     resp.send(new BaseResponse().ok(logs.map((x) => new DKHPTDJobLogs(x).toClient())));
   }));
   app.get("/api/accounts/:otherAccountId/dkhptd-s", SecretAuth(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
-    const query = new ObjectModifer([
-      PickProps(["status", "timeToStart", "username"], { dropFalsy: true }),
-    ]).apply(req.query);
+    const query = new ObjectModifer(req.query).modify(PickProps(["status", "timeToStart", "username"], { dropFalsy: true })).collect();
     // TODO: check privilege of account
     const filter: any = query.q ? resolveFilter(query.q.split(",")) : {};
     filter.ownerAccountId = new ObjectId(req.params.otherAccountId);
@@ -136,16 +130,16 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     }
 
     const ownerAccountId = new ObjectId(getRequestAccountId(req));
-    const safeData = new ObjectModifer([
-      PickProps(["username", "password", "classIds", "timeToStart"]),
-      NormalizeStringProp("username"),
-      NormalizeStringProp("password"),
-      NormalizeArrayProp("classIds", "string", ""),
-      NormalizeIntProp("timeToStart"),
-      SetProp("createdAt", Date.now()),
-      SetProp("status", JobStatus.READY),
-      SetProp("ownerAccountId", ownerAccountId),
-    ]).apply(data);
+    const safeData = new ObjectModifer(data)
+      .modify(PickProps(["username", "password", "classIds", "timeToStart"]))
+      .modify(NormalizeStringProp("username"))
+      .modify(NormalizeStringProp("password"))
+      .modify(NormalizeArrayProp("classIds", "string", ""))
+      .modify(NormalizeIntProp("timeToStart"))
+      .modify(SetProp("createdAt", Date.now()))
+      .modify(SetProp("status", JobStatus.READY))
+      .modify(SetProp("ownerAccountId", ownerAccountId))
+      .collect();
 
     const job = new DangKyHocPhanTuDongJob(safeData);
 
@@ -180,16 +174,16 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
     for (const entry of data) {
       try {
-        const safeEntry = new ObjectModifer([
-          PickProps(["username", "password", "classIds", "timeToStart"]),
-          NormalizeStringProp("username"),
-          NormalizeStringProp("password"),
-          NormalizeArrayProp("classIds", "string", ""),
-          NormalizeIntProp("timeToStart"),
-          SetProp("createdAt", Date.now()),
-          SetProp("status", JobStatus.READY),
-          SetProp("ownerAccountId", ownerAccountId),
-        ]).apply(entry);
+        const safeEntry = new ObjectModifer(entry)
+          .modify(PickProps(["username", "password", "classIds", "timeToStart"]))
+          .modify(NormalizeStringProp("username"))
+          .modify(NormalizeStringProp("password"))
+          .modify(NormalizeArrayProp("classIds", "string", ""))
+          .modify(NormalizeIntProp("timeToStart"))
+          .modify(SetProp("createdAt", Date.now()))
+          .modify(SetProp("status", JobStatus.READY))
+          .modify(SetProp("ownerAccountId", ownerAccountId))
+          .collect();
 
         const job = new DangKyHocPhanTuDongJob(safeEntry);
 
@@ -258,8 +252,8 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const result = [];
     for (const entry of data) {
       try {
-        const classToRegisterConstruct = new ObjectModifer([
-          PickProps([
+        const classToRegisterConstruct = new ObjectModifer(entry)
+          .modify(PickProps([
             "classId",
             "secondClassId",
             "subjectId",
@@ -272,21 +266,21 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
             "learnWeek",
             "GhiChu",
             "termId",
-          ]),
-          NormalizeIntProp("classId"),
-          NormalizeIntProp("secondClassId"),
-          NormalizeStringProp("subjectId"),
-          NormalizeStringProp("subjectName"),
-          NormalizeStringProp("classType"),
-          NormalizeIntProp("learnDayNumber"),
-          NormalizeIntProp("learnAtDayOfWeek"),
-          NormalizeStringProp("learnTime"),
-          NormalizeStringProp("room"),
-          NormalizeStringProp("learnWeek"),
-          NormalizeStringProp("GhiChu"),
-          NormalizeStringProp("termId"),
-          SetProp("createdAt", Date.now()),
-        ]).apply(entry);
+          ]))
+          .modify(NormalizeIntProp("classId"))
+          .modify(NormalizeIntProp("secondClassId"))
+          .modify(NormalizeStringProp("subjectId"))
+          .modify(NormalizeStringProp("subjectName"))
+          .modify(NormalizeStringProp("classType"))
+          .modify(NormalizeIntProp("learnDayNumber"))
+          .modify(NormalizeIntProp("learnAtDayOfWeek"))
+          .modify(NormalizeStringProp("learnTime"))
+          .modify(NormalizeStringProp("room"))
+          .modify(NormalizeStringProp("learnWeek"))
+          .modify(NormalizeStringProp("GhiChu"))
+          .modify(NormalizeStringProp("termId"))
+          .modify(SetProp("createdAt", Date.now()))
+          .collect();
 
         const classToRegister = new ClassToRegister(classToRegisterConstruct);
 
@@ -309,20 +303,21 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
   }));
 
   app.get("/api/class-to-registers", ExceptionHandlerWrapper(async (req, resp) => {
-    const query = new ObjectModifer([PickProps([
-      "classId",
-      "secondClassId",
-      "classType",
-      "subjectId",
-      "subjectName",
-      "learnDayNumber",
-      "learnAtDayOfWeek",
-      "learnTime",
-      "room",
-      "learnWeek",
-      "termId"
-    ], { dropFalsy: true }),
-    ]).apply(req.query);
+    const query = new ObjectModifer(req.query)
+      .modify(PickProps([
+        "classId",
+        "secondClassId",
+        "classType",
+        "subjectId",
+        "subjectName",
+        "learnDayNumber",
+        "learnAtDayOfWeek",
+        "learnTime",
+        "room",
+        "learnWeek",
+        "termId"
+      ], { dropFalsy: true }))
+      .collect();
     const termId = toNormalizedString(query.termId);
 
     if (!isValidTermId(termId)) {
@@ -390,19 +385,21 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
   }));
 
   app.delete("/api/class-to-registers", SecretAuth(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
-    const query = new ObjectModifer([PickProps([
-      "classId",
-      "secondClassId",
-      "classType",
-      "subjectId",
-      "subjectName",
-      "learnDayNumber",
-      "learnAtDayOfWeek",
-      "learnTime",
-      "room",
-      "learnWeek",
-      "termId"
-    ], { dropFalsy: true })]).apply(req.query);
+    const query = new ObjectModifer(req.query)
+      .modify(PickProps([
+        "classId",
+        "secondClassId",
+        "classType",
+        "subjectId",
+        "subjectName",
+        "learnDayNumber",
+        "learnAtDayOfWeek",
+        "learnTime",
+        "room",
+        "learnWeek",
+        "termId"
+      ], { dropFalsy: true }))
+      .collect();
     const termId = toNormalizedString(query.termId);
 
     if (!isValidTermId(termId)) {
@@ -415,19 +412,20 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     resp.send(new BaseResponse().ok(deleteResult.deletedCount));
   }));
   app.delete("/api/class-to-registers", SecretAuth(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
-    const query = new ObjectModifer([PickProps([
-      "classId",
-      "secondClassId",
-      "classType",
-      "subjectId",
-      "subjectName",
-      "learnDayNumber",
-      "learnAtDayOfWeek",
-      "learnTime",
-      "room",
-      "learnWeek",
-      "termId"
-    ], { dropFalsy: true })]).apply(req.query);
+    const query = new ObjectModifer(req.query)
+      .modify(PickProps([
+        "classId",
+        "secondClassId",
+        "classType",
+        "subjectId",
+        "subjectName",
+        "learnDayNumber",
+        "learnAtDayOfWeek",
+        "learnTime",
+        "room",
+        "learnWeek",
+        "termId"
+      ], { dropFalsy: true })).collect();
     const termId = toNormalizedString(query.termId);
 
     if (!isValidTermId(termId)) {

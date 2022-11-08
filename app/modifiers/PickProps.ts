@@ -2,7 +2,7 @@ export default (propNames: string[] = [], options = { dropFalsy: false }) => (in
   const output = {};
 
   for (const propName of propNames) {
-    if (options.dropFalsy) {
+    if (options?.dropFalsy) {
       if (input[propName]) { // check not falsy value
         output[propName] = input[propName];
       }
