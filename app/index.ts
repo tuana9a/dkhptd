@@ -67,8 +67,10 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
       .modify(NormalizeStringProp("password"))
       .collect());
     const hashedPassword = createHash("sha256").update(body.password).digest("hex");
-    const record = await db.collection(Account.name).findOne({ username: body.username, password: hashedPassword });
-    const account = new Account(record).withId(record._id);
+    const account = await db.collection(Account.name).findOne({ username: body.username, password: hashedPassword });
+
+    if (!account) throw new AccountNotFoundError();
+
     const token = sign({ id: account._id }, config.SECRET, { expiresIn: "1h" });
     resp.send(new BaseResponse().ok(new LoginResponse(token)));
   }));
@@ -96,6 +98,23 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
     if (isFalsy(account)) throw new AccountNotFoundError(accountId);
 
+    resp.send(new BaseResponse().ok(new Account(account).toClient()));
+  }));
+  app.put("/api/accounts/current/password", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const accountId = getRequestAccountId(req);
+    const body = new ObjectModifer(req.body)
+      .modify(PickProps(["password"]))
+      .modify(NormalizeStringProp("password"))
+      .modify(ReplaceCurrentPropValueWith("password", (oldValue) => createHash("sha256").update(oldValue).digest("hex")))
+      .collect();
+    const newHashedPassword = body.password;
+
+    const filter: Filter<Account> = { _id: new ObjectId(accountId) };
+    const account = await db.collection(Account.name).findOne(filter);
+
+    if (isFalsy(account)) throw new AccountNotFoundError(accountId);
+
+    await db.collection(Account.name).updateOne(filter, { $set: { password: newHashedPassword } });
     resp.send(new BaseResponse().ok(new Account(account).toClient()));
   }));
 

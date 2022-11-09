@@ -5,7 +5,7 @@ import SafeError from "./SafeError";
 export default class AccountNotFoundError extends SafeError {
   accountId: string | ObjectId;
 
-  constructor(accountId: string | ObjectId) {
+  constructor(accountId?: string | ObjectId) {
     super("ACCOUNT_NOT_FOUND");
     this.accountId = accountId;
   }
