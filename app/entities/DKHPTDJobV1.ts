@@ -54,7 +54,7 @@ export default class DKHPTDJobV1 extends EntityWithObjectId {
   decrypt() {
     const dPassword = d(this.password, this.iv);
     const dUsername = d(this.username, this.iv);
-    return new DKHPTDJob({
+    return new DKHPTDJobV1({
       _id: this._id,
       ownerAccountId: this.ownerAccountId,
       username: dUsername,

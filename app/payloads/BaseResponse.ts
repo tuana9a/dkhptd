@@ -1,7 +1,8 @@
 export default class BaseResponse<T> {
-  message: string;
-  data: T;
-  success: boolean;
+  private message: string;
+  private data: T;
+  private error: T;
+  private success: boolean;
 
   constructor() {
     this.message = null;
@@ -15,19 +16,14 @@ export default class BaseResponse<T> {
     return this;
   }
 
-  failed(data?: T) {
+  failed(error?: T) {
     this.success = false;
-    this.data = data;
+    this.error = error;
     return this;
   }
 
   withMessage(message: string) {
     this.message = message;
-    return this;
-  }
-
-  withData(data: T) {
-    this.data = data;
     return this;
   }
 }

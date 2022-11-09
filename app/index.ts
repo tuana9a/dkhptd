@@ -48,23 +48,15 @@ import DKHPTDJobLogs from "./entities/DKHPTDJobLogs";
 import toSafeInt from "./utils/toSafeInt";
 import getRequestAccountId from "./utils/getRequestAccountId";
 import DKHPTDJobV1 from "./entities/DKHPTDJobV1";
+import AccountNotFoundError from "./exceptions/AccountNotFoundError";
+import JobNotFoundError from "./exceptions/JobNotFoundError";
+import MissingTimeToStartError from "./exceptions/MissingTimeToStartError";
 
 const app = express();
 const server = createServer(app);
 const emitter = new EventEmitter();
 
 app.use(express.json());
-app.use("/", express.static("./static", { maxAge: String(7 * 24 * 60 * 60 * 1000) /* 7 day */ }));
-app.use("/examples", express.static("./examples"));
-app.post("/api/test/jobs/new", SecretFilter(config.SECRET), (req, resp) => {
-  try {
-    emitter.emit(config.NEW_JOB_EVENT_NAME, req.body);
-    resp.send(req.body);
-  } catch (err) {
-    logger.error(err);
-    resp.status(500).send(err);
-  }
-});
 
 new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
   const db = client.db(config.DATABASE_NAME);
@@ -96,6 +88,17 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     resp.send(new BaseResponse().ok(account.toClient()));
   }));
 
+  app.get("/api/accounts/current", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const accountId = getRequestAccountId(req);
+
+    const filter: Filter<Account> = { _id: new ObjectId(accountId) };
+    const account = await db.collection(Account.name).findOne(filter);
+
+    if (isFalsy(account)) throw new AccountNotFoundError(accountId);
+
+    resp.send(new BaseResponse().ok(new Account(account).toClient()));
+  }));
+
   app.get("/api/accounts/current/dkhptd-s", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
     const accountId = getRequestAccountId(req);
@@ -118,9 +121,8 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
   app.post("/api/accounts/current/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const data = req.body;
-    if (!data) {
-      throw new MissingRequestBodyDataError();
-    }
+
+    if (isFalsy(data)) throw new MissingRequestBodyDataError();
 
     const ownerAccountId = new ObjectId(getRequestAccountId(req));
     const safeData = new ObjectModifer(data)
@@ -136,30 +138,19 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
     const job = new DKHPTDJob(safeData);
 
-    if (!isValidCttSisUsername(job.username)) {
-      throw new InvalidCttSisUsernameError(job.username);
-    }
-
-    if (!isValidCttSisPassword(job.password)) {
-      throw new InvalidCttSisPassswordError(job.password);
-    }
-
-    if (!isValidClassIds(job.classIds)) {
-      throw new InvalidClassIdsError(job.classIds);
-    }
+    if (!isValidCttSisUsername(job.username)) throw new InvalidCttSisUsernameError(job.username);
+    if (!isValidCttSisPassword(job.password)) throw new InvalidCttSisPassswordError(job.password);
+    if (!isValidClassIds(job.classIds)) throw new InvalidClassIdsError(job.classIds);
+    if (isFalsy(job.timeToStart)) throw new MissingTimeToStartError();
 
     await db.collection(DKHPTDJob.name).insertOne(job);
     resp.send(new BaseResponse().ok(job));
   }));
   app.post("/api/accounts/current/dkhptd-s", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const data = req.body?.data;
-    if (isFalsy(data)) {
-      throw new MissingRequestBodyDataError();
-    }
+    if (isFalsy(data)) throw new MissingRequestBodyDataError();
 
-    if (!Array.isArray(data)) {
-      throw new NotAnArrayError(data);
-    }
+    if (!Array.isArray(data)) throw new NotAnArrayError(data);
 
     const ownerAccountId = new ObjectId(getRequestAccountId(req));
     const result = [];
@@ -180,17 +171,11 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
         const job = new DKHPTDJob(safeEntry);
 
-        if (!isValidCttSisUsername(job.username)) {
-          throw new InvalidCttSisUsernameError(job.username);
-        }
+        if (!isValidCttSisUsername(job.username)) throw new InvalidCttSisUsernameError(job.username);
+        if (!isValidCttSisPassword(job.password)) throw new InvalidCttSisPassswordError(job.password);
+        if (!isValidClassIds(job.classIds)) throw new InvalidClassIdsError(job.classIds);
+        if (isFalsy(job.timeToStart)) throw new MissingTimeToStartError();
 
-        if (!isValidCttSisPassword(job.password)) {
-          throw new InvalidCttSisPassswordError(job.password);
-        }
-
-        if (!isValidClassIds(job.classIds)) {
-          throw new InvalidClassIdsError(job.classIds);
-        }
 
         jobsToInsert.push(job);
         result.push(new BaseResponse().ok(job));
@@ -212,8 +197,11 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
   app.post("/api/accounts/current/dkhptd-s/:jobId/retry", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const accountId = getRequestAccountId(req);
     const filter = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
-    const record = await db.collection(DKHPTDJob.name).findOne(filter);
-    const newJob = new DKHPTDJob(record).toRetry();
+    const existedJob = await db.collection(DKHPTDJob.name).findOne(filter);
+
+    if (isFalsy(existedJob)) throw new JobNotFoundError(req.params.jobId);
+
+    const newJob = new DKHPTDJob(existedJob).toRetry();
     await db.collection(DKHPTDJob.name).insertOne(newJob);
     resp.send(new BaseResponse().ok(req.params.jobId));
   }));
@@ -262,9 +250,8 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
   app.post("/api/accounts/current/dkhptdv1", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const data = req.body;
-    if (!data) {
-      throw new MissingRequestBodyDataError();
-    }
+
+    if (isFalsy(data)) throw new MissingRequestBodyDataError();
 
     const ownerAccountId = new ObjectId(getRequestAccountId(req));
     const safeData = new ObjectModifer(data)
@@ -280,17 +267,10 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
     const job = new DKHPTDJobV1(safeData);
 
-    if (!isValidCttSisUsername(job.username)) {
-      throw new InvalidCttSisUsernameError(job.username);
-    }
-
-    if (!isValidCttSisPassword(job.password)) {
-      throw new InvalidCttSisPassswordError(job.password);
-    }
-
-    if (!isValidClassIds(job.classIds)) {
-      throw new InvalidClassIdsError(job.classIds);
-    }
+    if (!isValidCttSisUsername(job.username)) throw new InvalidCttSisUsernameError(job.username);
+    if (!isValidCttSisPassword(job.password)) throw new InvalidCttSisPassswordError(job.password);
+    if (!isValidClassIds(job.classIds)) throw new InvalidClassIdsError(job.classIds);
+    if (isFalsy(job.timeToStart)) throw new MissingTimeToStartError();
 
     const eJob = job.encrypt();
     await db.collection(DKHPTDJobV1.name).insertOne(eJob);
@@ -298,13 +278,9 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
   }));
   app.post("/api/accounts/current/dkhptdv1-s", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const data = req.body?.data;
-    if (isFalsy(data)) {
-      throw new MissingRequestBodyDataError();
-    }
 
-    if (!Array.isArray(data)) {
-      throw new NotAnArrayError(data);
-    }
+    if (isFalsy(data)) throw new MissingRequestBodyDataError();
+    if (!Array.isArray(data)) throw new NotAnArrayError(data);
 
     const ownerAccountId = new ObjectId(getRequestAccountId(req));
     const result = [];
@@ -325,17 +301,10 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
         const job = new DKHPTDJobV1(safeEntry);
 
-        if (!isValidCttSisUsername(job.username)) {
-          throw new InvalidCttSisUsernameError(job.username);
-        }
-
-        if (!isValidCttSisPassword(job.password)) {
-          throw new InvalidCttSisPassswordError(job.password);
-        }
-
-        if (!isValidClassIds(job.classIds)) {
-          throw new InvalidClassIdsError(job.classIds);
-        }
+        if (!isValidCttSisUsername(job.username)) throw new InvalidCttSisUsernameError(job.username);
+        if (!isValidCttSisPassword(job.password)) throw new InvalidCttSisPassswordError(job.password);
+        if (!isValidClassIds(job.classIds)) throw new InvalidClassIdsError(job.classIds);
+        if (isFalsy(job.timeToStart)) throw new MissingTimeToStartError();
 
         jobsToInsert.push(job);
         result.push(new BaseResponse().ok(job));
@@ -358,8 +327,11 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
   app.post("/api/accounts/current/dkhptdv1-s/:jobId/retry", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const accountId = getRequestAccountId(req);
     const filter = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
-    const record = await db.collection(DKHPTDJobV1.name).findOne(filter);
-    const newJob = new DKHPTDJobV1(record).toRetry();
+    const existedJob = await db.collection(DKHPTDJobV1.name).findOne(filter);
+
+    if (!existedJob) throw new JobNotFoundError(req.params.jobId);
+
+    const newJob = new DKHPTDJobV1(existedJob).decrypt().toRetry();
     const eNewJob = newJob.encrypt();
     await db.collection(DKHPTDJobV1.name).insertOne(eNewJob);
     resp.send(new BaseResponse().ok(req.params.jobId));
