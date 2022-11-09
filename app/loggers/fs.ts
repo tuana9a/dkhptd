@@ -3,7 +3,7 @@ import moment from "moment";
 import config from "../config";
 
 export default {
-  info: (data: any) => {
+  info: (data) => {
     let msg = data;
     if (typeof data === "object") {
       msg = JSON.stringify(data, null, 2);
@@ -11,7 +11,7 @@ export default {
     const filepath = `${config.LOG_DIR + moment().format("YYYY-MM-DD")}.log`;
     fs.appendFileSync(filepath, `${moment().format("YYYY-MM-DD hh:mm:ss")} [INFO] ${msg}\n`);
   },
-  warn: (data: any) => {
+  warn: (data) => {
     let msg = data;
     if (typeof data === "object") {
       msg = JSON.stringify(data, null, 2);
@@ -19,7 +19,7 @@ export default {
     const filepath = `${config.LOG_DIR + moment().format("YYYY-MM-DD")}.log`;
     fs.appendFileSync(filepath, `${moment().format("YYYY-MM-DD hh:mm:ss")} [WARN] ${msg}\n`);
   },
-  error: (error: any) => {
+  error: (error) => {
     const msg = {
       name: error.name,
       message: error.message,

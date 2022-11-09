@@ -1,1 +1,1 @@
-export default (input: any) => String(input).match(/^\d+\w*$/);
+export default (input) => String(input).match(/^\d+\w*$/);

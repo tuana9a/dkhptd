@@ -1,13 +1,13 @@
 import crypto from "crypto";
 import { ObjectId } from "mongodb";
-import toObjectId from "../dto/toObjectId";
+import toObjectId from "../utils/toObjectId";
 import ObjectModifer from "../modifiers/ObjectModifier";
 import { d, e } from "../utils/cypher";
-import DangKyHocPhanTuDongJob from "./DangKyHocPhanTuDongJob";
+import DKHPTDJob from "./DKHPTDJob";
 import EntityWithObjectId from "./EntityWithObjectId";
 import JobStatus from "./JobStatus";
 
-export default class DangKyHocPhanTuDongJobV1 extends EntityWithObjectId {
+export default class DKHPTDJobV1 extends EntityWithObjectId {
   ownerAccountId: ObjectId;
   username: string;
   password: string;
@@ -30,8 +30,7 @@ export default class DangKyHocPhanTuDongJobV1 extends EntityWithObjectId {
     doingAt?: number;
     iv?: string;
   }) {
-    super();
-    this._id = _id;
+    super(_id);
     this.ownerAccountId = ownerAccountId;
     this.username = username;
     this.password = password;
@@ -55,7 +54,7 @@ export default class DangKyHocPhanTuDongJobV1 extends EntityWithObjectId {
   decrypt() {
     const dPassword = d(this.password, this.iv);
     const dUsername = d(this.username, this.iv);
-    return new DangKyHocPhanTuDongJob({
+    return new DKHPTDJob({
       _id: this._id,
       ownerAccountId: this.ownerAccountId,
       username: dUsername,
@@ -72,7 +71,7 @@ export default class DangKyHocPhanTuDongJobV1 extends EntityWithObjectId {
     const iv = crypto.randomBytes(16).toString("hex");
     const ePassword = e(this.password, iv);
     const eUsername = e(this.username, iv);
-    return new DangKyHocPhanTuDongJobV1({
+    return new DKHPTDJobV1({
       _id: this._id,
       ownerAccountId: this.ownerAccountId,
       username: eUsername,
@@ -87,7 +86,7 @@ export default class DangKyHocPhanTuDongJobV1 extends EntityWithObjectId {
   }
 
   toRetry() {
-    const output = new DangKyHocPhanTuDongJobV1(this);
+    const output = new DKHPTDJobV1(this);
     output._id = null;
     output.status = JobStatus.READY;
     output.doingAt = null;

@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import EntityWithObjectId from "./EntityWithObjectId";
 
 export default class ClassToRegister extends EntityWithObjectId {
@@ -30,9 +31,23 @@ export default class ClassToRegister extends EntityWithObjectId {
     describe,
     termId,
     createdAt,
-  }: ClassToRegister) {
-    super();
-    this._id = _id;
+  }: {
+    _id?: ObjectId;
+    classId?: string;
+    secondClassId?: string;
+    learnDayNumber?: number;
+    classType?: string;
+    subjectId?: string;
+    subjectName?: string;
+    learnAtDayOfWeek?: number;
+    learnTime?: string;
+    room?: string;
+    learnWeek?: string;
+    describe?: string;
+    termId?: string;
+    createdAt?: number;
+  }) {
+    super(_id);
     this.classId = classId;
     this.secondClassId = secondClassId;
     this.classType = classType;

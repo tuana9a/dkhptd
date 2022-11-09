@@ -1,4 +1,4 @@
-export default (propNames: string[] = []) => (input: any) => {
+export default (propNames: string[] = []) => (input) => {
   const output = {};
 
   const remainKeys = Object.keys(input).filter((key) => !propNames.includes(key));

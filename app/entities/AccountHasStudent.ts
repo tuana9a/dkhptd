@@ -5,8 +5,12 @@ export default class AccountHasStudent extends EntityWithObjectId {
   accountId: ObjectId;
   studentId: string;
 
-  constructor({ accountId, studentId }) {
-    super();
+  constructor({ _id, accountId, studentId }: {
+    _id?: ObjectId;
+    accountId?: ObjectId;
+    studentId?: string;
+  }) {
+    super(_id);
     this.accountId = accountId;
     this.studentId = studentId;
   }

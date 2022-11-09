@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import toObjectId from "../dto/toObjectId";
+import toObjectId from "../utils/toObjectId";
 import EntityWithObjectId from "./EntityWithObjectId";
 import { ActionLog } from "puppeteer-worker-job-builder/v1";
 
@@ -18,8 +18,7 @@ export default class DHPTDJobLogs extends EntityWithObjectId {
     logs?: ActionLog[];
     createdAt?: number
   }) {
-    super();
-    this._id = _id;
+    super(_id);
     this.jobId = jobId;
     this.workerId = workerId;
     this.ownerAccountId = ownerAccountId;

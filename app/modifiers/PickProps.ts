@@ -1,4 +1,4 @@
-export default (propNames: string[] = [], options = { dropFalsy: false }) => (input: any) => {
+export default (propNames: string[] = [], options = { dropFalsy: false }) => (input) => {
   const output = {};
 
   for (const propName of propNames) {

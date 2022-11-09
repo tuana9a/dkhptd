@@ -23,13 +23,6 @@ const config = {
 
   DKHPTD_JOBS_QUEUE_NAME: "dkhptd.jobs",
   DKHPTD_JOB_RESULT_QUEUE_NAME: "dkhptd.jobs.result",
-
-  DKHPTD_JOB_COLLECTION_NAME: "dkhptdJob",
-  DKHPTD_JOB_V1_COLLECTION_NAME: "dkhptdJobV1",
-  DKHPTD_JOB_V1_LOGS_COLLECTION_NAME: "dkhptdJobV1Logs",
-  DKHPTD_JOB_LOGS_COLLECTION_NAME: "dkhptdJobLogs",
-  ACCOUNT_COLLECTION_NAME: "account",
-  CLASS_TO_REGISTER_COLLECTION_NAME: "classToRegister",
 };
 
 export default config;

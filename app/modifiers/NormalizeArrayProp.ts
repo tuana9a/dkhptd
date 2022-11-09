@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
 
-import toSafeInt from "../dto/toSafeInt";
-import toSafeString from "../dto/toSafeString";
+import toSafeInt from "../utils/toSafeInt";
+import toSafeString from "../utils/toSafeString";
 
-export default (propName: string, propType: string, defaultValue: any) => (input: any) => {
+export default (propName: string, propType: string, defaultValue) => (input) => {
   const currentValue = input[propName];
 
   if (currentValue === null || currentValue === undefined || !Array.isArray(currentValue)) {

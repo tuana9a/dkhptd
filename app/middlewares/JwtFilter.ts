@@ -10,7 +10,7 @@ export default (secret: string): Handler => (req, res, next) => {
     return;
   }
 
-  jwt.verify(token, secret, (err, subject: any) => {
+  jwt.verify(token, secret, (err, subject: { id: string }) => {
     if (err) {
       logger.info(`Reject [${err.message}] [${req.method}] ${req.path}`);
       res.sendStatus(403);

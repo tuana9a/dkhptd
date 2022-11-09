@@ -4,7 +4,7 @@
 import Query from "../payloads/Query";
 import resolveQuery from "./resolveQuery";
 
-const resolveFirst = (agg: any, query: Query) => {
+const resolveFirst = (agg: { [key: string]: object }, query: Query) => {
   if (query.operator == "!=") {
     agg[query.key] = { $ne: query.value };
   } else if (query.operator == ">") {
@@ -22,7 +22,7 @@ const resolveFirst = (agg: any, query: Query) => {
   }
 };
 
-const resolveExisted = (agg: any, query: Query) => {
+const resolveExisted = (agg: { [key: string]: object }, query: Query) => {
   if (query.operator == "==") {
     agg[query.key] = query.value;
   } else if (query.operator == ">") {

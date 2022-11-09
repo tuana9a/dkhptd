@@ -1,4 +1,4 @@
-export default class Worker {
+export default class DKHPTDWorker {
   _id: string;
 
   constructor({ _id }) {

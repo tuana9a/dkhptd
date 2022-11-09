@@ -1,4 +1,4 @@
-export default (old: any, next: any, opts = { ignoreKeys: new Set() }) => {
+export default (old, next, opts = { ignoreKeys: new Set() }) => {
   const diff = {};
   const keys = new Set(Object.keys(old)
     .concat(Object.keys(next))

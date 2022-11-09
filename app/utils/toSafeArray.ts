@@ -1,4 +1,4 @@
-export default <T>(input: any): T[] => {
+export default <T>(input): T[] => {
   try {
     return Array.from(input);
   } catch (err) {

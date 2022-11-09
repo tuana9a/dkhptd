@@ -1,14 +1,14 @@
 export default class ObjectModifer {
-  private input: any;
-  private modifiers: ((input: any) => any)[];
-  private opts: any;
+  private input;
+  private modifiers: ((input) => unknown)[];
+  private opts;
 
-  constructor(input: any) {
+  constructor(input) {
     this.input = input;
     this.modifiers = [];
   }
 
-  modify(modifier: (input: any) => any) {
+  modify(modifier: (input) => unknown) {
     this.modifiers.push(modifier);
     return this;
   }

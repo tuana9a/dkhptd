@@ -3,9 +3,9 @@
 
 class Logger {
   handler: {
-    info: (...params: any[]) => any;
-    warn: (...params: any[]) => any;
-    error: (...params: any[]) => any;
+    info: (...params) => void;
+    warn: (...params) => void;
+    error: (...params) => void;
   };
 
   constructor() {
@@ -16,11 +16,11 @@ class Logger {
     this.handler = require(`./${name}`).default;
   }
 
-  info(data: any) {
+  info(data) {
     this.handler.info(data);
   }
 
-  warn(data: any) {
+  warn(data) {
     this.handler.info(data);
   }
 

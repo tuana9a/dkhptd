@@ -1,10 +1,10 @@
 import { ObjectId } from "mongodb";
-import toObjectId from "../dto/toObjectId";
+import toObjectId from "../utils/toObjectId";
 import ObjectModifer from "../modifiers/ObjectModifier";
 import EntityWithObjectId from "./EntityWithObjectId";
 import JobStatus from "./JobStatus";
 
-export default class DangKyHocPhanTuDongJob extends EntityWithObjectId {
+export default class DKHPTDJob extends EntityWithObjectId {
   ownerAccountId: ObjectId;
   username: string;
   password: string;
@@ -25,8 +25,7 @@ export default class DangKyHocPhanTuDongJob extends EntityWithObjectId {
     createdAt?: number;
     doingAt?: number;
   }) {
-    super();
-    this._id = _id;
+    super(_id);
     this.ownerAccountId = ownerAccountId;
     this.username = username;
     this.password = password;
@@ -47,7 +46,7 @@ export default class DangKyHocPhanTuDongJob extends EntityWithObjectId {
   }
 
   toRetry() {
-    const output = new DangKyHocPhanTuDongJob(this);
+    const output = new DKHPTDJob(this);
     output._id = null;
     output.status = JobStatus.READY;
     output.doingAt = null;

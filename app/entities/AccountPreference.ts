@@ -6,9 +6,12 @@ export default class AccountPreference extends EntityWithObjectId {
 
   ownerAccountId: ObjectId;
 
-  constructor({ _id, secret, ownerAccountId }) {
-    super();
-    this._id = _id;
+  constructor({ _id, secret, ownerAccountId }: {
+    _id?: ObjectId;
+    secret?: string;
+    ownerAccountId: ObjectId;
+  }) {
+    super(_id);
     this.secret = secret;
     this.ownerAccountId = ownerAccountId;
   }

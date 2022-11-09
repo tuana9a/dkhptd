@@ -2,9 +2,9 @@ import BaseResponse from "../payloads/BaseResponse";
 import SafeError from "./SafeError";
 
 export default class InvalidValueError extends SafeError {
-  value: any;
+  value;
 
-  withValue(value: any) {
+  withValue(value) {
     this.value = value;
   }
 
