@@ -2,10 +2,10 @@ import crypto from "crypto";
 import { ObjectId } from "mongodb";
 import toObjectId from "../utils/toObjectId";
 import ObjectModifer from "../modifiers/ObjectModifier";
-import { d, e } from "../utils/cypher";
-import DKHPTDJob from "./DKHPTDJob";
+import { c } from "../utils/cypher";
 import EntityWithObjectId from "./EntityWithObjectId";
-import JobStatus from "./JobStatus";
+import JobStatus from "../configs/JobStatus";
+import config from "../config";
 
 export default class DKHPTDJobV1 extends EntityWithObjectId {
   ownerAccountId: ObjectId;
@@ -52,8 +52,8 @@ export default class DKHPTDJobV1 extends EntityWithObjectId {
   }
 
   decrypt() {
-    const dPassword = d(this.password, this.iv);
-    const dUsername = d(this.username, this.iv);
+    const dPassword = c(config.JOB_ENCRYPTION_KEY).d(this.password, this.iv);
+    const dUsername = c(config.JOB_ENCRYPTION_KEY).d(this.username, this.iv);
     return new DKHPTDJobV1({
       _id: this._id,
       ownerAccountId: this.ownerAccountId,
@@ -69,8 +69,8 @@ export default class DKHPTDJobV1 extends EntityWithObjectId {
 
   encrypt() {
     const iv = crypto.randomBytes(16).toString("hex");
-    const ePassword = e(this.password, iv);
-    const eUsername = e(this.username, iv);
+    const ePassword = c(config.JOB_ENCRYPTION_KEY).e(this.password, iv);
+    const eUsername = c(config.JOB_ENCRYPTION_KEY).e(this.username, iv);
     return new DKHPTDJobV1({
       _id: this._id,
       ownerAccountId: this.ownerAccountId,
@@ -92,5 +92,17 @@ export default class DKHPTDJobV1 extends EntityWithObjectId {
     output.doingAt = null;
     output.createdAt = Date.now();
     return output;
+  }
+
+  toWorker() {
+    return {
+      id: this._id.toHexString(),
+      name: "DangKyHocPhanTuDong",
+      params: {
+        username: this.username,
+        password: this.password,
+        classIds: this.classIds,
+      }
+    };
   }
 }

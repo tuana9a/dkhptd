@@ -1,1 +1,1 @@
-export default (input) => Buffer.from(JSON.stringify(input));
+export default (input) => Buffer.from(input);

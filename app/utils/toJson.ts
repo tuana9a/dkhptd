@@ -1,1 +1,1 @@
-export default (input, space = 2) => JSON.stringify(input, null, space);
+export default (input, space?: string | number) => JSON.stringify(input, null, space);

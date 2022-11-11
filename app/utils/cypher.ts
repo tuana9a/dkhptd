@@ -4,23 +4,30 @@
  */
 
 import crypto from "crypto";
-import config from "../config";
 
 const ALGORITHM = "aes-256-cbc";
 
-// Encrypting text
-export function e(text: string, iv: string) {
-  const cipher = crypto.createCipheriv(ALGORITHM, Buffer.from(config.JOB_ENCRYPTION_KEY, "hex"), Buffer.from(iv, "hex"));
-  let encrypted = cipher.update(text);
-  encrypted = Buffer.concat([encrypted, cipher.final()]);
-  return encrypted.toString("hex");
+class C {
+  private secret: string;
+
+  constructor(secret: string) {
+    this.secret = secret;
+  }
+
+  e(text: string, iv: string) {
+    const cipher = crypto.createCipheriv(ALGORITHM, Buffer.from(this.secret, "hex"), Buffer.from(iv, "hex"));
+    let encrypted = cipher.update(text);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return encrypted.toString("hex");
+  }
+
+  d(text: string, iv: string) {
+    const encryptedText = Buffer.from(text, "hex");
+    const decipher = crypto.createDecipheriv(ALGORITHM, Buffer.from(this.secret, "hex"), Buffer.from(iv, "hex"));
+    let decrypted = decipher.update(encryptedText);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
+  }
 }
 
-// Decrypting text
-export function d(text: string, iv: string) {
-  const encryptedText = Buffer.from(text, "hex");
-  const decipher = crypto.createDecipheriv(ALGORITHM, Buffer.from(config.JOB_ENCRYPTION_KEY, "hex"), Buffer.from(iv, "hex"));
-  let decrypted = decipher.update(encryptedText);
-  decrypted = Buffer.concat([decrypted, decipher.final()]);
-  return decrypted.toString();
-}
+export const c = (secret: string) => new C(secret);

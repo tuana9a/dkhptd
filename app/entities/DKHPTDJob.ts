@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import toObjectId from "../utils/toObjectId";
 import ObjectModifer from "../modifiers/ObjectModifier";
 import EntityWithObjectId from "./EntityWithObjectId";
-import JobStatus from "./JobStatus";
+import JobStatus from "../configs/JobStatus";
 
 export default class DKHPTDJob extends EntityWithObjectId {
   ownerAccountId: ObjectId;
@@ -52,5 +52,17 @@ export default class DKHPTDJob extends EntityWithObjectId {
     output.doingAt = null;
     output.createdAt = Date.now();
     return output;
+  }
+
+  toWorker() {
+    return {
+      id: this._id.toHexString(),
+      name: "DangKyHocPhanTuDong",
+      params: {
+        username: this.username,
+        password: this.password,
+        classIds: this.classIds,
+      }
+    };
   }
 }

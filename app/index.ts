@@ -1,9 +1,9 @@
-import { createServer } from "http";
+import http from "http";
+import crypto from "crypto";
 import express from "express";
 import * as amqplib from "amqplib/callback_api";
 import { Filter, MongoClient, ObjectId } from "mongodb";
-import { createHash } from "crypto";
-import { sign } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import EventEmitter from "events";
 
 import toJson from "./utils/toJson";
@@ -12,7 +12,7 @@ import SecretFilter from "./middlewares/SecretFilter";
 import ObjectModifer from "./modifiers/ObjectModifier";
 import config from "./config";
 import loop from "./utils/loop";
-import JobStatus from "./entities/JobStatus";
+import JobStatus from "./configs/JobStatus";
 import DKHPTDJob from "./entities/DKHPTDJob";
 import logger from "./loggers/logger";
 import ExceptionHandlerWrapper from "./utils/ExceptionHandlerWrapper";
@@ -51,9 +51,15 @@ import DKHPTDJobV1 from "./entities/DKHPTDJobV1";
 import AccountNotFoundError from "./exceptions/AccountNotFoundError";
 import JobNotFoundError from "./exceptions/JobNotFoundError";
 import MissingTimeToStartError from "./exceptions/MissingTimeToStartError";
+import toSHA256 from "./utils/toSHA256";
+import DKHPTDJobV1Logs from "./entities/DKHPTDJobV1Logs";
+import { c } from "./utils/cypher";
+import AppEvent from "./configs/AppEvent";
+import ExchangeName from "./configs/ExchangeName";
+import QueueName from "./configs/QueueName";
 
 const app = express();
-const server = createServer(app);
+const server = http.createServer(app);
 const emitter = new EventEmitter();
 
 app.use(express.json());
@@ -66,12 +72,12 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
       .modify(NormalizeStringProp("username"))
       .modify(NormalizeStringProp("password"))
       .collect());
-    const hashedPassword = createHash("sha256").update(body.password).digest("hex");
+    const hashedPassword = toSHA256(body.password);
     const account = await db.collection(Account.name).findOne({ username: body.username, password: hashedPassword });
 
     if (!account) throw new AccountNotFoundError();
 
-    const token = sign({ id: account._id }, config.SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ id: account._id }, config.SECRET, { expiresIn: "1h" });
     resp.send(new BaseResponse().ok(new LoginResponse(token)));
   }));
   app.post("/api/signup", ExceptionHandlerWrapper(async (req, resp) => {
@@ -79,7 +85,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
       .modify(PickProps(["username", "password"]))
       .modify(NormalizeStringProp("username"))
       .modify(NormalizeStringProp("password"))
-      .modify(ReplaceCurrentPropValueWith("password", (oldValue) => createHash("sha256").update(oldValue).digest("hex")))
+      .modify(ReplaceCurrentPropValueWith("password", (oldValue) => toSHA256(oldValue)))
       .collect());
     const isUsernameExists = await db.collection(Account.name).findOne({ username: body.username });
     if (isUsernameExists) {
@@ -105,7 +111,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const body = new ObjectModifer(req.body)
       .modify(PickProps(["password"]))
       .modify(NormalizeStringProp("password"))
-      .modify(ReplaceCurrentPropValueWith("password", (oldValue) => createHash("sha256").update(oldValue).digest("hex")))
+      .modify(ReplaceCurrentPropValueWith("password", (oldValue) => toSHA256(oldValue)))
       .collect();
     const newHashedPassword = body.password;
 
@@ -260,11 +266,22 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
     const accountId = getRequestAccountId(req);
 
-    const filter: Filter<any> = query.q ? resolveFilter(query.q.split(",")) : {};
+    const filter: Filter<DKHPTDJobV1Logs> = query.q ? resolveFilter(query.q.split(",")) : {};
     filter.ownerAccountId = new ObjectId(accountId);
     filter.jobId = new ObjectId(req.params.jobId);
-    const logs = await db.collection(DKHPTDJobV1.name).find(filter).toArray();
-    resp.send(new BaseResponse().ok(logs.map((x) => new DKHPTDJobLogs(x).toClient())));
+    const logs = await db.collection(DKHPTDJobV1Logs.name).find(filter).toArray();
+    resp.send(new BaseResponse().ok(logs.map((x) => new DKHPTDJobV1Logs(x).toClient())));
+  }));
+
+  app.get("/api/accounts/current/dkhptdv1-s/:jobId/d/logs", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
+    const accountId = getRequestAccountId(req);
+
+    const filter: Filter<DKHPTDJobV1Logs> = query.q ? resolveFilter(query.q.split(",")) : {};
+    filter.ownerAccountId = new ObjectId(accountId);
+    filter.jobId = new ObjectId(req.params.jobId);
+    const logs = await db.collection(DKHPTDJobV1Logs.name).find(filter).toArray();
+    resp.send(new BaseResponse().ok(logs.map((x) => new DKHPTDJobV1Logs(x).decrypt().toClient())));
   }));
 
   app.post("/api/accounts/current/dkhptdv1", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
@@ -561,23 +578,52 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     resp.send(new BaseResponse().ok(deletedCount));
   }));
 
-  emitter.on(config.NEW_JOB_RESULT_EVENT_NAME, async (result) => {
+  emitter.on(AppEvent.NEW_JOB_RESULT, async (result) => {
     try {
       logger.info(`Received Job Result: ${result.id}`);
       const jobId = new ObjectId(result.id);
       const job = await db.collection(DKHPTDJob.name).findOne({ _id: jobId });
 
-      if (job) {
-        await db.collection(DKHPTDJob.name).updateOne({ _id: jobId }, { $set: { status: JobStatus.DONE } });
-        const logs = new DKHPTDJobLogs({
-          jobId,
-          workerId: result.workerId,
-          ownerAccountId: job.ownerAccountId,
-          logs: result.logs,
-          createdAt: Date.now(),
-        });
-        await db.collection(DKHPTDJobLogs.name).insertOne(logs);
+      if (!job) {
+        logger.warn(`Job ${result.id} not found for job result`);
+        return;
       }
+
+      await db.collection(DKHPTDJob.name).updateOne({ _id: jobId }, { $set: { status: JobStatus.DONE } });
+      const logs = new DKHPTDJobLogs({
+        jobId,
+        workerId: result.workerId,
+        ownerAccountId: job.ownerAccountId,
+        logs: result.logs,
+        createdAt: Date.now(),
+      });
+      await db.collection(DKHPTDJobLogs.name).insertOne(logs);
+    } catch (err) {
+      logger.error(err);
+    }
+  });
+
+  emitter.on(AppEvent.NEW_JOB_V1_RESULT, async (result) => {
+    try {
+      logger.info(`Received Job Result: ${result.id}`);
+      const jobId = new ObjectId(result.id);
+      const job = await db.collection(DKHPTDJobV1.name).findOne({ _id: jobId });
+
+      if (!job) {
+        logger.warn(`Job ${result.id} not found for job result`);
+        return;
+      }
+      await db.collection(DKHPTDJobV1.name).updateOne({ _id: jobId }, { $set: { status: JobStatus.DONE } });
+      const newIv = crypto.randomBytes(16).toString("hex");
+      const logs = new DKHPTDJobV1Logs({
+        jobId,
+        workerId: result.workerId,
+        ownerAccountId: job.ownerAccountId,
+        logs: c(config.JOB_ENCRYPTION_KEY).e(toJson(result.logs), newIv),
+        createdAt: Date.now(),
+        iv: newIv,
+      });
+      await db.collection(DKHPTDJobV1Logs.name).insertOne(logs);
     } catch (err) {
       logger.error(err);
     }
@@ -592,7 +638,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
       while (await cursor.hasNext()) {
         const entry = await cursor.next();
         const job = new DKHPTDJob(entry);
-        emitter.emit(config.NEW_JOB_EVENT_NAME, {
+        emitter.emit(AppEvent.NEW_JOB, {
           name: "DangKyHocPhanTuDong",
           params: {
             username: job.username,
@@ -611,9 +657,29 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
       logger.error(err);
     }
   }, 10_000);
-});
 
-// TODO: loop in dkhptd v1
+  loop.infinity(async () => {
+    try {
+      const cursor = db.collection(DKHPTDJobV1.name).find({
+        timeToStart: { $lt: Date.now() }, /* less than now then it's time to run */
+        status: JobStatus.READY,
+      }, { sort: { timeToStart: 1 } });
+      while (await cursor.hasNext()) {
+        const entry = await cursor.next();
+        const job = new DKHPTDJobV1(entry).decrypt();
+        emitter.emit(AppEvent.NEW_JOB_V1, job.toWorker());
+        await db.collection(DKHPTDJobV1.name).updateOne({ _id: new ObjectId(job._id) }, {
+          $set: {
+            status: JobStatus.DOING,
+            doingAt: Date.now(),
+          },
+        });
+      }
+    } catch (err) {
+      logger.error(err);
+    }
+  }, 10_000);
+});
 
 amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
   if (error0) {
@@ -625,14 +691,28 @@ amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
       logger.error(error1);
       return;
     }
-    emitter.on(config.NEW_JOB_EVENT_NAME, (job) => channel.sendToQueue(config.DKHPTD_JOBS_QUEUE_NAME, toBuffer(job)));
+    emitter.on(AppEvent.NEW_JOB, (job) => {
+      logger.info("New Job: " + toJson(job));
+      channel.sendToQueue(QueueName.DKHPTD_JOBS, toBuffer(toJson(job)));
+    });
 
-    channel.assertQueue(config.DKHPTD_JOBS_QUEUE_NAME);
-    channel.assertExchange(config.DKHPTD_WORKER_DOING_EXCHANGE_NAME, "fanout", { durable: false });
-    channel.assertExchange(config.DKHPTD_WORKER_PING_EXCHANGE_NAME, "fanout", { durable: false });
+    emitter.on(AppEvent.NEW_JOB_V1, (job) => {
+      logger.info("New Job: " + toJson(job));
+      const iv = crypto.randomBytes(16).toString("hex");
+      channel.sendToQueue(QueueName.DKHPTD_JOBS_V1, toBuffer(c(config.AMQP_ENCRYPTION_KEY).e(toJson(job), iv)), {
+        headers: {
+          iv: iv,
+        }
+      });
+    });
+
+    channel.assertQueue(QueueName.DKHPTD_JOBS);
+    channel.assertQueue(QueueName.DKHPTD_JOBS_V1);
+    channel.assertExchange(ExchangeName.DKHPTD_WORKER_DOING, "fanout", { durable: false });
+    channel.assertExchange(ExchangeName.DKHPTD_WORKER_PING, "fanout", { durable: false });
 
     // result queue
-    channel.assertQueue(config.DKHPTD_JOB_RESULT_QUEUE_NAME, null, (error2, q) => {
+    channel.assertQueue(QueueName.DKHPTD_JOBS_RESULT, null, (error2, q) => {
       if (error2) {
         logger.error(error2);
         return;
@@ -641,7 +721,24 @@ amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
       channel.consume(q.queue, async (msg) => {
         try {
           const result = JSON.parse(msg.content.toString());
-          emitter.emit(config.NEW_JOB_RESULT_EVENT_NAME, result);
+          emitter.emit(AppEvent.NEW_JOB_RESULT, result);
+        } catch (err) {
+          logger.error(err);
+        }
+        channel.ack(msg);
+      }, { noAck: false });
+    });
+
+    channel.assertQueue(QueueName.DKHPTD_JOBS_V1_RESULT, null, (error2, q) => {
+      if (error2) {
+        logger.error(error2);
+        return;
+      }
+
+      channel.consume(q.queue, async (msg) => {
+        try {
+          const result = JSON.parse(c(config.AMQP_ENCRYPTION_KEY).d(msg.content.toString(), msg.properties.headers.iv));
+          emitter.emit(AppEvent.NEW_JOB_V1_RESULT, result);
         } catch (err) {
           logger.error(err);
         }
@@ -655,11 +752,11 @@ amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
         return;
       }
 
-      channel.bindQueue(q.queue, config.DKHPTD_WORKER_PING_EXCHANGE_NAME, "");
+      channel.bindQueue(q.queue, ExchangeName.DKHPTD_WORKER_PING, "");
       channel.consume(q.queue, async (msg) => {
         try {
           const ping = JSON.parse(msg.content.toString());
-          emitter.emit(config.PING_EVENT_NAME, ping);
+          emitter.emit(AppEvent.PING, ping);
         } catch (err) {
           logger.error(err);
         }
@@ -673,11 +770,11 @@ amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
         return;
       }
 
-      channel.bindQueue(q.queue, config.DKHPTD_WORKER_DOING_EXCHANGE_NAME, "");
+      channel.bindQueue(q.queue, ExchangeName.DKHPTD_WORKER_DOING, "");
       channel.consume(q.queue, async (msg) => {
         try {
           const doing = JSON.parse(msg.content.toString());
-          emitter.emit(config.DOING_EVENT_NAME, doing);
+          emitter.emit(AppEvent.DOING, doing);
         } catch (err) {
           logger.error(err);
         }
@@ -687,8 +784,8 @@ amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
   });
 });
 
-emitter.on(config.DOING_EVENT_NAME, (doing) => logger.info(`Doing: ${toJson(doing)}`));
-emitter.on(config.PING_EVENT_NAME, (ping) => logger.info(`Ping: ${toJson(ping, null)}`));
+emitter.on(AppEvent.DOING, (doing) => logger.info(`Doing: ${toJson(doing)}`));
+emitter.on(AppEvent.PING, (ping) => logger.info(`Ping: ${toJson(ping)}`));
 
 logger.info(`Config: \n${toKeyValueString(config)}`);
 server.listen(config.PORT);
