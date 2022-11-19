@@ -1,6 +1,7 @@
 import http from "http";
 import crypto from "crypto";
 import express from "express";
+import multer from "multer";
 import * as amqplib from "amqplib/callback_api";
 import { Filter, MongoClient, ObjectId } from "mongodb";
 import jwt from "jsonwebtoken";
@@ -57,6 +58,7 @@ import { c } from "./utils/cypher";
 import AppEvent from "./configs/AppEvent";
 import ExchangeName from "./configs/ExchangeName";
 import QueueName from "./configs/QueueName";
+import ParsedClassToRegister from "./payloads/ParsedClassToRegister";
 
 const app = express();
 const server = http.createServer(app);
@@ -410,9 +412,9 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
             "learnDayNumber",
             "learnAtDayOfWeek",
             "learnTime",
-            "room",
+            "learnRoom",
             "learnWeek",
-            "GhiChu",
+            "describe",
             "termId",
           ]))
           .modify(NormalizeIntProp("classId"))
@@ -423,9 +425,9 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
           .modify(NormalizeIntProp("learnDayNumber"))
           .modify(NormalizeIntProp("learnAtDayOfWeek"))
           .modify(NormalizeStringProp("learnTime"))
-          .modify(NormalizeStringProp("room"))
+          .modify(NormalizeStringProp("learnRoom"))
           .modify(NormalizeStringProp("learnWeek"))
-          .modify(NormalizeStringProp("GhiChu"))
+          .modify(NormalizeStringProp("describe"))
           .modify(NormalizeStringProp("termId"))
           .modify(SetProp("createdAt", Date.now()))
           .collect();
@@ -448,6 +450,11 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
     await db.collection(ClassToRegister.name).insertMany(classToRegistersToInsert);
     resp.send(new BaseResponse().ok(result));
+  }));
+  app.post("/api/class-to-register-file", SecretFilter(config.SECRET), multer({ limits: { fileSize: 5 * 1000 * 1000 /* 5mb */ } }).single("file"), ExceptionHandlerWrapper(async (req, resp) => {
+    const file = req.file;
+    emitter.emit(AppEvent.CLASS_TO_REGISTER_FILE_UPLOADED, file.buffer);
+    resp.send(new BaseResponse().ok());
   }));
 
   app.get("/api/term-ids/:termId/class-to-registers", ExceptionHandlerWrapper(async (req, resp) => {
@@ -537,7 +544,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
         "learnDayNumber",
         "learnAtDayOfWeek",
         "learnTime",
-        "room",
+        "learnRoom",
         "learnWeek",
         "termId"
       ], { dropFalsy: true })).collect();
@@ -580,7 +587,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
   emitter.on(AppEvent.NEW_JOB_RESULT, async (result) => {
     try {
-      logger.info(`Received Job Result: ${result.id}`);
+      logger.info(`Received job result: ${result.id}`);
       const jobId = new ObjectId(result.id);
       const job = await db.collection(DKHPTDJob.name).findOne({ _id: jobId });
 
@@ -605,7 +612,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
   emitter.on(AppEvent.NEW_JOB_V1_RESULT, async (result) => {
     try {
-      logger.info(`Received Job Result: ${result.id}`);
+      logger.info(`Received job v1 result: ${result.id}`);
       const jobId = new ObjectId(result.id);
       const job = await db.collection(DKHPTDJobV1.name).findOne({ _id: jobId });
 
@@ -624,6 +631,33 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
         iv: newIv,
       });
       await db.collection(DKHPTDJobV1Logs.name).insertOne(logs);
+    } catch (err) {
+      logger.error(err);
+    }
+  });
+
+  emitter.on(AppEvent.CLASS_TO_REGISTER_FILE_PARSED, async (result: { data: ParsedClassToRegister[] }) => {
+    try {
+      logger.info(`Received parsed class to register, count: ${result.data.length}`);
+      const classes = result.data.map(x => new ParsedClassToRegister(x))
+        .map(x => x.toCTR())
+        .map(x => new ObjectModifer(x)
+          .modify(NormalizeIntProp("classId"))
+          .modify(NormalizeIntProp("secondClassId"))
+          .modify(NormalizeStringProp("subjectId"))
+          .modify(NormalizeStringProp("subjectName"))
+          .modify(NormalizeStringProp("classType"))
+          .modify(NormalizeIntProp("learnDayNumber"))
+          .modify(NormalizeIntProp("learnAtDayOfWeek"))
+          .modify(NormalizeStringProp("learnTime"))
+          .modify(NormalizeStringProp("learnRoom"))
+          .modify(NormalizeStringProp("learnWeek"))
+          .modify(NormalizeStringProp("describe"))
+          .modify(NormalizeStringProp("termId"))
+          .modify(SetProp("createdAt", Date.now()))
+          .collect())
+        .map(x => new ClassToRegister(x));
+      await db.collection(ClassToRegister.name).insertMany(classes);
     } catch (err) {
       logger.error(err);
     }
@@ -692,12 +726,12 @@ amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
       return;
     }
     emitter.on(AppEvent.NEW_JOB, (job) => {
-      logger.info("New Job: " + toJson(job));
+      logger.info("new Job: " + toJson(job));
       channel.sendToQueue(QueueName.DKHPTD_JOBS, toBuffer(toJson(job)));
     });
 
     emitter.on(AppEvent.NEW_JOB_V1, (job) => {
-      logger.info("New Job: " + toJson(job));
+      logger.info("new Job V1: " + toJson(job));
       const iv = crypto.randomBytes(16).toString("hex");
       channel.sendToQueue(QueueName.DKHPTD_JOBS_V1, toBuffer(c(config.AMQP_ENCRYPTION_KEY).e(toJson(job), iv)), {
         headers: {
@@ -706,13 +740,25 @@ amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
       });
     });
 
-    channel.assertQueue(QueueName.DKHPTD_JOBS);
-    channel.assertQueue(QueueName.DKHPTD_JOBS_V1);
+    emitter.on(AppEvent.CLASS_TO_REGISTER_FILE_UPLOADED, (buffer: Buffer) => {
+      logger.info("new Parse XLSX Job");
+      channel.sendToQueue(QueueName.DKHPTD_PARSE_CLASS_TO_REGISTER_XLSX_JOBS, buffer);
+    });
+
+    channel.assertQueue(QueueName.DKHPTD_JOBS, { durable: false });
+    channel.assertQueue(QueueName.DKHPTD_JOBS_RESULT, { durable: false });
+
+    channel.assertQueue(QueueName.DKHPTD_JOBS_V1, { durable: false });
+    channel.assertQueue(QueueName.DKHPTD_JOBS_V1_RESULT, { durable: false });
+
+    channel.assertQueue(QueueName.DKHPTD_PARSE_CLASS_TO_REGISTER_XLSX_JOBS, { durable: false });
+    channel.assertQueue(QueueName.DKHPTD_PARSE_CLASS_TO_REGISTER_XLSX_JOBS_RESULT, { durable: false });
+
     channel.assertExchange(ExchangeName.DKHPTD_WORKER_DOING, "fanout", { durable: false });
     channel.assertExchange(ExchangeName.DKHPTD_WORKER_PING, "fanout", { durable: false });
 
     // result queue
-    channel.assertQueue(QueueName.DKHPTD_JOBS_RESULT, null, (error2, q) => {
+    channel.assertQueue(QueueName.DKHPTD_JOBS_RESULT, { durable: false }, (error2, q) => {
       if (error2) {
         logger.error(error2);
         return;
@@ -729,7 +775,7 @@ amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
       }, { noAck: false });
     });
 
-    channel.assertQueue(QueueName.DKHPTD_JOBS_V1_RESULT, null, (error2, q) => {
+    channel.assertQueue(QueueName.DKHPTD_JOBS_V1_RESULT, { durable: false }, (error2, q) => {
       if (error2) {
         logger.error(error2);
         return;
@@ -739,6 +785,23 @@ amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
         try {
           const result = JSON.parse(c(config.AMQP_ENCRYPTION_KEY).d(msg.content.toString(), msg.properties.headers.iv));
           emitter.emit(AppEvent.NEW_JOB_V1_RESULT, result);
+        } catch (err) {
+          logger.error(err);
+        }
+        channel.ack(msg);
+      }, { noAck: false });
+    });
+
+    channel.assertQueue(QueueName.DKHPTD_PARSE_CLASS_TO_REGISTER_XLSX_JOBS_RESULT, { durable: false }, (error2, q) => {
+      if (error2) {
+        logger.error(error2);
+        return;
+      }
+
+      channel.consume(q.queue, async (msg) => {
+        try {
+          const result = JSON.parse(msg.content.toString());
+          emitter.emit(AppEvent.CLASS_TO_REGISTER_FILE_PARSED, result);
         } catch (err) {
           logger.error(err);
         }

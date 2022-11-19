@@ -2,15 +2,15 @@ import { ObjectId } from "mongodb";
 import EntityWithObjectId from "./EntityWithObjectId";
 
 export default class ClassToRegister extends EntityWithObjectId {
-  classId: string;
-  secondClassId: string;
+  classId: number;
+  secondClassId: number;
   learnDayNumber: number;
   classType: string;
   subjectId: string;
   subjectName: string;
   learnAtDayOfWeek: number;
   learnTime: string;
-  room: string;
+  learnRoom: string;
   learnWeek: string;
   describe: string;
   termId: string;
@@ -26,22 +26,22 @@ export default class ClassToRegister extends EntityWithObjectId {
     learnDayNumber,
     learnAtDayOfWeek,
     learnTime,
-    room,
+    learnRoom,
     learnWeek,
     describe,
     termId,
     createdAt,
   }: {
     _id?: ObjectId;
-    classId?: string;
-    secondClassId?: string;
+    classId?: number;
+    secondClassId?: number;
     learnDayNumber?: number;
     classType?: string;
     subjectId?: string;
     subjectName?: string;
     learnAtDayOfWeek?: number;
     learnTime?: string;
-    room?: string;
+    learnRoom?: string;
     learnWeek?: string;
     describe?: string;
     termId?: string;
@@ -56,7 +56,7 @@ export default class ClassToRegister extends EntityWithObjectId {
     this.learnDayNumber = learnDayNumber;
     this.learnAtDayOfWeek = learnAtDayOfWeek;
     this.learnTime = learnTime;
-    this.room = room;
+    this.learnRoom = learnRoom;
     this.learnWeek = learnWeek;
     this.describe = describe;
     this.termId = termId;
