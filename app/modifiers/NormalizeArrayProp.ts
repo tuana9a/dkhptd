@@ -3,13 +3,11 @@
 import toSafeInt from "../utils/toSafeInt";
 import toSafeString from "../utils/toSafeString";
 
-export default (propName: string, propType: string, defaultValue) => (input) => {
+export default (propName: string, propType: string) => (input) => {
   const currentValue = input[propName];
 
   if (currentValue === null || currentValue === undefined || !Array.isArray(currentValue)) {
-    if (defaultValue) {
-      input[propName] = []; // default for an array;
-    }
+    input[propName] = []; // default for an array;
     return input;
   }
 
@@ -22,11 +20,7 @@ export default (propName: string, propType: string, defaultValue) => (input) => 
     input[propName] = input[propName].map((x) => toSafeString(x));
     return input;
   }
-
-  if (!propType || propType === "object") {
-    // do nothing
-    return input;
-  }
-
+  
+  // other type do nothing
   return input;
 };

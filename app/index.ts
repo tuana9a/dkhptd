@@ -59,6 +59,9 @@ import AppEvent from "./configs/AppEvent";
 import ExchangeName from "./configs/ExchangeName";
 import QueueName from "./configs/QueueName";
 import ParsedClassToRegister from "./payloads/ParsedClassToRegister";
+import DKHPTDJobV2 from "./entities/DKHPTDJobV2";
+import DKHPTDJobV2Logs from "./entities/DKHPTDJobV2Logs";
+import isValidClassIdsV2 from "./validations/isValidClassIdsV2";
 
 const app = express();
 const server = http.createServer(app);
@@ -156,7 +159,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
       .modify(PickProps(["username", "password", "classIds", "timeToStart"]))
       .modify(NormalizeStringProp("username"))
       .modify(NormalizeStringProp("password"))
-      .modify(NormalizeArrayProp("classIds", "string", ""))
+      .modify(NormalizeArrayProp("classIds", "string"))
       .modify(NormalizeIntProp("timeToStart"))
       .modify(SetProp("createdAt", Date.now()))
       .modify(SetProp("status", JobStatus.READY))
@@ -189,7 +192,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
           .modify(PickProps(["username", "password", "classIds", "timeToStart"]))
           .modify(NormalizeStringProp("username"))
           .modify(NormalizeStringProp("password"))
-          .modify(NormalizeArrayProp("classIds", "string", ""))
+          .modify(NormalizeArrayProp("classIds", "string"))
           .modify(NormalizeIntProp("timeToStart"))
           .modify(SetProp("createdAt", Date.now()))
           .modify(SetProp("status", JobStatus.READY))
@@ -202,7 +205,6 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
         if (!isValidCttSisPassword(job.password)) throw new InvalidCttSisPassswordError(job.password);
         if (!isValidClassIds(job.classIds)) throw new InvalidClassIdsError(job.classIds);
         if (isFalsy(job.timeToStart)) throw new MissingTimeToStartError();
-
 
         jobsToInsert.push(job);
         result.push(new BaseResponse().ok(job));
@@ -223,7 +225,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
   app.post("/api/accounts/current/dkhptd-s/:jobId/retry", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const accountId = getRequestAccountId(req);
-    const filter = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
+    const filter: Filter<DKHPTDJob> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
     const existedJob = await db.collection(DKHPTDJob.name).findOne(filter);
 
     if (isFalsy(existedJob)) throw new JobNotFoundError(req.params.jobId);
@@ -234,7 +236,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
   }));
   app.put("/api/accounts/current/dkhptd-s/:jobId/cancel", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const accountId = getRequestAccountId(req);
-    const filter = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
+    const filter: Filter<DKHPTDJob> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
     await db.collection(DKHPTDJob.name).findOneAndUpdate(filter, { $set: { status: JobStatus.CANCELED } });
     resp.send(new BaseResponse().ok(req.params.jobId));
   }));
@@ -274,7 +276,6 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const logs = await db.collection(DKHPTDJobV1Logs.name).find(filter).toArray();
     resp.send(new BaseResponse().ok(logs.map((x) => new DKHPTDJobV1Logs(x).toClient())));
   }));
-
   app.get("/api/accounts/current/dkhptdv1-s/:jobId/d/logs", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
     const accountId = getRequestAccountId(req);
@@ -296,7 +297,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
       .modify(PickProps(["username", "password", "classIds", "timeToStart"]))
       .modify(NormalizeStringProp("username"))
       .modify(NormalizeStringProp("password"))
-      .modify(NormalizeArrayProp("classIds", "string", ""))
+      .modify(NormalizeArrayProp("classIds", "string"))
       .modify(NormalizeIntProp("timeToStart"))
       .modify(SetProp("createdAt", Date.now()))
       .modify(SetProp("status", JobStatus.READY))
@@ -330,7 +331,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
           .modify(PickProps(["username", "password", "classIds", "timeToStart"]))
           .modify(NormalizeStringProp("username"))
           .modify(NormalizeStringProp("password"))
-          .modify(NormalizeArrayProp("classIds", "string", ""))
+          .modify(NormalizeArrayProp("classIds", "string"))
           .modify(NormalizeIntProp("timeToStart"))
           .modify(SetProp("createdAt", Date.now()))
           .modify(SetProp("status", JobStatus.READY))
@@ -364,7 +365,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
   app.post("/api/accounts/current/dkhptdv1-s/:jobId/retry", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const accountId = getRequestAccountId(req);
-    const filter = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
+    const filter: Filter<DKHPTDJobV1> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
     const existedJob = await db.collection(DKHPTDJobV1.name).findOne(filter);
 
     if (!existedJob) throw new JobNotFoundError(req.params.jobId);
@@ -376,15 +377,156 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
   }));
   app.put("/api/accounts/current/dkhptdv1-s/:jobId/cancel", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const accountId = getRequestAccountId(req);
-    const filter = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
+    const filter: Filter<DKHPTDJobV1> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
     await db.collection(DKHPTDJobV1.name).findOneAndUpdate(filter, { $set: { status: JobStatus.CANCELED } });
     resp.send(new BaseResponse().ok(req.params.jobId));
   }));
 
   app.delete("/api/accounts/current/dkhptdv1-s/:jobId", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const accountId = getRequestAccountId(req);
-    const filter = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
+    const filter: Filter<DKHPTDJobV1> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
     await db.collection(DKHPTDJobV1.name).deleteOne(filter);
+    resp.send(new BaseResponse().ok(req.params.jobId));
+  }));
+
+  app.get("/api/accounts/current/dkhptdv2-s", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
+    const accountId = getRequestAccountId(req);
+
+    const filter: Filter<DKHPTDJobV2> = query.q ? resolveFilter(query.q.split(",")) : {};
+    filter.ownerAccountId = new ObjectId(accountId);
+    const jobs = await db.collection(DKHPTDJobV2.name).find(filter).toArray();
+    resp.send(new BaseResponse().ok(jobs.map((x) => new DKHPTDJobV2(x).toClient())));
+  }));
+  app.get("/api/accounts/current/d/dkhptdv2-s", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
+    const accountId = getRequestAccountId(req);
+
+    const filter: Filter<DKHPTDJobV2> = query.q ? resolveFilter(query.q.split(",")) : {};
+    filter.ownerAccountId = new ObjectId(accountId);
+    const jobs = await db.collection(DKHPTDJobV2.name).find(filter).toArray();
+    resp.send(new BaseResponse().ok(jobs.map((x) => new DKHPTDJobV2(x).decrypt().toClient())));
+  }));
+  app.get("/api/accounts/current/dkhptdv2-s/:jobId/logs", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
+    const accountId = getRequestAccountId(req);
+
+    const filter: Filter<DKHPTDJobV2Logs> = query.q ? resolveFilter(query.q.split(",")) : {};
+    filter.ownerAccountId = new ObjectId(accountId);
+    filter.jobId = new ObjectId(req.params.jobId);
+    const logs = await db.collection(DKHPTDJobV2Logs.name).find(filter).toArray();
+    resp.send(new BaseResponse().ok(logs.map((x) => new DKHPTDJobV2Logs(x).toClient())));
+  }));
+  app.get("/api/accounts/current/dkhptdv2-s/:jobId/d/logs", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
+    const accountId = getRequestAccountId(req);
+
+    const filter: Filter<DKHPTDJobV2Logs> = query.q ? resolveFilter(query.q.split(",")) : {};
+    filter.ownerAccountId = new ObjectId(accountId);
+    filter.jobId = new ObjectId(req.params.jobId);
+    const logs = await db.collection(DKHPTDJobV2Logs.name).find(filter).toArray();
+    resp.send(new BaseResponse().ok(logs.map((x) => new DKHPTDJobV2Logs(x).decrypt().toClient())));
+  }));
+
+  app.post("/api/accounts/current/dkhptdv2", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const data = req.body;
+
+    if (isFalsy(data)) throw new MissingRequestBodyDataError();
+
+    const ownerAccountId = new ObjectId(getRequestAccountId(req));
+    const safeData = new ObjectModifer(data)
+      .modify(PickProps(["username", "password", "classIds", "timeToStart"]))
+      .modify(NormalizeStringProp("username"))
+      .modify(NormalizeStringProp("password"))
+      .modify(NormalizeArrayProp("classIds", "string"))
+      .modify(NormalizeIntProp("timeToStart"))
+      .modify(SetProp("createdAt", Date.now()))
+      .modify(SetProp("status", JobStatus.READY))
+      .modify(SetProp("ownerAccountId", ownerAccountId))
+      .collect();
+
+    const job = new DKHPTDJobV2(safeData);
+
+    if (!isValidCttSisUsername(job.username)) throw new InvalidCttSisUsernameError(job.username);
+    if (!isValidCttSisPassword(job.password)) throw new InvalidCttSisPassswordError(job.password);
+    if (!isValidClassIdsV2(job.classIds)) throw new InvalidClassIdsError(job.classIds);
+    if (isFalsy(job.timeToStart)) throw new MissingTimeToStartError();
+
+    const eJob = job.encrypt();
+    await db.collection(DKHPTDJobV2.name).insertOne(eJob);
+    resp.send(new BaseResponse().ok(job));
+  }));
+  app.post("/api/accounts/current/dkhptdv2-s", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const data = req.body?.data;
+
+    if (isFalsy(data)) throw new MissingRequestBodyDataError();
+    if (!Array.isArray(data)) throw new NotAnArrayError(data);
+
+    const ownerAccountId = new ObjectId(getRequestAccountId(req));
+    const result = [];
+    const jobsToInsert = [];
+
+    for (const entry of data) {
+      try {
+        const safeEntry = new ObjectModifer(entry)
+          .modify(PickProps(["username", "password", "classIds", "timeToStart"]))
+          .modify(NormalizeStringProp("username"))
+          .modify(NormalizeStringProp("password"))
+          .modify(NormalizeArrayProp("classIds", "string"))
+          .modify(NormalizeIntProp("timeToStart"))
+          .modify(SetProp("createdAt", Date.now()))
+          .modify(SetProp("status", JobStatus.READY))
+          .modify(SetProp("ownerAccountId", ownerAccountId))
+          .collect();
+
+        const job = new DKHPTDJobV2(safeEntry);
+
+        if (!isValidCttSisUsername(job.username)) throw new InvalidCttSisUsernameError(job.username);
+        if (!isValidCttSisPassword(job.password)) throw new InvalidCttSisPassswordError(job.password);
+        if (!isValidClassIdsV2(job.classIds)) throw new InvalidClassIdsError(job.classIds);
+        if (isFalsy(job.timeToStart)) throw new MissingTimeToStartError();
+
+        jobsToInsert.push(job);
+        result.push(new BaseResponse().ok(job));
+      } catch (err) {
+        if (err.__isSafeError) {
+          result.push(err.toBaseResponse());
+        } else {
+          result.push(new BaseResponse().failed(err).withMessage(err.message));
+        }
+      }
+    }
+
+    if (jobsToInsert.length !== 0) {
+      const eJobsToInsert = jobsToInsert.map((x) => x.encrypt());
+      await db.collection(DKHPTDJobV2.name).insertMany(eJobsToInsert);
+    }
+    resp.send(new BaseResponse().ok(result));
+  }));
+
+  app.post("/api/accounts/current/dkhptdv2-s/:jobId/retry", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const accountId = getRequestAccountId(req);
+    const filter: Filter<DKHPTDJobV2> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
+    const existedJob = await db.collection(DKHPTDJobV2.name).findOne(filter);
+
+    if (!existedJob) throw new JobNotFoundError(req.params.jobId);
+
+    const newJob = new DKHPTDJobV2(existedJob).decrypt().toRetry();
+    const eNewJob = newJob.encrypt();
+    await db.collection(DKHPTDJobV2.name).insertOne(eNewJob);
+    resp.send(new BaseResponse().ok(req.params.jobId));
+  }));
+  app.put("/api/accounts/current/dkhptdv1-s/:jobId/cancel", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const accountId = getRequestAccountId(req);
+    const filter: Filter<DKHPTDJobV2> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
+    await db.collection(DKHPTDJobV2.name).findOneAndUpdate(filter, { $set: { status: JobStatus.CANCELED } });
+    resp.send(new BaseResponse().ok(req.params.jobId));
+  }));
+
+  app.delete("/api/accounts/current/dkhptdv1-s/:jobId", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+    const accountId = getRequestAccountId(req);
+    const filter: Filter<DKHPTDJobV2> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
+    await db.collection(DKHPTDJobV2.name).deleteOne(filter);
     resp.send(new BaseResponse().ok(req.params.jobId));
   }));
 
@@ -636,6 +778,32 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     }
   });
 
+  emitter.on(AppEvent.NEW_JOB_V2_RESULT, async (result) => {
+    try {
+      logger.info(`Received job v2 result: ${result.id}`);
+      const jobId = new ObjectId(result.id);
+      const job = await db.collection(DKHPTDJobV2.name).findOne({ _id: jobId });
+
+      if (!job) {
+        logger.warn(`Job ${result.id} not found for job result`);
+        return;
+      }
+      await db.collection(DKHPTDJobV2.name).updateOne({ _id: jobId }, { $set: { status: JobStatus.DONE } });
+      const newIv = crypto.randomBytes(16).toString("hex");
+      const logs = new DKHPTDJobV2Logs({
+        jobId,
+        workerId: result.workerId,
+        ownerAccountId: job.ownerAccountId,
+        logs: c(config.JOB_ENCRYPTION_KEY).e(toJson(result.logs), newIv),
+        createdAt: Date.now(),
+        iv: newIv,
+      });
+      await db.collection(DKHPTDJobV2Logs.name).insertOne(logs);
+    } catch (err) {
+      logger.error(err);
+    }
+  });
+
   emitter.on(AppEvent.CLASS_TO_REGISTER_FILE_PARSED, async (result: { data: ParsedClassToRegister[] }) => {
     try {
       logger.info(`Received parsed class to register, count: ${result.data.length}`);
@@ -713,6 +881,28 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
       logger.error(err);
     }
   }, 10_000);
+
+  loop.infinity(async () => {
+    try {
+      const cursor = db.collection(DKHPTDJobV2.name).find({
+        timeToStart: { $lt: Date.now() }, /* less than now then it's time to run */
+        status: JobStatus.READY,
+      }, { sort: { timeToStart: 1 } });
+      while (await cursor.hasNext()) {
+        const entry = await cursor.next();
+        const job = new DKHPTDJobV2(entry).decrypt();
+        emitter.emit(AppEvent.NEW_JOB_V2, job.toWorker());
+        await db.collection(DKHPTDJobV2.name).updateOne({ _id: new ObjectId(job._id) }, {
+          $set: {
+            status: JobStatus.DOING,
+            doingAt: Date.now(),
+          },
+        });
+      }
+    } catch (err) {
+      logger.error(err);
+    }
+  }, 10_000);
 });
 
 amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
@@ -740,6 +930,16 @@ amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
       });
     });
 
+    emitter.on(AppEvent.NEW_JOB_V2, (job) => {
+      logger.info("new Job V2: " + toJson(job));
+      const iv = crypto.randomBytes(16).toString("hex");
+      channel.sendToQueue(QueueName.DKHPTD_JOBS_V2, toBuffer(c(config.AMQP_ENCRYPTION_KEY).e(toJson(job), iv)), {
+        headers: {
+          iv: iv,
+        }
+      });
+    });
+
     emitter.on(AppEvent.CLASS_TO_REGISTER_FILE_UPLOADED, (buffer: Buffer) => {
       logger.info("new Parse XLSX Job");
       channel.sendToQueue(QueueName.DKHPTD_PARSE_CLASS_TO_REGISTER_XLSX_JOBS, buffer);
@@ -750,6 +950,9 @@ amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
 
     channel.assertQueue(QueueName.DKHPTD_JOBS_V1, { durable: false });
     channel.assertQueue(QueueName.DKHPTD_JOBS_V1_RESULT, { durable: false });
+
+    channel.assertQueue(QueueName.DKHPTD_JOBS_V2, { durable: false });
+    channel.assertQueue(QueueName.DKHPTD_JOBS_V2_RESULT, { durable: false });
 
     channel.assertQueue(QueueName.DKHPTD_PARSE_CLASS_TO_REGISTER_XLSX_JOBS, { durable: false });
     channel.assertQueue(QueueName.DKHPTD_PARSE_CLASS_TO_REGISTER_XLSX_JOBS_RESULT, { durable: false });
@@ -785,6 +988,23 @@ amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
         try {
           const result = JSON.parse(c(config.AMQP_ENCRYPTION_KEY).d(msg.content.toString(), msg.properties.headers.iv));
           emitter.emit(AppEvent.NEW_JOB_V1_RESULT, result);
+        } catch (err) {
+          logger.error(err);
+        }
+        channel.ack(msg);
+      }, { noAck: false });
+    });
+
+    channel.assertQueue(QueueName.DKHPTD_JOBS_V2_RESULT, { durable: false }, (error2, q) => {
+      if (error2) {
+        logger.error(error2);
+        return;
+      }
+
+      channel.consume(q.queue, async (msg) => {
+        try {
+          const result = JSON.parse(c(config.AMQP_ENCRYPTION_KEY).d(msg.content.toString(), msg.properties.headers.iv));
+          emitter.emit(AppEvent.NEW_JOB_V2_RESULT, result);
         } catch (err) {
           logger.error(err);
         }

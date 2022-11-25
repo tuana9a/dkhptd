@@ -6,7 +6,7 @@ import toObjectId from "../utils/toObjectId";
 import DKHPTDJobLogs from "./DKHPTDJobLogs";
 import EntityWithObjectId from "./EntityWithObjectId";
 
-export default class DHPTDJobV1Logs extends EntityWithObjectId {
+export default class DHPTDJobV2Logs extends EntityWithObjectId {
   jobId: ObjectId;
   workerId: string;
   ownerAccountId: ObjectId;
