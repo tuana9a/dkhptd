@@ -11,6 +11,6 @@ export default (handler: (req: Request, resp: Response, next?: NextFunction) => 
       return;
     }
     logger.error(err);
-    resp.status(500).send(new BaseResponse().failed(err).withMessage(err.message));
+    resp.status(500).send(new BaseResponse().failed(err).msg(err.message));
   }
 };

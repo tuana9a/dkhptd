@@ -1,7 +1,8 @@
 module.exports = {
   "env": {
     "es2021": true,
-    "node": true
+    "node": true,
+    "jest": true,
   },
   "extends": [
     "eslint:recommended",
@@ -9,7 +10,7 @@ module.exports = {
   ],
   "overrides": [
   ],
-  "ignorePatterns": "tests/**/*",
+  // "ignorePatterns": "tests/**/*",
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",

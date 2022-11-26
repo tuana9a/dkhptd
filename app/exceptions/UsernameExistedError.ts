@@ -10,6 +10,6 @@ export default class UsernameExistedError extends SafeError {
   }
 
   toBaseResponse() {
-    return new BaseResponse().failed(this.username).withMessage(this.message);
+    return new BaseResponse().failed(this.username).msg(this.message);
   }
 }

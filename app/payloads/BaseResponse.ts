@@ -1,4 +1,5 @@
 export default class BaseResponse<T> {
+  private code: number;
   private message: string;
   private data: T;
   private error: T;
@@ -22,8 +23,13 @@ export default class BaseResponse<T> {
     return this;
   }
 
-  withMessage(message: string) {
+  msg(message: string) {
     this.message = message;
+    return this;
+  }
+
+  codee(code: number) {
+    this.code = code;
     return this;
   }
 }

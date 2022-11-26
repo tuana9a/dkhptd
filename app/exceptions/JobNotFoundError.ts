@@ -11,6 +11,6 @@ export default class JobNotFoundError extends SafeError {
   }
 
   toBaseResponse(): BaseResponse<unknown> {
-    return new BaseResponse().failed(this.jobId).withMessage(this.message);
+    return new BaseResponse().failed(this.jobId).msg(this.message);
   }
 }

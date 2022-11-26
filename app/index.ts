@@ -33,17 +33,8 @@ import resolveFilter from "./utils/resolveMongoFilter";
 import RateLimit from "./middlewares/RateLimit";
 import isFalsy from "./validations/isFalsy";
 import MissingRequestBodyDataError from "./exceptions/MissingRequestBodyDataError";
-import NotAnArrayError from "./exceptions/NotAnArrayError";
 import SetProp from "./modifiers/SetProp";
-import isValidCttSisPassword from "./validations/isValidCttSisPassword";
-import isValidCttSisUsername from "./validations/isValidCttSisUsername";
-import InvalidCttSisUsernameError from "./exceptions/InvalidCttSisUsernameError";
-import InvalidCttSisPassswordError from "./exceptions/InvalidCttSisPassswordError";
-import isValidClassIds from "./validations/isValidClassIds";
-import InvalidClassIdsError from "./exceptions/InvalidClassIdsError";
 import ClassToRegister from "./entities/ClassToRegister";
-import isValidTermId from "./validations/isValidTermId";
-import InvalidTermIdError from "./exceptions/InvalidTermIdError";
 import toNormalizedString from "./utils/toNormalizedString";
 import DKHPTDJobLogs from "./entities/DKHPTDJobLogs";
 import toSafeInt from "./utils/toSafeInt";
@@ -51,7 +42,6 @@ import getRequestAccountId from "./utils/getRequestAccountId";
 import DKHPTDJobV1 from "./entities/DKHPTDJobV1";
 import AccountNotFoundError from "./exceptions/AccountNotFoundError";
 import JobNotFoundError from "./exceptions/JobNotFoundError";
-import MissingTimeToStartError from "./exceptions/MissingTimeToStartError";
 import toSHA256 from "./utils/toSHA256";
 import DKHPTDJobV1Logs from "./entities/DKHPTDJobV1Logs";
 import { c } from "./utils/cypher";
@@ -61,7 +51,12 @@ import QueueName from "./configs/QueueName";
 import ParsedClassToRegister from "./payloads/ParsedClassToRegister";
 import DKHPTDJobV2 from "./entities/DKHPTDJobV2";
 import DKHPTDJobV2Logs from "./entities/DKHPTDJobV2Logs";
-import isValidClassIdsV2 from "./validations/isValidClassIdsV2";
+import requireNotFalsy from "./requires/requireNotFalsy";
+import requireValidTermId from "./requires/requireValidTermId";
+import requireLength from "./requires/requireLength";
+import notEmptyString from "./requires/notEmptyString";
+import requireArray from "./requires/requireArray";
+import requireTypeOf from "./requires/requireTypeOf";
 
 const app = express();
 const server = http.createServer(app);
@@ -168,19 +163,27 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
     const job = new DKHPTDJob(safeData);
 
-    if (!isValidCttSisUsername(job.username)) throw new InvalidCttSisUsernameError(job.username);
-    if (!isValidCttSisPassword(job.password)) throw new InvalidCttSisPassswordError(job.password);
-    if (!isValidClassIds(job.classIds)) throw new InvalidClassIdsError(job.classIds);
-    if (isFalsy(job.timeToStart)) throw new MissingTimeToStartError();
+    requireNotFalsy("job.username", job.username);
+    notEmptyString("job.username", job.username);
+    requireLength("job.username", job.username, x => x >= 8);
+
+    requireNotFalsy("job.password", job.password,);
+    notEmptyString("job.password", job.password);
+
+    requireNotFalsy("job.classIds", job.classIds);
+    requireLength("job.classIds", job.classIds, x => x > 0);
+    requireArray("job.classIds", job.classIds, [requireTypeOf("string")]);
+
+    requireNotFalsy("job.timeToStart", job.timeToStart);
 
     await db.collection(DKHPTDJob.name).insertOne(job);
     resp.send(new BaseResponse().ok(job));
   }));
   app.post("/api/accounts/current/dkhptd-s", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const data = req.body?.data;
-    if (isFalsy(data)) throw new MissingRequestBodyDataError();
 
-    if (!Array.isArray(data)) throw new NotAnArrayError(data);
+    requireNotFalsy("body.data", data);
+    requireArray("body.data", data);
 
     const ownerAccountId = new ObjectId(getRequestAccountId(req));
     const result = [];
@@ -201,10 +204,18 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
         const job = new DKHPTDJob(safeEntry);
 
-        if (!isValidCttSisUsername(job.username)) throw new InvalidCttSisUsernameError(job.username);
-        if (!isValidCttSisPassword(job.password)) throw new InvalidCttSisPassswordError(job.password);
-        if (!isValidClassIds(job.classIds)) throw new InvalidClassIdsError(job.classIds);
-        if (isFalsy(job.timeToStart)) throw new MissingTimeToStartError();
+        requireNotFalsy("job.username", job.username);
+        notEmptyString("job.username", job.username);
+        requireLength("job.username", job.username, x => x >= 8);
+
+        requireNotFalsy("job.password", job.password);
+        notEmptyString("job.password", job.password);
+
+        requireNotFalsy("job.classIds", job.classIds);
+        requireLength("job.classIds", job.classIds, x => x > 0);
+        requireArray("job.classIds", job.classIds, [requireTypeOf("string")]);
+
+        requireNotFalsy("job.timeToStart", job.timeToStart);
 
         jobsToInsert.push(job);
         result.push(new BaseResponse().ok(job));
@@ -212,7 +223,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
         if (err.__isSafeError) {
           result.push(err.toBaseResponse());
         } else {
-          result.push(new BaseResponse().failed(err).withMessage(err.message));
+          result.push(new BaseResponse().failed(err).msg(err.message));
         }
       }
     }
@@ -306,10 +317,18 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
     const job = new DKHPTDJobV1(safeData);
 
-    if (!isValidCttSisUsername(job.username)) throw new InvalidCttSisUsernameError(job.username);
-    if (!isValidCttSisPassword(job.password)) throw new InvalidCttSisPassswordError(job.password);
-    if (!isValidClassIds(job.classIds)) throw new InvalidClassIdsError(job.classIds);
-    if (isFalsy(job.timeToStart)) throw new MissingTimeToStartError();
+    requireNotFalsy("job.username", job.username);
+    notEmptyString("job.username", job.username);
+    requireLength("job.username", job.username, x => x >= 8);
+
+    requireNotFalsy("job.password", job.password);
+    notEmptyString("job.password", job.password);
+
+    requireNotFalsy("job.classIds", job.classIds);
+    requireLength("job.classIds", job.classIds, x => x > 0);
+    requireArray("job.classIds", job.classIds, [requireTypeOf("string")]);
+
+    requireNotFalsy("job.timeToStart", job.timeToStart);
 
     const eJob = job.encrypt();
     await db.collection(DKHPTDJobV1.name).insertOne(eJob);
@@ -318,8 +337,8 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
   app.post("/api/accounts/current/dkhptdv1-s", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const data = req.body?.data;
 
-    if (isFalsy(data)) throw new MissingRequestBodyDataError();
-    if (!Array.isArray(data)) throw new NotAnArrayError(data);
+    requireNotFalsy("body.data", data);
+    requireArray("body.data", data);
 
     const ownerAccountId = new ObjectId(getRequestAccountId(req));
     const result = [];
@@ -340,10 +359,18 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
         const job = new DKHPTDJobV1(safeEntry);
 
-        if (!isValidCttSisUsername(job.username)) throw new InvalidCttSisUsernameError(job.username);
-        if (!isValidCttSisPassword(job.password)) throw new InvalidCttSisPassswordError(job.password);
-        if (!isValidClassIds(job.classIds)) throw new InvalidClassIdsError(job.classIds);
-        if (isFalsy(job.timeToStart)) throw new MissingTimeToStartError();
+        requireNotFalsy("job.username", job.username);
+        notEmptyString("job.username", job.username);
+        requireLength("job.username", job.username, x => x >= 8);
+
+        requireNotFalsy("job.password", job.password);
+        notEmptyString("job.password", job.password);
+
+        requireNotFalsy("job.classIds", job.classIds);
+        requireLength("job.classIds", job.classIds, x => x > 0);
+        requireArray("job.classIds", job.classIds, [requireTypeOf("string")]);
+
+        requireNotFalsy("job.timeToStart", job.timeToStart);
 
         jobsToInsert.push(job);
         result.push(new BaseResponse().ok(job));
@@ -351,7 +378,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
         if (err.__isSafeError) {
           result.push(err.toBaseResponse());
         } else {
-          result.push(new BaseResponse().failed(err).withMessage(err.message));
+          result.push(new BaseResponse().failed(err).msg(err.message));
         }
       }
     }
@@ -438,7 +465,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
       .modify(PickProps(["username", "password", "classIds", "timeToStart"]))
       .modify(NormalizeStringProp("username"))
       .modify(NormalizeStringProp("password"))
-      .modify(NormalizeArrayProp("classIds", "string"))
+      .modify(NormalizeArrayProp("classIds"))
       .modify(NormalizeIntProp("timeToStart"))
       .modify(SetProp("createdAt", Date.now()))
       .modify(SetProp("status", JobStatus.READY))
@@ -447,10 +474,18 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
     const job = new DKHPTDJobV2(safeData);
 
-    if (!isValidCttSisUsername(job.username)) throw new InvalidCttSisUsernameError(job.username);
-    if (!isValidCttSisPassword(job.password)) throw new InvalidCttSisPassswordError(job.password);
-    if (!isValidClassIdsV2(job.classIds)) throw new InvalidClassIdsError(job.classIds);
-    if (isFalsy(job.timeToStart)) throw new MissingTimeToStartError();
+    requireNotFalsy("job.username", job.username);
+    notEmptyString("job.username", job.username);
+    requireLength("job.username", job.username, x => x >= 8);
+
+    requireNotFalsy("job.password", job.password);
+    notEmptyString("job.password", job.password);
+
+    requireNotFalsy("job.classIds", job.classIds);
+    requireLength("job.classIds", job.classIds, x => x > 0);
+    requireArray("job.classIds", job.classIds, [e => requireArray(e, [requireTypeOf("string")])]);
+
+    requireNotFalsy("job.timeToStart", job.timeToStart);
 
     const eJob = job.encrypt();
     await db.collection(DKHPTDJobV2.name).insertOne(eJob);
@@ -459,8 +494,8 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
   app.post("/api/accounts/current/dkhptdv2-s", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const data = req.body?.data;
 
-    if (isFalsy(data)) throw new MissingRequestBodyDataError();
-    if (!Array.isArray(data)) throw new NotAnArrayError(data);
+    requireNotFalsy("body.data", data);
+    requireArray("body.data", data);
 
     const ownerAccountId = new ObjectId(getRequestAccountId(req));
     const result = [];
@@ -472,7 +507,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
           .modify(PickProps(["username", "password", "classIds", "timeToStart"]))
           .modify(NormalizeStringProp("username"))
           .modify(NormalizeStringProp("password"))
-          .modify(NormalizeArrayProp("classIds", "string"))
+          .modify(NormalizeArrayProp("classIds"))
           .modify(NormalizeIntProp("timeToStart"))
           .modify(SetProp("createdAt", Date.now()))
           .modify(SetProp("status", JobStatus.READY))
@@ -481,10 +516,18 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
         const job = new DKHPTDJobV2(safeEntry);
 
-        if (!isValidCttSisUsername(job.username)) throw new InvalidCttSisUsernameError(job.username);
-        if (!isValidCttSisPassword(job.password)) throw new InvalidCttSisPassswordError(job.password);
-        if (!isValidClassIdsV2(job.classIds)) throw new InvalidClassIdsError(job.classIds);
-        if (isFalsy(job.timeToStart)) throw new MissingTimeToStartError();
+        requireNotFalsy("job.username", job.username);
+        notEmptyString("job.username", job.username);
+        requireLength("job.username", job.username, x => x >= 8);
+
+        requireNotFalsy("job.password", job.password);
+        notEmptyString("job.password", job.password);
+
+        requireNotFalsy("job.classIds", job.classIds);
+        requireLength("job.classIds", job.classIds, x => x > 0);
+        requireArray("job.classIds", job.classIds, [e => requireArray(e, [requireTypeOf("string")])]);
+
+        requireNotFalsy("job.timeToStart", job.timeToStart);
 
         jobsToInsert.push(job);
         result.push(new BaseResponse().ok(job));
@@ -492,7 +535,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
         if (err.__isSafeError) {
           result.push(err.toBaseResponse());
         } else {
-          result.push(new BaseResponse().failed(err).withMessage(err.message));
+          result.push(new BaseResponse().failed(err).msg(err.message));
         }
       }
     }
@@ -532,13 +575,9 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
   app.post("/api/class-to-registers", SecretFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const data = req.body?.data;
-    if (isFalsy(data)) {
-      throw new MissingRequestBodyDataError();
-    }
 
-    if (!Array.isArray(data)) {
-      throw new NotAnArrayError(data);
-    }
+    requireNotFalsy("body.data", data);
+    requireArray("body.data", data);
 
     const classToRegistersToInsert = [];
     const result = [];
@@ -576,16 +615,15 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
 
         const classToRegister = new ClassToRegister(classToRegisterConstruct);
 
-        if (!isValidTermId(classToRegister.termId)) {
-          throw new InvalidTermIdError(classToRegister.termId);
-        }
+        requireValidTermId("classToRegister.termId", classToRegister.termId);
+
         classToRegistersToInsert.push(classToRegister);
         result.push(new BaseResponse().ok(classToRegister));
       } catch (err) {
         if (err.__isSafeError) {
           result.push(err.toBaseResponse());
         } else {
-          result.push(new BaseResponse().failed(err).withMessage(err.message));
+          result.push(new BaseResponse().failed(err).msg(err.message));
         }
       }
     }
@@ -603,9 +641,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
     const termId = toNormalizedString(req.params.termId);
 
-    if (!isValidTermId(termId)) {
-      throw new InvalidTermIdError(termId);
-    }
+    requireValidTermId("termId", termId);
 
     const filter: Filter<ClassToRegister> = resolveFilter(String(query.q).split(","));
     filter.termId = termId;
@@ -624,9 +660,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const classIds = toNormalizedString(req.query.classIds).split(",").map((x) => toNormalizedString(x));
     const termId = toNormalizedString(req.query.termId);
 
-    if (!isValidTermId(termId)) {
-      throw new InvalidTermIdError(termId);
-    }
+    requireValidTermId("termId", termId);
 
     const filter = { classId: { $in: classIds }, termId: termId };
     const classToRegisters = await db.collection(ClassToRegister.name).find(filter).toArray();
@@ -636,9 +670,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const classIds = toNormalizedString(req.query.classIds).split(",").map((x) => toNormalizedString(x));
     const termId = toNormalizedString(req.query.termId);
 
-    if (!isValidTermId(termId)) {
-      throw new InvalidTermIdError(termId);
-    }
+    requireValidTermId("termId", termId);
 
     const filter = {
       classId: {
@@ -660,9 +692,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const classId = toNormalizedString(req.params.classId);
     const termId = toNormalizedString(req.query.termId);
 
-    if (!isValidTermId(termId)) {
-      throw new InvalidTermIdError(termId);
-    }
+    requireValidTermId("termId", termId);
 
     const filter = { classId: classId, termId: termId };
     const classToRegister = await db.collection(ClassToRegister.name).findOne(filter);
@@ -692,9 +722,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
       ], { dropFalsy: true })).collect();
     const termId = toNormalizedString(query.termId);
 
-    if (!isValidTermId(termId)) {
-      throw new InvalidTermIdError(termId);
-    }
+    requireValidTermId("termId", termId);
 
     const filter: Filter<ClassToRegister> = resolveFilter(String(query.q).split(","));
     filter.termId = termId;

@@ -3,7 +3,7 @@
 import toSafeInt from "../utils/toSafeInt";
 import toSafeString from "../utils/toSafeString";
 
-export default (propName: string, propType: string) => (input) => {
+export default (propName: string, propType?: string) => (input) => {
   const currentValue = input[propName];
 
   if (currentValue === null || currentValue === undefined || !Array.isArray(currentValue)) {

@@ -1,11 +1,13 @@
 import BaseResponse from "../payloads/BaseResponse";
 import SafeError from "./SafeError";
 
-export default class InvalidCttSisPassswordError extends SafeError {
+export default class FaslyValueError extends SafeError {
   value;
+  path: string;
 
-  constructor(value) {
-    super("INVALID_CTT_SIS_PASSWORD");
+  constructor(name: string, value) {
+    super("FALSY_VALUE");
+    this.path = name;
     this.value = value;
   }
 

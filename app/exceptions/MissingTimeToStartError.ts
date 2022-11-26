@@ -7,6 +7,6 @@ export default class MissingTimeToStartError extends SafeError {
   }
 
   toBaseResponse(): BaseResponse<unknown> {
-    return new BaseResponse().failed().withMessage(this.message);
+    return new BaseResponse().failed().msg(this.message);
   }
 }

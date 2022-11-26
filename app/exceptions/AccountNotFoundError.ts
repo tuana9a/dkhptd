@@ -11,6 +11,6 @@ export default class AccountNotFoundError extends SafeError {
   }
 
   toBaseResponse(): BaseResponse<unknown> {
-    return new BaseResponse().failed(this.accountId).withMessage(this.message);
+    return new BaseResponse().failed(this.accountId).msg(this.message);
   }
 }

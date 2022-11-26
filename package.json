@@ -4,7 +4,10 @@
     "dev": "nodemon ./dist/index.js",
     "dev:test": "nodemon ./dist/test-index.js",
     "start": "node ./dist/index.js",
-    "test": "jest tests"
+    "test:watch": "jest tests --watch",
+    "test": "jest tests",
+    "build:watch": "tsc --watch --declaration",
+    "build": "tsc --declaration"
   },
   "dependencies": {
     "amqplib": "^0.10.3",

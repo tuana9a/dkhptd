@@ -1,3 +1,3 @@
 import toNormalizedString from "../utils/toNormalizedString";
 
-export default (input) => toNormalizedString(input).split(",").map((x) => toNormalizedString(x)).filter((x) => x);
+export default (input: string) => input.split(",").map((x) => toNormalizedString(x)).filter((x) => x);
