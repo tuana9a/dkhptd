@@ -259,7 +259,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     resp.send(new BaseResponse().ok(req.params.jobId));
   }));
 
-  app.get("/api/accounts/current/dkhptdv1-s", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.get("/api/accounts/current/v1/dkhptd-s", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
     const accountId = getRequestAccountId(req);
 
@@ -268,7 +268,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const jobs = await db.collection(DKHPTDJobV1.name).find(filter).toArray();
     resp.send(new BaseResponse().ok(jobs.map((x) => new DKHPTDJobV1(x).toClient())));
   }));
-  app.get("/api/accounts/current/d/dkhptdv1-s", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.get("/api/accounts/current/v1/d/dkhptd-s", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
     const accountId = getRequestAccountId(req);
 
@@ -277,7 +277,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const jobs = await db.collection(DKHPTDJobV1.name).find(filter).toArray();
     resp.send(new BaseResponse().ok(jobs.map((x) => new DKHPTDJobV1(x).decrypt().toClient())));
   }));
-  app.get("/api/accounts/current/dkhptdv1-s/:jobId/logs", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.get("/api/accounts/current/v1/dkhptd-s/:jobId/logs", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
     const accountId = getRequestAccountId(req);
 
@@ -287,7 +287,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const logs = await db.collection(DKHPTDJobV1Logs.name).find(filter).toArray();
     resp.send(new BaseResponse().ok(logs.map((x) => new DKHPTDJobV1Logs(x).toClient())));
   }));
-  app.get("/api/accounts/current/dkhptdv1-s/:jobId/d/logs", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.get("/api/accounts/current/v1/dkhptd-s/:jobId/d/logs", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
     const accountId = getRequestAccountId(req);
 
@@ -298,7 +298,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     resp.send(new BaseResponse().ok(logs.map((x) => new DKHPTDJobV1Logs(x).decrypt().toClient())));
   }));
 
-  app.post("/api/accounts/current/dkhptdv1", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.post("/api/accounts/current/v1/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const data = req.body;
 
     if (isFalsy(data)) throw new MissingRequestBodyDataError();
@@ -334,7 +334,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     await db.collection(DKHPTDJobV1.name).insertOne(eJob);
     resp.send(new BaseResponse().ok(job));
   }));
-  app.post("/api/accounts/current/dkhptdv1-s", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.post("/api/accounts/current/v1/dkhptd-s", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const data = req.body?.data;
 
     requireNotFalsy("body.data", data);
@@ -390,7 +390,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     resp.send(new BaseResponse().ok(result));
   }));
 
-  app.post("/api/accounts/current/dkhptdv1-s/:jobId/retry", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.post("/api/accounts/current/v1/dkhptd-s/:jobId/retry", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const accountId = getRequestAccountId(req);
     const filter: Filter<DKHPTDJobV1> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
     const existedJob = await db.collection(DKHPTDJobV1.name).findOne(filter);
@@ -402,21 +402,21 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     await db.collection(DKHPTDJobV1.name).insertOne(eNewJob);
     resp.send(new BaseResponse().ok(req.params.jobId));
   }));
-  app.put("/api/accounts/current/dkhptdv1-s/:jobId/cancel", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.put("/api/accounts/current/v1/dkhptd-s/:jobId/cancel", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const accountId = getRequestAccountId(req);
     const filter: Filter<DKHPTDJobV1> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
     await db.collection(DKHPTDJobV1.name).findOneAndUpdate(filter, { $set: { status: JobStatus.CANCELED } });
     resp.send(new BaseResponse().ok(req.params.jobId));
   }));
 
-  app.delete("/api/accounts/current/dkhptdv1-s/:jobId", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.delete("/api/accounts/current/v1/dkhptd-s/:jobId", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const accountId = getRequestAccountId(req);
     const filter: Filter<DKHPTDJobV1> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
     await db.collection(DKHPTDJobV1.name).deleteOne(filter);
     resp.send(new BaseResponse().ok(req.params.jobId));
   }));
 
-  app.get("/api/accounts/current/dkhptdv2-s", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.get("/api/accounts/current/v2/dkhptd-s", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
     const accountId = getRequestAccountId(req);
 
@@ -425,7 +425,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const jobs = await db.collection(DKHPTDJobV2.name).find(filter).toArray();
     resp.send(new BaseResponse().ok(jobs.map((x) => new DKHPTDJobV2(x).toClient())));
   }));
-  app.get("/api/accounts/current/d/dkhptdv2-s", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.get("/api/accounts/current/v2/d/dkhptd-s", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
     const accountId = getRequestAccountId(req);
 
@@ -434,7 +434,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const jobs = await db.collection(DKHPTDJobV2.name).find(filter).toArray();
     resp.send(new BaseResponse().ok(jobs.map((x) => new DKHPTDJobV2(x).decrypt().toClient())));
   }));
-  app.get("/api/accounts/current/dkhptdv2-s/:jobId/logs", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.get("/api/accounts/current/v2/dkhptd-s/:jobId/logs", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
     const accountId = getRequestAccountId(req);
 
@@ -444,7 +444,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     const logs = await db.collection(DKHPTDJobV2Logs.name).find(filter).toArray();
     resp.send(new BaseResponse().ok(logs.map((x) => new DKHPTDJobV2Logs(x).toClient())));
   }));
-  app.get("/api/accounts/current/dkhptdv2-s/:jobId/d/logs", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.get("/api/accounts/current/v2/dkhptd-s/:jobId/d/logs", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
     const accountId = getRequestAccountId(req);
 
@@ -455,7 +455,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     resp.send(new BaseResponse().ok(logs.map((x) => new DKHPTDJobV2Logs(x).decrypt().toClient())));
   }));
 
-  app.post("/api/accounts/current/dkhptdv2", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.post("/api/accounts/current/v2/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const data = req.body;
 
     if (isFalsy(data)) throw new MissingRequestBodyDataError();
@@ -491,7 +491,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     await db.collection(DKHPTDJobV2.name).insertOne(eJob);
     resp.send(new BaseResponse().ok(job));
   }));
-  app.post("/api/accounts/current/dkhptdv2-s", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.post("/api/accounts/current/v2/dkhptd-s", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const data = req.body?.data;
 
     requireNotFalsy("body.data", data);
@@ -547,7 +547,7 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     resp.send(new BaseResponse().ok(result));
   }));
 
-  app.post("/api/accounts/current/dkhptdv2-s/:jobId/retry", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.post("/api/accounts/current/v2/dkhptd-s/:jobId/retry", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const accountId = getRequestAccountId(req);
     const filter: Filter<DKHPTDJobV2> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
     const existedJob = await db.collection(DKHPTDJobV2.name).findOne(filter);
@@ -559,14 +559,14 @@ new MongoClient(config.MONGODB_CONNECTION_STRING).connect().then((client) => {
     await db.collection(DKHPTDJobV2.name).insertOne(eNewJob);
     resp.send(new BaseResponse().ok(req.params.jobId));
   }));
-  app.put("/api/accounts/current/dkhptdv1-s/:jobId/cancel", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.put("/api/accounts/current/v1/dkhptd-s/:jobId/cancel", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const accountId = getRequestAccountId(req);
     const filter: Filter<DKHPTDJobV2> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
     await db.collection(DKHPTDJobV2.name).findOneAndUpdate(filter, { $set: { status: JobStatus.CANCELED } });
     resp.send(new BaseResponse().ok(req.params.jobId));
   }));
 
-  app.delete("/api/accounts/current/dkhptdv1-s/:jobId", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  app.delete("/api/accounts/current/v1/dkhptd-s/:jobId", JwtFilter(config.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
     const accountId = getRequestAccountId(req);
     const filter: Filter<DKHPTDJobV2> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
     await db.collection(DKHPTDJobV2.name).deleteOne(filter);
