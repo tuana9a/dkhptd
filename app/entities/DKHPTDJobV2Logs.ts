@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { ActionLog } from "puppeteer-worker-job-builder/v1";
-import config from "../config";
+import cfg from "../cfg";
 import { c } from "../utils/cypher";
 import toObjectId from "../utils/toObjectId";
 import DKHPTDJobLogs from "./DKHPTDJobLogs";
@@ -47,7 +47,7 @@ export default class DHPTDJobV2Logs extends EntityWithObjectId {
   }
 
   decrypt() {
-    const text = c(config.JOB_ENCRYPTION_KEY).d(this.logs, this.iv);
+    const text = c(cfg.JOB_ENCRYPTION_KEY).d(this.logs, this.iv);
     const logs: ActionLog[] = JSON.parse(text);
     return new DKHPTDJobLogs({
       _id: this._id,

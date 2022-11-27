@@ -5,7 +5,7 @@ import ObjectModifer from "../modifiers/ObjectModifier";
 import { c } from "../utils/cypher";
 import EntityWithObjectId from "./EntityWithObjectId";
 import JobStatus from "../configs/JobStatus";
-import config from "../config";
+import cfg from "../cfg";
 
 export default class DKHPTDJobV1 extends EntityWithObjectId {
   ownerAccountId: ObjectId;
@@ -52,8 +52,8 @@ export default class DKHPTDJobV1 extends EntityWithObjectId {
   }
 
   decrypt() {
-    const dPassword = c(config.JOB_ENCRYPTION_KEY).d(this.password, this.iv);
-    const dUsername = c(config.JOB_ENCRYPTION_KEY).d(this.username, this.iv);
+    const dPassword = c(cfg.JOB_ENCRYPTION_KEY).d(this.password, this.iv);
+    const dUsername = c(cfg.JOB_ENCRYPTION_KEY).d(this.username, this.iv);
     return new DKHPTDJobV1({
       _id: this._id,
       ownerAccountId: this.ownerAccountId,
@@ -69,8 +69,8 @@ export default class DKHPTDJobV1 extends EntityWithObjectId {
 
   encrypt() {
     const iv = crypto.randomBytes(16).toString("hex");
-    const ePassword = c(config.JOB_ENCRYPTION_KEY).e(this.password, iv);
-    const eUsername = c(config.JOB_ENCRYPTION_KEY).e(this.username, iv);
+    const ePassword = c(cfg.JOB_ENCRYPTION_KEY).e(this.password, iv);
+    const eUsername = c(cfg.JOB_ENCRYPTION_KEY).e(this.username, iv);
     return new DKHPTDJobV1({
       _id: this._id,
       ownerAccountId: this.ownerAccountId,

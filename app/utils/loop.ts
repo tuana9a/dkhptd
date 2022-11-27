@@ -1,9 +1,9 @@
 export default {
-  infinity: (fn: Function, delay: number) => {
-    const callIt = async () => {
+  infinity: (fn: () => unknown, delay: number) => {
+    const call = async () => {
       await fn();
-      setTimeout(callIt, delay);
+      setTimeout(call, delay);
     };
-    callIt();
+    call();
   },
 };

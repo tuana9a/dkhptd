@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-const config = {
+const cfg = {
   SECRET: process.env.SECRET || String(Math.round(Math.random() * Date.now())),
   JOB_ENCRYPTION_KEY: process.env.JOB_ENCRYPTION_KEY,
   AMQP_ENCRYPTION_KEY: process.env.AMQP_ENCRYPTION_KEY,
@@ -15,4 +15,4 @@ const config = {
   DATABASE_NAME: "dkhptd",
 };
 
-export default config;
+export default cfg;

@@ -2,7 +2,7 @@ import { Handler, NextFunction, Request, Response } from "express";
 import logger from "../loggers/logger";
 import BaseResponse from "../payloads/BaseResponse";
 
-export default (handler: (req: Request, resp: Response, next?: NextFunction) => Promise<any>): Handler => async (req, resp, next) => {
+export default (handler: (req: Request, resp: Response, next?: NextFunction) => Promise<unknown>): Handler => async (req, resp, next) => {
   try {
     await handler(req, resp, next);
   } catch (err) {

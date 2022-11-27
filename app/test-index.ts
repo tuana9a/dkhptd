@@ -6,7 +6,7 @@ import EventEmitter from "events";
 
 import toJson from "./utils/toJson";
 import toBuffer from "./utils/toBuffer";
-import config from "./config";
+import cfg from "./cfg";
 import logger from "./loggers/logger";
 import toKeyValueString from "./utils/toKeyValueString";
 import { c } from "./utils/cypher";
@@ -48,7 +48,7 @@ app.post("/api/test/v1/job/new", (req, resp) => {
   resp.send(job);
 });
 
-amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
+amqplib.connect(cfg.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
   if (error0) {
     logger.error(error0);
     return;
@@ -66,7 +66,7 @@ amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
     emitter.on(AppEvent.NEW_JOB_V1, (job) => {
       logger.info("New Job: " + toJson(job));
       const iv = crypto.randomBytes(16).toString("hex");
-      channel.sendToQueue(QueueName.DKHPTD_JOBS_V1, toBuffer(c(config.AMQP_ENCRYPTION_KEY).e(toJson(job), iv)), {
+      channel.sendToQueue(QueueName.DKHPTD_JOBS_V1, toBuffer(c(cfg.AMQP_ENCRYPTION_KEY).e(toJson(job), iv)), {
         headers: {
           iv: iv,
         }
@@ -104,7 +104,7 @@ amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
 
       channel.consume(q.queue, async (msg) => {
         try {
-          const result = JSON.parse(c(config.AMQP_ENCRYPTION_KEY).d(msg.content.toString(), msg.properties.headers.iv));
+          const result = JSON.parse(c(cfg.AMQP_ENCRYPTION_KEY).d(msg.content.toString(), msg.properties.headers.iv));
           emitter.emit(AppEvent.NEW_JOB_V1_RESULT, result);
         } catch (err) {
           logger.error(err);
@@ -154,5 +154,5 @@ amqplib.connect(config.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
 emitter.on(AppEvent.DOING, (doing) => logger.info(`Doing: ${toJson(doing, 2)}`));
 emitter.on(AppEvent.PING, (ping) => logger.info(`Ping: ${toJson(ping)}`));
 
-logger.info(`Config: \n${toKeyValueString(config)}`);
-server.listen(config.PORT);
+logger.info(`Config: \n${toKeyValueString(cfg)}`);
+server.listen(cfg.PORT);
