@@ -1,7 +1,6 @@
 import { Handler } from "express";
 import jwt from "jsonwebtoken";
 import logger from "../loggers/logger";
-import setRequestAccountId from "../utils/setRequestAccountId";
 
 export default (secret: string): Handler => (req, res, next) => {
   const token = req.headers.authorization || (req.headers.Authorization as string);
@@ -18,7 +17,7 @@ export default (secret: string): Handler => (req, res, next) => {
     }
 
     logger.info(`Authenticated [${subject.id}] [${req.method}] ${req.path}`);
-    setRequestAccountId(req)(subject.id);
+    req.__accountId = subject.id;
     next();
   });
 };

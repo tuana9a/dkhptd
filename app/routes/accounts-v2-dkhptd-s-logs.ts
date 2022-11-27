@@ -8,14 +8,13 @@ import ObjectModifer from "../modifiers/ObjectModifier";
 import PickProps from "../modifiers/PickProps";
 import BaseResponse from "../payloads/BaseResponse";
 import ExceptionHandlerWrapper from "../utils/ExceptionHandlerWrapper";
-import getRequestAccountId from "../utils/getRequestAccountId";
 import resolveMongoFilter from "../utils/resolveMongoFilter";
 
 const router = express.Router();
 
 router.get("/api/accounts/current/v2/dkhptd-s/:jobId/logs", JwtFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
   const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
-  const accountId = getRequestAccountId(req);
+  const accountId = req.__accountId;
 
   const filter: Filter<DKHPTDJobV2Logs> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
   filter.ownerAccountId = new ObjectId(accountId);
@@ -27,7 +26,7 @@ router.get("/api/accounts/current/v2/dkhptd-s/:jobId/logs", JwtFilter(cfg.SECRET
 
 router.get("/api/accounts/current/v2/dkhptd-s/:jobId/d/logs", JwtFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
   const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
-  const accountId = getRequestAccountId(req);
+  const accountId = req.__accountId;
 
   const filter: Filter<DKHPTDJobV2Logs> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
   filter.ownerAccountId = new ObjectId(accountId);

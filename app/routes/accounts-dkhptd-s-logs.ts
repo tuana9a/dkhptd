@@ -6,12 +6,11 @@ import DKHPTDJobLogs from "../entities/DKHPTDJobLogs";
 import JwtFilter from "../middlewares/JwtFilter";
 import BaseResponse from "../payloads/BaseResponse";
 import ExceptionHandlerWrapper from "../utils/ExceptionHandlerWrapper";
-import getRequestAccountId from "../utils/getRequestAccountId";
 
 const router = express.Router();
 
 router.get("/api/accounts/current/dkhptd-s/:jobId/logs", JwtFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
-  const accountId = getRequestAccountId(req);
+  const accountId = req.__accountId;
 
   const filter: Filter<DKHPTDJobLogs> = {
     ownerAccountId: new ObjectId(accountId),

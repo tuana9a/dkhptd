@@ -21,7 +21,6 @@ import requireLength from "../requires/requireLength";
 import requireNotFalsy from "../requires/requireNotFalsy";
 import requireTypeOf from "../requires/requireTypeOf";
 import ExceptionHandlerWrapper from "../utils/ExceptionHandlerWrapper";
-import getRequestAccountId from "../utils/getRequestAccountId";
 import resolveMongoFilter from "../utils/resolveMongoFilter";
 import isFalsy from "../validations/isFalsy";
 
@@ -29,7 +28,7 @@ const router = express.Router();
 
 router.get("/api/accounts/current/v2/dkhptd-s", JwtFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
   const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
-  const accountId = getRequestAccountId(req);
+  const accountId = req.__accountId;
 
   const filter: Filter<DKHPTDJobV2> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
   filter.ownerAccountId = new ObjectId(accountId);
@@ -40,7 +39,7 @@ router.get("/api/accounts/current/v2/dkhptd-s", JwtFilter(cfg.SECRET), Exception
 
 router.get("/api/accounts/current/v2/d/dkhptd-s", JwtFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
   const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
-  const accountId = getRequestAccountId(req);
+  const accountId = req.__accountId;
 
   const filter: Filter<DKHPTDJobV2> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
   filter.ownerAccountId = new ObjectId(accountId);
@@ -54,7 +53,7 @@ router.post("/api/accounts/current/v2/dkhptd", RateLimit({ windowMs: 5 * 60 * 10
 
   if (isFalsy(data)) throw new MissingRequestBodyDataError();
 
-  const ownerAccountId = new ObjectId(getRequestAccountId(req));
+  const ownerAccountId = new ObjectId(req.__accountId);
   const safeData = new ObjectModifer(data)
     .modify(PickProps(["username", "password", "classIds", "timeToStart"]))
     .modify(NormalizeStringProp("username"))
@@ -93,7 +92,7 @@ router.post("/api/accounts/current/v2/dkhptd-s", RateLimit({ windowMs: 5 * 60 * 
   requireNotFalsy("body.data", data);
   requireArray("body.data", data);
 
-  const ownerAccountId = new ObjectId(getRequestAccountId(req));
+  const ownerAccountId = new ObjectId(req.__accountId);
   const result = [];
   const jobsToInsert = [];
 
@@ -145,7 +144,7 @@ router.post("/api/accounts/current/v2/dkhptd-s", RateLimit({ windowMs: 5 * 60 * 
 }));
 
 router.post("/api/accounts/current/v2/dkhptd-s/:jobId/retry", JwtFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
-  const accountId = getRequestAccountId(req);
+  const accountId = req.__accountId;
   const filter: Filter<DKHPTDJobV2> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
   const existedJob = await mongoConnectionPool.getClient()
     .db(cfg.DATABASE_NAME).collection(DKHPTDJobV2.name).findOne(filter);
@@ -160,7 +159,7 @@ router.post("/api/accounts/current/v2/dkhptd-s/:jobId/retry", JwtFilter(cfg.SECR
 }));
 
 router.put("/api/accounts/current/v1/dkhptd-s/:jobId/cancel", JwtFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
-  const accountId = getRequestAccountId(req);
+  const accountId = req.__accountId;
   const filter: Filter<DKHPTDJobV2> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
   await mongoConnectionPool.getClient()
     .db(cfg.DATABASE_NAME).collection(DKHPTDJobV2.name).findOneAndUpdate(filter, { $set: { status: JobStatus.CANCELED } });
@@ -168,7 +167,7 @@ router.put("/api/accounts/current/v1/dkhptd-s/:jobId/cancel", JwtFilter(cfg.SECR
 }));
 
 router.delete("/api/accounts/current/v1/dkhptd-s/:jobId", JwtFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
-  const accountId = getRequestAccountId(req);
+  const accountId = req.__accountId;
   const filter: Filter<DKHPTDJobV2> = { _id: new ObjectId(req.params.jobId), ownerAccountId: new ObjectId(accountId) };
   await mongoConnectionPool.getClient()
     .db(cfg.DATABASE_NAME).collection(DKHPTDJobV2.name).deleteOne(filter);
