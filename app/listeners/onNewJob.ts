@@ -10,7 +10,7 @@ export default {
   setup() {
     emitter.on(AppEvent.NEW_JOB, (job) => {
       logger.info("new Job: " + toJson(job));
-      rabbitmqConnectionPool.getChannel().sendToQueue(QueueName.DKHPTD_JOBS, toBuffer(toJson(job)));
+      rabbitmqConnectionPool.getChannel().sendToQueue(QueueName.RUN_JOB, toBuffer(toJson(job)));
     });
   }
 };

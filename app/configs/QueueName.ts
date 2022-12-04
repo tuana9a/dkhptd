@@ -1,15 +1,15 @@
 const QueueName = {
-  DKHPTD_JOBS: "dkhptd.jobs",
-  DKHPTD_JOBS_RESULT: "dkhptd.jobs.result",
+  RUN_JOB: "dkhptd.run-job",
+  PROCESS_JOB_RESULT: "dkhptd.process-job-result",
 
-  DKHPTD_JOBS_V1: "dkhptd.jobs.v1",
-  DKHPTD_JOBS_V1_RESULT: "dkhptd.jobs.v1.result",
+  RUN_JOB_V1: "dkhptd.run-job-v1",
+  PROCESS_JOB_V1_RESULT: "dkhptd.process-job-v1-result",
 
-  DKHPTD_JOBS_V2: "dkhptd.jobs.v2",
-  DKHPTD_JOBS_V2_RESULT: "dkhptd.jobs.v2.result",
+  RUN_JOB_V2: "dkhptd.run-job-v2",
+  PROCESS_JOB_V2_RESULT: "dkhptd.process-job-v2-result",
 
-  DKHPTD_PARSE_CTR_XLSX_JOBS: "dkhptd.parse.ctr.xslx.jobs",
-  DKHPTD_PARSE_CTR_XLSX_JOBS_RESULT: "dkhptd.parse.ctr.xslx.jobs.result"
+  PARSE_TKB_XLSX: "parse-tkb-xslx",
+  PROCESS_PARSE_TKB_XLSX_RESULT: "process-parse-tkb-xlsx-result"
 };
 
 export default QueueName;

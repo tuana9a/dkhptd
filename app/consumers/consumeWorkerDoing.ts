@@ -12,11 +12,11 @@ export default {
         return;
       }
 
-      rabbitmqConnectionPool.getChannel().bindQueue(q.queue, ExchangeName.DKHPTD_WORKER_DOING, "");
+      rabbitmqConnectionPool.getChannel().bindQueue(q.queue, ExchangeName.WORKER_DOING, "");
       rabbitmqConnectionPool.getChannel().consume(q.queue, async (msg) => {
         try {
           const doing = JSON.parse(msg.content.toString());
-          emitter.emit(AppEvent.DOING, doing);
+          emitter.emit(AppEvent.WORKER_DOING, doing);
         } catch (err) {
           logger.error(err);
         }

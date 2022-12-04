@@ -5,6 +5,6 @@ import emitter from "./emiter";
 
 export default {
   setup() {
-    emitter.on(AppEvent.PING, (ping) => logger.info(`Ping: ${toJson(ping)}`));
+    emitter.on(AppEvent.WORKER_PING, (ping) => logger.info(`Ping: ${toJson(ping)}`));
   }
 };

@@ -85,7 +85,7 @@ router.post("/api/class-to-registers", SecretFilter(cfg.SECRET), ExceptionHandle
 
 router.post("/api/class-to-register-file", SecretFilter(cfg.SECRET), multer({ limits: { fileSize: 5 * 1000 * 1000 /* 5mb */ } }).single("file"), ExceptionHandlerWrapper(async (req, resp) => {
   const file = req.file;
-  emitter.emit(AppEvent.CLASS_TO_REGISTER_FILE_UPLOADED, file.buffer);
+  emitter.emit(AppEvent.TKB_XLSX_UPLOADED, file.buffer);
   resp.send(new BaseResponse().ok());
 }));
 

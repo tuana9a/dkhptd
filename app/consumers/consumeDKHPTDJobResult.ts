@@ -6,7 +6,7 @@ import logger from "../loggers/logger";
 
 export default {
   setup() {
-    rabbitmqConnectionPool.getChannel().assertQueue(QueueName.DKHPTD_JOBS_RESULT, { durable: false }, (error2, q) => {
+    rabbitmqConnectionPool.getChannel().assertQueue(QueueName.PROCESS_JOB_RESULT, { durable: false }, (error2, q) => {
       if (error2) {
         logger.error(error2);
         return;

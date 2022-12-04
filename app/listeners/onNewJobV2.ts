@@ -14,7 +14,7 @@ export default {
     emitter.on(AppEvent.NEW_JOB_V2, (job) => {
       logger.info("new Job V2: " + toJson(job));
       const iv = crypto.randomBytes(16).toString("hex");
-      rabbitmqConnectionPool.getChannel().sendToQueue(QueueName.DKHPTD_JOBS_V2, toBuffer(c(cfg.AMQP_ENCRYPTION_KEY).e(toJson(job), iv)), {
+      rabbitmqConnectionPool.getChannel().sendToQueue(QueueName.RUN_JOB_V2, toBuffer(c(cfg.AMQP_ENCRYPTION_KEY).e(toJson(job), iv)), {
         headers: {
           iv: iv,
         }

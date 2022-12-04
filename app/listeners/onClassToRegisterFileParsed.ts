@@ -12,7 +12,7 @@ import emitter from "./emiter";
 
 export default {
   setup() {
-    emitter.on(AppEvent.CLASS_TO_REGISTER_FILE_PARSED, async (result: { data: ParsedClassToRegister[] }) => {
+    emitter.on(AppEvent.TKB_XLSX_PARSED, async (result: { data: ParsedClassToRegister[] }) => {
       try {
         logger.info(`Received parsed class to register, count: ${result.data.length}`);
         const classes = result.data.map(x => new ParsedClassToRegister(x))

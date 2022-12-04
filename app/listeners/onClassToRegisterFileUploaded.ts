@@ -6,9 +6,9 @@ import emitter from "./emiter";
 
 export default {
   setup() {
-    emitter.on(AppEvent.CLASS_TO_REGISTER_FILE_UPLOADED, (buffer: Buffer) => {
+    emitter.on(AppEvent.TKB_XLSX_UPLOADED, (buffer: Buffer) => {
       logger.info("new Parse XLSX Job");
-      rabbitmqConnectionPool.getChannel().sendToQueue(QueueName.DKHPTD_PARSE_CTR_XLSX_JOBS, buffer);
+      rabbitmqConnectionPool.getChannel().sendToQueue(QueueName.PARSE_TKB_XLSX, buffer);
     });
   }
 };
