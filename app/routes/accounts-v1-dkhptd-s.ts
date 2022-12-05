@@ -48,6 +48,16 @@ router.get("/api/accounts/current/v1/d/dkhptd-s", JwtFilter(cfg.SECRET), Excepti
   resp.send(new BaseResponse().ok(jobs.map((x) => new DKHPTDJobV1(x).decrypt().toClient())));
 }));
 
+router.get("/api/accounts/current/v1/d/dkhptd-s/:jobId", JwtFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  const accountId = req.__accountId;
+
+  const filter: Filter<DKHPTDJobV1> = { _id: new ObjectId(req.params.jobId) };
+  filter.ownerAccountId = new ObjectId(accountId);
+  const doc = await mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(DKHPTDJobV1.name).findOne(filter);
+  const job = new DKHPTDJobV1(doc);
+  resp.send(new BaseResponse().ok(job.decrypt().toClient()));
+}));
+
 router.post("/api/accounts/current/v1/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), JwtFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
   const data = req.body;
 
