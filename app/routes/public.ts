@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 import Account from "../entities/Account";
 import cfg from "../cfg";
-import AccountNotFoundError from "../exceptions/AccountNotFoundError";
+import UsernameNotFoundError from "../exceptions/UsernameNotFoundError";
 import UsernameExistedError from "../exceptions/UsernameExistedError";
 import NormalizeStringProp from "../modifiers/NormalizeStringProp";
 import ObjectModifer from "../modifiers/ObjectModifier";
@@ -15,6 +15,7 @@ import LoginWithUsernamePasswordRequest from "../payloads/LoginWithUsernamePassw
 import ExceptionHandlerWrapper from "../utils/ExceptionHandlerWrapper";
 import toSHA256 from "../utils/toSHA256";
 import mongoConnectionPool from "../connections/MongoConnectionPool";
+import WrongPasswordError from "../exceptions/WrongPasswordError";
 
 const router = express.Router();
 
@@ -27,12 +28,18 @@ router.post("/api/login", ExceptionHandlerWrapper(async (req, resp) => {
 
   const hashedPassword = toSHA256(body.password);
 
-  const account = await mongoConnectionPool.getClient()
+  const doc = await mongoConnectionPool.getClient()
     .db(cfg.DATABASE_NAME)
     .collection(Account.name)
-    .findOne({ username: body.username, password: hashedPassword });
+    .findOne({ username: body.username });
 
-  if (!account) throw new AccountNotFoundError();
+  if (!doc) throw new UsernameNotFoundError();
+
+  const account = new Account(doc);
+
+  if (account.password != hashedPassword) {
+    throw new WrongPasswordError();
+  }
 
   const token = jwt.sign({ id: account._id }, cfg.SECRET, { expiresIn: "1h" });
   resp.send(new BaseResponse().ok(new LoginResponse(token)));

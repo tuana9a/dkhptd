@@ -4,7 +4,7 @@ import { Filter, ObjectId } from "mongodb";
 import cfg from "../cfg";
 import mongoConnectionPool from "../connections/MongoConnectionPool";
 import Account from "../entities/Account";
-import AccountNotFoundError from "../exceptions/AccountNotFoundError";
+import UsernameNotFoundError from "../exceptions/UsernameNotFoundError";
 import JwtFilter from "../middlewares/JwtFilter";
 import NormalizeStringProp from "../modifiers/NormalizeStringProp";
 import ObjectModifer from "../modifiers/ObjectModifier";
@@ -26,7 +26,7 @@ router.get("/api/accounts/current", JwtFilter(cfg.SECRET), ExceptionHandlerWrapp
     .collection(Account.name)
     .findOne(filter);
 
-  if (isFalsy(account)) throw new AccountNotFoundError(accountId);
+  if (isFalsy(account)) throw new UsernameNotFoundError(accountId);
 
   resp.send(new BaseResponse().ok(new Account(account).toClient()));
 }));
@@ -48,7 +48,7 @@ router.put("/api/accounts/current/password", JwtFilter(cfg.SECRET), ExceptionHan
     .collection(Account.name)
     .findOne(filter);
 
-  if (isFalsy(account)) throw new AccountNotFoundError(accountId);
+  if (isFalsy(account)) throw new UsernameNotFoundError(accountId);
 
   await mongoConnectionPool.getClient()
     .db(cfg.DATABASE_NAME)

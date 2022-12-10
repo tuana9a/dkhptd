@@ -2,11 +2,11 @@ import { ObjectId } from "mongodb";
 import BaseResponse from "../payloads/BaseResponse";
 import SafeError from "./SafeError";
 
-export default class AccountNotFoundError extends SafeError {
+export default class WrongPasswordError extends SafeError {
   accountId: string | ObjectId;
 
   constructor(accountId?: string | ObjectId) {
-    super("ACCOUNT_NOT_FOUND");
+    super("WRONG_PASSWORD");
     this.accountId = accountId;
   }
 
