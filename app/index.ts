@@ -41,13 +41,13 @@ amqplib.connect(cfg.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
     }
     rabbitmqConnectionPool.addChannel(channel);
 
-    channel.assertQueue(QueueName.RUN_JOB, { durable: false });
-    channel.assertQueue(QueueName.RUN_JOB_V1, { durable: false });
-    channel.assertQueue(QueueName.RUN_JOB_V2, { durable: false });
-    channel.assertQueue(QueueName.PARSE_TKB_XLSX, { durable: false });
+    channel.assertQueue(QueueName.RUN_JOB, {});
+    channel.assertQueue(QueueName.RUN_JOB_V1, {});
+    channel.assertQueue(QueueName.RUN_JOB_V2, {});
+    channel.assertQueue(QueueName.PARSE_TKB_XLSX, {});
 
-    channel.assertExchange(ExchangeName.WORKER_DOING, "fanout", { durable: false });
-    channel.assertExchange(ExchangeName.WORKER_PING, "fanout", { durable: false });
+    channel.assertExchange(ExchangeName.WORKER_DOING, "fanout", {});
+    channel.assertExchange(ExchangeName.WORKER_PING, "fanout", {});
 
     consumerSetup.setup();
   });

@@ -99,6 +99,21 @@ router.delete("/api/class-to-registers", SecretFilter(cfg.SECRET), ExceptionHand
   resp.send(new BaseResponse().ok(deleteResult.deletedCount));
 }));
 
+router.get("/api/class-to-registers", ExceptionHandlerWrapper(async (req, resp) => {
+  const query = new ObjectModifer(req.query)
+    .modify(PickProps(["q", "page", "size"], { dropFalsy: true }))
+    .modify(NormalizeIntProp("page"))
+    .modify(NormalizeIntProp("size"))
+    .collect();
+  const page = query.page || 0;
+  const size = query.size || 10;
+
+  const filter: Filter<ClassToRegister> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
+  const classToRegisters = await mongoConnectionPool.getClient()
+    .db(cfg.DATABASE_NAME).collection(ClassToRegister.name).find(filter).skip(page * size).limit(size).toArray();
+  resp.send(new BaseResponse().ok(classToRegisters.map((x) => new ClassToRegister(x))));
+}));
+
 router.get("/api/class-to-registers/class-ids", ExceptionHandlerWrapper(async (req, resp) => {
   const classIds = toNormalizedString(req.query.classIds).split(",").map((x) => toNormalizedString(x));
   const termId = toNormalizedString(req.query.termId);

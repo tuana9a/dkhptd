@@ -4,5 +4,6 @@ const regex = /(\w+\s*)(==|>=|<=|!=|\*=|>|<)(.*)/;
 
 export default (str: string) => {
   const matcher = str.match(regex);
-  return new Query(matcher[1], matcher[2], matcher[3]);
+  if (matcher) { return new Query(matcher[1], matcher[2], matcher[3]); }
+  return new Query(null, null, null);
 };

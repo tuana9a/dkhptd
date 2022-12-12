@@ -6,7 +6,7 @@ import logger from "../loggers/logger";
 
 export default {
   setup() {
-    rabbitmqConnectionPool.getChannel().assertQueue("", { exclusive: true }, (error2, q) => {
+    rabbitmqConnectionPool.getChannel().assertQueue("", { autoDelete: true }, (error2, q) => {
       if (error2) {
         logger.error(error2);
         return;
