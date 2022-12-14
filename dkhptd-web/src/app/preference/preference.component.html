@@ -1,0 +1,25 @@
+<div>
+  <table>
+    <tr>
+      <td>_id</td>
+      <td>termId</td>
+      <td>wantedSubjectIds</td>
+      <td>ownerAccountId</td>
+      <td></td>
+    </tr>
+    <tr *ngFor="let p of preferences">
+      <td>{{p._id}}</td>
+      <td>{{p.termId}}</td>
+      <td>{{p.wantedSubjectIds}}</td>
+      <td>{{p.ownerAccountId}}</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><input type="text" [(ngModel)]="newTermId"></td>
+      <td><input type="text" [(ngModel)]="newWantedSubjectIds"></td>
+      <td></td>
+      <td><button>ADD</button></td>
+    </tr>
+  </table>
+</div>

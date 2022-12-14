@@ -1,0 +1,29 @@
+<div>
+  <table>
+    <tr>
+      <td>job.username</td>
+      <td><input type="text" [(ngModel)]="username"></td>
+    </tr>
+    <tr>
+      <td>job.password</td>
+      <td><input type="password" [(ngModel)]="password"></td>
+    </tr>
+    <tr>
+      <td>job.classIds</td>
+      <td>
+        <input type="text" [(ngModel)]="classIds">
+        <!-- <span class="classId mr-1" *ngFor="let classId of classIds">
+          <input type="text" [(ngModel)]="classId">
+        </span> -->
+      </td>
+    </tr>
+    <tr>
+      <td>job.timeToStart</td>
+      <td><input type="datetime-local" [(ngModel)]="timeToStart"></td>
+    </tr>
+  </table>
+  <button (click)="onSubmit()">SUBMIT</button>
+</div>
+<div>
+  <span>{{message}}</span>
+</div>

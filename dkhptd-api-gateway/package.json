@@ -1,5 +1,5 @@
 {
-  "name": "dkhptd",
+  "name": "dkhptd-api-gateway",
   "scripts": {
     "dev": "nodemon ./dist/index.js",
     "dev:test": "nodemon ./dist/test-index.js",

@@ -1,0 +1,59 @@
+#!/usr/bin/env node
+
+const yargs = require("yargs");
+
+const { launch } = require("../app");
+
+const cliParser = yargs
+  .usage("Usage: puppeteer-worker")
+  .option("worker-type", {
+    type: "string",
+    requiresArg: false,
+    choices: ["http", "rabbit", "standalone"],
+  })
+  .option("rabbitmq", {
+    describe: "the rabbitmq connection string",
+    type: "string",
+    requiresArg: false,
+  })
+  .option("mode", {
+    type: "string",
+    requiresArg: false,
+    choices: ["default", "headless", "visible", "docker"],
+    describe: "The puppeteer mode",
+  })
+  .option("log-dest", {
+    type: "string",
+    requiresArg: false,
+    choices: ["cs", "fs"],
+  })
+  .option("max-try", {
+    type: "number",
+    requiresArg: false,
+  })
+  .option("access-token", {
+    type: "string",
+    requiresArg: false,
+  })
+  .option("http-worker-pull-config-url", {
+    type: "string",
+    requiresArg: false,
+  })
+  .option("config-file", {
+    type: "string",
+    requiresArg: false,
+  });
+const options = cliParser.argv;
+
+launch({
+  configFile: options.configFile,
+  workerId: options.workerId,
+  workerType: options.workerType,
+  logDest: options.logDest, // "fs" or "cs"
+  secret: options.secret,
+  httpWorkerPullConfigUrl: options.httpWorkerPullConfigUrl,
+  accessToken: options.accessToken,
+  rabbitmqConnectionString: options.rabbitmq,
+  maxTry: options.maxTry,
+  puppeteerMode: options.mode, // "default", "headless", "visible", "docker"
+});

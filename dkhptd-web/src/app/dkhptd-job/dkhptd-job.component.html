@@ -1,0 +1,36 @@
+<div>
+  <table>
+    <tr>
+      <td>job._id</td>
+      <td><span>{{job?._id}}</span></td>
+    </tr>
+    <tr>
+      <td>job.username</td>
+      <td><span>{{job?.username}}</span></td>
+    </tr>
+    <tr>
+      <td>job.password</td>
+      <td><span>{{job?.password}}</span></td>
+    </tr>
+    <tr>
+      <td>job.classIds</td>
+      <td>
+        <span class="classId mr-1" *ngFor="let classId of job?.classIds"><a [href]="['/search-class-to-register', classId==classId]">{{classId}}</a></span>
+      </td>
+    </tr>
+    <tr>
+      <td>job.timeToStart</td>
+      <td><span>{{job?.timeToStart | date:'dd-MM-YYYY hh:mm:ss'}}</span></td>
+    </tr>
+    <tr>
+      <td>job.createdAt</td>
+      <td><span>{{job?.createdAt | date:'dd-MM-YYYY hh:mm:ss'}}</span></td>
+    </tr>
+    <tr>
+      <td>job.status</td>
+      <td><span>{{job?.status | JobStatus}}</span></td>
+    </tr>
+  </table>
+  <!-- <div><button (click)="showLogs()">Show Logs</button></div> -->
+  <div *ngFor="let l of logs" app-dkhptd-job-logs [id]="id" [logs]="l.logs"></div>
+</div>

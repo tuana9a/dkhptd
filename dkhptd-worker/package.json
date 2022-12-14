@@ -1,0 +1,41 @@
+{
+  "name": "dkhptd-worker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./app/index.js",
+  "exports": "./app/index.js",
+  "scripts": {
+    "start": "./bin/dkhptd-worker --config-file config.json",
+    "dev": "nodemon ./bin/dkhptd-worker --config-file config.json",
+    "test": "jest test",
+    "test:watch": "jest --watch test"
+  },
+  "bin": {
+    "dkhptd-worker": "./bin/dkhptd-worker"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "author": "Tuan Nguyen Minh",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "amqplib": "^0.10.3",
+    "axios": "0.25.0",
+    "form-data": "4.0.0",
+    "moment": "^2.29.4",
+    "puppeteer": "13.5.1",
+    "puppeteer-worker": "^3.0.0-a.1",
+    "puppeteer-worker-job-builder": "^2.0.0-a.2",
+    "tu9nioc": "^1.0.3",
+    "yargs": "17.5.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
+    "eslint": "^8.13.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "jest": "27.5.1",
+    "nodemon": "2.0.15",
+    "typescript": "^4.8.4"
+  }
+}

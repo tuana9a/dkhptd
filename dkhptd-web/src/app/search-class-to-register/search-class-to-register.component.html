@@ -1,0 +1,53 @@
+<div>
+  <div>
+    <input class="w-full" type="text" [(ngModel)]="q" (change)="onQueryChange()">
+  </div>
+  <div>
+    <table>
+      <tr>
+        <td>page</td>
+        <td><input type="number" [(ngModel)]="page" (change)="onQueryChange()"></td>
+        <td><button (click)="prevPage()">PREV</button></td>
+        <td><button (click)="nextPage()">NEXT</button></td>
+      </tr>
+      <tr>
+        <td>size</td>
+        <td><input type="number" [(ngModel)]="size" (change)="onQueryChange()"></td>
+      </tr>
+    </table>
+  </div>
+  <table>
+    <tr>
+      <td>_id</td>
+      <td>classId</td>
+      <td>secondClassId</td>
+      <td>classType</td>
+      <td>subjectId</td>
+      <td>subjectName</td>
+      <td>learnDayNumber</td>
+      <td>learnAtDayOfWeek</td>
+      <td>learnTime</td>
+      <td>learnRoom</td>
+      <td>learnWeek</td>
+      <td>describe</td>
+      <td>termId</td>
+      <td>createdAt</td>
+    </tr>
+    <tr *ngFor="let c of classToRegsiters">
+      <td>{{c._id}}</td>
+      <td>{{c.classId}}</td>
+      <td>{{c.secondClassId}}</td>
+      <td>{{c.classType}}</td>
+      <td>{{c.subjectId}}</td>
+      <td>{{c.subjectName}}</td>
+      <td>{{c.learnDayNumber}}</td>
+      <td>{{c.learnAtDayOfWeek}}</td>
+      <td>{{c.learnTime}}</td>
+      <td>{{c.learnRoom}}</td>
+      <td>{{c.learnWeek}}</td>
+      <td>{{c.describe}}</td>
+      <td>{{c.termId}}</td>
+      <td>{{c.createdAt}}</td>
+    </tr>
+  </table>
+</div>

@@ -1,0 +1,12 @@
+@import "../css/color.scss";
+
+a {
+  text-decoration: none;
+  color: $neon-color;
+  border: 1px solid white;
+  padding: 1px 3px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
