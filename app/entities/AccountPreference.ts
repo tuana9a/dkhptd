@@ -1,18 +1,20 @@
 import { ObjectId } from "mongodb";
-import EntityWithObjectId from "./EntityWithObjectId";
+import BaseEntity from "./BaseEntity";
 
-export default class AccountPreference extends EntityWithObjectId {
-  secret: string;
-
+export default class AccountPreference extends BaseEntity {
+  termId: string;
+  wantedSubjectIds: string[];
   ownerAccountId: ObjectId;
 
-  constructor({ _id, secret, ownerAccountId }: {
+  constructor({ _id, termId: termId, wantedSubjectIds, ownerAccountId }: {
     _id?: ObjectId;
-    secret?: string;
+    termId?: string;
     ownerAccountId: ObjectId;
+    wantedSubjectIds?: string[];
   }) {
     super(_id);
-    this.secret = secret;
+    this.termId = termId;
+    this.wantedSubjectIds = wantedSubjectIds;
     this.ownerAccountId = ownerAccountId;
   }
 }

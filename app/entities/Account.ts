@@ -1,9 +1,9 @@
 import { ObjectId } from "mongodb";
 import DropProps from "../modifiers/DropProps";
 import ObjectModifer from "../modifiers/ObjectModifier";
-import EntityWithObjectId from "./EntityWithObjectId";
+import BaseEntity from "./BaseEntity";
 
-export default class Account extends EntityWithObjectId {
+export default class Account extends BaseEntity {
   username: string;
   name: string;
   password: string;

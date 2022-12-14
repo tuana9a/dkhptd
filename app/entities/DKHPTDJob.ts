@@ -1,10 +1,10 @@
 import { ObjectId } from "mongodb";
 import toObjectId from "../utils/toObjectId";
 import ObjectModifer from "../modifiers/ObjectModifier";
-import EntityWithObjectId from "./EntityWithObjectId";
+import BaseEntity from "./BaseEntity";
 import JobStatus from "../configs/JobStatus";
 
-export default class DKHPTDJob extends EntityWithObjectId {
+export default class DKHPTDJob extends BaseEntity {
   ownerAccountId: ObjectId;
   username: string;
   password: string;

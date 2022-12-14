@@ -9,6 +9,7 @@ import accountsRouter from "./accounts";
 import classToRegistersRouter from "./class-to-registers";
 import publicRouter from "./public";
 import termIdsClassToRegistersRouter from "./term-ids-class-to-registers";
+import accountsPreferencesRouter from "./accounts-preferences";
 
 const router = express.Router();
 router.use(accountsDkhptdsLogsRouter);
@@ -21,5 +22,6 @@ router.use(classToRegistersRouter);
 router.use(termIdsClassToRegistersRouter);
 router.use(publicRouter);
 router.use(accountsRouter);
+router.use(accountsPreferencesRouter);
 
 export default router;

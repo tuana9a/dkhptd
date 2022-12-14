@@ -4,9 +4,9 @@ import cfg from "../cfg";
 import { c } from "../utils/cypher";
 import toObjectId from "../utils/toObjectId";
 import DKHPTDJobLogs from "./DKHPTDJobLogs";
-import EntityWithObjectId from "./EntityWithObjectId";
+import BaseEntity from "./BaseEntity";
 
-export default class DHKPTDJobV2Logs extends EntityWithObjectId {
+export default class DHKPTDJobV2Logs extends BaseEntity {
   jobId: ObjectId;
   workerId: string;
   ownerAccountId: ObjectId;

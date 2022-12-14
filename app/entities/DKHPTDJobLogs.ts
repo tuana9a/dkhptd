@@ -1,9 +1,9 @@
 import { ObjectId } from "mongodb";
 import toObjectId from "../utils/toObjectId";
-import EntityWithObjectId from "./EntityWithObjectId";
+import BaseEntity from "./BaseEntity";
 import { ActionLog } from "puppeteer-worker-job-builder/v1";
 
-export default class DKHPTDJobLogs extends EntityWithObjectId {
+export default class DKHPTDJobLogs extends BaseEntity {
   jobId: ObjectId;
   workerId: string;
   ownerAccountId: ObjectId;

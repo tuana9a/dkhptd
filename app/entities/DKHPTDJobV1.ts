@@ -3,11 +3,11 @@ import { ObjectId } from "mongodb";
 import toObjectId from "../utils/toObjectId";
 import ObjectModifer from "../modifiers/ObjectModifier";
 import { c } from "../utils/cypher";
-import EntityWithObjectId from "./EntityWithObjectId";
+import BaseEntity from "./BaseEntity";
 import JobStatus from "../configs/JobStatus";
 import cfg from "../cfg";
 
-export default class DKHPTDJobV1 extends EntityWithObjectId {
+export default class DKHPTDJobV1 extends BaseEntity {
   ownerAccountId: ObjectId;
   username: string;
   password: string;

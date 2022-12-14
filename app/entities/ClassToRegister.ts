@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
-import EntityWithObjectId from "./EntityWithObjectId";
+import BaseEntity from "./BaseEntity";
 
-export default class ClassToRegister extends EntityWithObjectId {
+export default class ClassToRegister extends BaseEntity {
   classId: number;
   secondClassId: number;
   learnDayNumber: number;

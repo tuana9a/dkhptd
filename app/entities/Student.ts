@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
-import EntityWithObjectId from "./EntityWithObjectId";
+import BaseEntity from "./BaseEntity";
 
-export default class Student extends EntityWithObjectId {
+export default class Student extends BaseEntity {
   studentId: string;
   email: string;
 
