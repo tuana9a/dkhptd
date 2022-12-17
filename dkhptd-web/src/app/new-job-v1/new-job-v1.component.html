@@ -2,24 +2,30 @@
   <table>
     <tr>
       <td>job.username</td>
-      <td><input type="text" [(ngModel)]="username"></td>
+      <td><input class="w-full" type="text" [(ngModel)]="username"></td>
     </tr>
     <tr>
       <td>job.password</td>
-      <td><input type="password" [(ngModel)]="password"></td>
+      <td><input class="w-full" type="password" [(ngModel)]="password"></td>
     </tr>
     <tr>
       <td>job.classIds</td>
       <td>
-        <input type="text" [(ngModel)]="classIds">
-        <!-- <span class="classId mr-1" *ngFor="let classId of classIds">
-          <input type="text" [(ngModel)]="classId">
-        </span> -->
+        <table>
+          <tr *ngFor="let classId of classIds">
+            <td class="border border-solid border-black">{{classId}}</td>
+            <td><button (click)="onDeleteClassId(classId)">DELETE</button></td>
+          </tr>
+          <tr>
+            <td class="border border-solid border-black"><input type="text" [(ngModel)]="classId"></td>
+            <td><button (click)="onAddClassId()">ADD</button></td>
+          </tr>
+        </table>
       </td>
     </tr>
     <tr>
       <td>job.timeToStart</td>
-      <td><input type="datetime-local" [(ngModel)]="timeToStart"></td>
+      <td><input type="datetime-local" class="w-full" [(ngModel)]="timeToStart"></td>
     </tr>
   </table>
   <button (click)="onSubmit()">SUBMIT</button>

@@ -10,6 +10,7 @@ import NormalizeArrayProp from "../modifiers/NormalizeArrayProp";
 import NormalizeStringProp from "../modifiers/NormalizeStringProp";
 import ObjectModifer from "../modifiers/ObjectModifier";
 import PickProps from "../modifiers/PickProps";
+import SetProp from "../modifiers/SetProp";
 import BaseResponse from "../payloads/BaseResponse";
 import ExceptionHandlerWrapper from "../utils/ExceptionHandlerWrapper";
 import resolveMongoFilter from "../utils/resolveMongoFilter";
@@ -52,6 +53,27 @@ router.put("/api/accounts/current/preferences/:preferenceId", JwtFilter(cfg.SECR
         wantedSubjectIds: body.wantedSubjectIds
       }
     });
+  resp.send(new BaseResponse().ok());
+}));
+
+router.post("/api/accounts/current/preference", JwtFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+  const accountId = req.__accountId;
+
+  const data = req.body;
+
+  if (isFalsy(data)) throw new MissingRequestBodyDataError();
+
+  const body = new ObjectModifer(data)
+    .modify(PickProps(["termId", "wantedSubjectIds"]))
+    .modify(NormalizeStringProp("termId"))
+    .modify(NormalizeArrayProp("wantedSubjectIds", "string"))
+    .modify(SetProp("ownerAccountId", new ObjectId(accountId)))
+    .collect();
+  const newPreference = new AccountPreference(body);
+  await mongoConnectionPool.getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(AccountPreference.name)
+    .insertOne(newPreference);
   resp.send(new BaseResponse().ok());
 }));
 

@@ -41,7 +41,7 @@ router.post("/api/login", ExceptionHandlerWrapper(async (req, resp) => {
     throw new WrongPasswordError();
   }
 
-  const token = jwt.sign({ id: account._id }, cfg.SECRET, { expiresIn: "1h" });
+  const token = jwt.sign({ id: account._id }, cfg.SECRET, { expiresIn: "1d" });
   resp.send(new BaseResponse().ok(new LoginResponse(token)));
 }));
 

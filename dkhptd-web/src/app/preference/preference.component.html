@@ -1,25 +1,35 @@
-<div>
-  <table>
-    <tr>
-      <td>_id</td>
-      <td>termId</td>
-      <td>wantedSubjectIds</td>
-      <td>ownerAccountId</td>
-      <td></td>
-    </tr>
-    <tr *ngFor="let p of preferences">
-      <td>{{p._id}}</td>
-      <td>{{p.termId}}</td>
-      <td>{{p.wantedSubjectIds}}</td>
-      <td>{{p.ownerAccountId}}</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td><input type="text" [(ngModel)]="newTermId"></td>
-      <td><input type="text" [(ngModel)]="newWantedSubjectIds"></td>
-      <td></td>
-      <td><button>ADD</button></td>
-    </tr>
-  </table>
+<div class="flex">
+  <div>
+    <table>
+      <tr>
+        <td *ngIf="showIdColumn">_id</td>
+        <td>termId</td>
+        <td>wantedSubjectIds</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td *ngIf="showIdColumn">{{preference._id}}</td>
+        <td><input type="text" [(ngModel)]="preference.termId"></td>
+        <td>
+          <table class="">
+            <tr *ngFor="let subjectId of preference.wantedSubjectIds">
+              <td class="border border-solid border-black">{{subjectId}}</td>
+              <td class=""><button (click)="onRemoveSubjectId(subjectId)">REMOVE</button></td>
+            </tr>
+            <tr>
+              <td class="border border-solid border-black"><input type="text" [(ngModel)]="subjectId"></td>
+              <td class=""><button (click)="onAddSubjectId()">ADD</button></td>
+            </tr>
+          </table>
+        </td>
+        <td *ngIf="showUpdateButton">
+          <button (click)="onUpdatePreference()">UPDATE</button>
+        </td>
+      </tr>
+      <!-- <tr>
+        <td>ownerAccountId</td>
+        <td>{{preference.ownerAccountId}}</td>
+      </tr> -->
+    </table>
+  </div>
 </div>

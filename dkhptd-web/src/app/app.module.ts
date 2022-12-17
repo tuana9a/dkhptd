@@ -5,7 +5,7 @@ import { Routes, RouterModule } from "@angular/router";
 import { AppComponent } from "./app.component";
 import { SearchClassToRegisterComponent } from "./search-class-to-register/search-class-to-register.component";
 import { PreferenceComponent } from "./preference/preference.component";
-import { WorkerStatusDoingComponent } from "./worker-status-doing/worker-status-doing.component";
+import { PreferencesComponent } from "./preferences/preferences.component";
 import { NewJobV1 } from "./new-job-v1/new-job-v1.component";
 import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
 import { BaseUrlInterceptor } from "src/interceptors/base-url.interceptor";
@@ -34,7 +34,7 @@ const routes: Routes = [
   },
   { path: "new-job-v1", component: NewJobV1 },
   { path: "search-class-to-register", component: SearchClassToRegisterComponent },
-  { path: "preference", component: PreferenceComponent },
+  { path: "preferences", component: PreferencesComponent },
 ];
 
 @NgModule({
@@ -42,7 +42,7 @@ const routes: Routes = [
     AppComponent,
     SearchClassToRegisterComponent,
     PreferenceComponent,
-    WorkerStatusDoingComponent,
+    PreferencesComponent,
     NewJobV1,
     LoginComponent,
     ProfileComponent,

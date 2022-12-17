@@ -17,7 +17,7 @@ const router = epxress.Router();
 
 router.get("/api/term-ids/:termId/class-to-registers", ExceptionHandlerWrapper(async (req, resp) => {
   const query = new ObjectModifer(req.query).modify(PickProps(["q"], { dropFalsy: true })).collect();
-  const termId = toNormalizedString(req.params.termId);
+  const termId = toSafeInt(req.params.termId);
 
   requireValidTermId("termId", termId);
 
@@ -30,7 +30,7 @@ router.get("/api/term-ids/:termId/class-to-registers", ExceptionHandlerWrapper(a
 
 router.get("/api/term-ids/:termId/class-to-registers/:id", ExceptionHandlerWrapper(async (req, resp) => {
   const id = toNormalizedString(req.params.id);
-  const termId = toNormalizedString(req.params.termId);
+  const termId = toSafeInt(req.params.termId);
   const filter: Filter<ClassToRegister> = { _id: new ObjectId(id) };
   filter.termId = termId;
   const classToRegister = await mongoConnectionPool.getClient()
@@ -40,7 +40,7 @@ router.get("/api/term-ids/:termId/class-to-registers/:id", ExceptionHandlerWrapp
 
 router.delete("/api/term-ids/:termId/class-to-registers/class-ids/:classId/duplicates", SecretFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
   const classId = toSafeInt(req.params.classId);
-  const termId = toNormalizedString(req.params.termId);
+  const termId = toSafeInt(req.params.termId);
 
   const filter: Filter<ClassToRegister> = { classId: classId, termId: termId };
   const cursor = mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(ClassToRegister.name).find(filter);

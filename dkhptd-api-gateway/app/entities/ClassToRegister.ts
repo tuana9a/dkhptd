@@ -13,7 +13,7 @@ export default class ClassToRegister extends BaseEntity {
   learnRoom: string;
   learnWeek: string;
   describe: string;
-  termId: string;
+  termId: number;
   createdAt: number;
 
   constructor({
@@ -44,7 +44,7 @@ export default class ClassToRegister extends BaseEntity {
     learnRoom?: string;
     learnWeek?: string;
     describe?: string;
-    termId?: string;
+    termId?: string | number;
     createdAt?: number;
   }) {
     super(_id);
@@ -59,7 +59,7 @@ export default class ClassToRegister extends BaseEntity {
     this.learnRoom = learnRoom;
     this.learnWeek = learnWeek;
     this.describe = describe;
-    this.termId = termId;
+    this.termId = parseInt(termId as string);
     this.createdAt = createdAt;
   }
 }

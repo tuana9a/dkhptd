@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ClassToRegsitersApi } from "src/apis/class-to-register.apis";
 import ClassToRegister from "src/entities/ClassToRegister";
@@ -9,6 +9,7 @@ import ClassToRegister from "src/entities/ClassToRegister";
   styleUrls: ["./search-class-to-register.component.scss"]
 })
 export class SearchClassToRegisterComponent implements OnInit {
+  @Input() showIdColumn = false;
   q = "";
   page = 0;
   size = 10;
@@ -17,7 +18,7 @@ export class SearchClassToRegisterComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(query => {
-      this.q = query["q"];
+      this.q = query["q"] || "";
       this.page = query["page"] || 0;
       this.size = query["size"] || 10;
       this.api.find(this.q, this.page, this.size).subscribe(res => {

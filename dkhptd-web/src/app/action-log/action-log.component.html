@@ -1,6 +1,6 @@
 <td><span>{{actionLog?.action}}</span></td>
 <td *ngIf="actionLog?.nestingLogs?.length">
-  <table>
+  <table class="border-spacing-0">
     <tr *ngFor="let a of actionLog?.nestingLogs" app-action-log [actionLog]="a"></tr>
   </table>
 </td>

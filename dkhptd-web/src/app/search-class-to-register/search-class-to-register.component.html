@@ -1,9 +1,14 @@
 <div>
   <div>
-    <input class="w-full" type="text" [(ngModel)]="q" (change)="onQueryChange()">
+    <table class="w-full">
+      <tr>
+        <td class="w-[40px]"><span>Query</span></td>
+        <td><input class="w-full" type="text" [(ngModel)]="q" (change)="onQueryChange()"></td>
+      </tr>
+    </table>
   </div>
   <div>
-    <table>
+    <table class="">
       <tr>
         <td>page</td>
         <td><input type="number" [(ngModel)]="page" (change)="onQueryChange()"></td>
@@ -16,9 +21,9 @@
       </tr>
     </table>
   </div>
-  <table>
+  <table class="w-full">
     <tr>
-      <td>_id</td>
+      <td *ngIf="showIdColumn">_id</td>
       <td>classId</td>
       <td>secondClassId</td>
       <td>classType</td>
@@ -34,7 +39,7 @@
       <td>createdAt</td>
     </tr>
     <tr *ngFor="let c of classToRegsiters">
-      <td>{{c._id}}</td>
+      <td *ngIf="showIdColumn">{{c._id}}</td>
       <td>{{c.classId}}</td>
       <td>{{c.secondClassId}}</td>
       <td>{{c.classType}}</td>
@@ -47,7 +52,7 @@
       <td>{{c.learnWeek}}</td>
       <td>{{c.describe}}</td>
       <td>{{c.termId}}</td>
-      <td>{{c.createdAt}}</td>
+      <td>{{c.createdAt | date:'dd-MM-YYYY hh:mm:ss'}}</td>
     </tr>
   </table>
 </div>

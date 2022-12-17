@@ -20,9 +20,16 @@ td {
 
 input {
   border: none;
-  outline: none;
+  // outline: none;
 }
 
+// button {
+//   border: none;
+// }
+
+body,
+input,
 button {
-  border: none;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 15px;
 }

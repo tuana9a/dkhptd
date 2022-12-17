@@ -7,7 +7,7 @@ import BaseResponse from "src/payloads/BaseResponse";
 @Injectable({
   providedIn: "root"
 })
-export class AccountsPreferenceApi {
+export class AccountsPreferencesApi {
   constructor(private httpClient: HttpClient) {
   }
 

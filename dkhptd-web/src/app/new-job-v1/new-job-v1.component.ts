@@ -10,7 +10,8 @@ export class NewJobV1 implements OnInit {
   username = "";
   password = "";
   timeToStart = "";
-  classIds = "";
+  classIds: string[] = [];
+  classId = "";
   message?: string;
 
   constructor(private api: DKHPTDV1sApi) { }
@@ -21,11 +22,21 @@ export class NewJobV1 implements OnInit {
 
   onSubmit() {
     const timeToStart = new Date(this.timeToStart).getTime();
-    const classIds = this.classIds.trim().split(/,|\s+/).map(x => x.trim()).filter(x => x);
+    const classIds = this.classIds.map(x => x.trim()).filter(x => x);
     this.api.submitCurrentNewJobV1(this.username, this.password, classIds, timeToStart).subscribe(res => {
       this.message = res.success ? "SUCCESS" : res.message;
     }, err => {
       this.message = err.message;
     });
+  }
+
+  onAddClassId() {
+    if (this.classId && !this.classId.match(/^\s*$/)) {
+      this.classIds.push(this.classId);
+    }
+  }
+
+  onDeleteClassId(classId: string) {
+    this.classIds = this.classIds.filter(x => x != classId);
   }
 }

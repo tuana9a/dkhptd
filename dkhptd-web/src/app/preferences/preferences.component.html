@@ -1,0 +1,8 @@
+<div *ngFor="let p of preferences" app-preference [preference]="p"></div>
+<div>
+  <div app-preference [preference]="newPreference" [showUpdateButton]="false" [showIdColumn]="false"></div>
+  <div><button (click)="addPreference()">ADD PREFERENCE</button></div>
+</div>
+<div>
+  <span>{{message}}</span>
+</div>
