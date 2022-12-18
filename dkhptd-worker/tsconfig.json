@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "target": "ES2021",
+    "module": "CommonJS",
+    "rootDir": "app/",
+    "outDir": "dist/",
+    "esModuleInterop": true
+  },
+  "include": [
+    "app/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules/",
+    "dist/"
+  ]
+}

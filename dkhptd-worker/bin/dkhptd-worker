@@ -1,8 +1,9 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-var-requires */
 
 const yargs = require("yargs");
 
-const { launch } = require("../app");
+const { launch } = require("../dist");
 
 const cliParser = yargs
   .usage("Usage: puppeteer-worker")
@@ -49,11 +50,11 @@ launch({
   configFile: options.configFile,
   workerId: options.workerId,
   workerType: options.workerType,
-  logDest: options.logDest, // "fs" or "cs"
+  logDest: options.logDest,
   secret: options.secret,
   httpWorkerPullConfigUrl: options.httpWorkerPullConfigUrl,
   accessToken: options.accessToken,
   rabbitmqConnectionString: options.rabbitmq,
   maxTry: options.maxTry,
-  puppeteerMode: options.mode, // "default", "headless", "visible", "docker"
+  puppeteerMode: options.mode,
 });

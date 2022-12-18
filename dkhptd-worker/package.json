@@ -5,6 +5,8 @@
   "main": "./app/index.js",
   "exports": "./app/index.js",
   "scripts": {
+    "build": "tsc --declaration",
+    "build:watch": "tsc --watch --declaration",
     "start": "./bin/dkhptd-worker --config-file config.json",
     "dev": "nodemon ./bin/dkhptd-worker --config-file config.json",
     "test": "jest test",
@@ -26,14 +28,18 @@
     "puppeteer": "13.5.1",
     "puppeteer-worker": "^3.0.0-a.1",
     "puppeteer-worker-job-builder": "^2.0.0-a.2",
-    "tu9nioc": "^1.0.3",
+    "tu9nioc": "^1.1.1",
     "yargs": "17.5.1"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.40.0",
-    "eslint": "^8.13.0",
+    "@typescript-eslint/eslint-plugin": "^5.46.1",
+    "@typescript-eslint/parser": "^5.46.1",
+    "eslint": "^8.30.0",
     "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-standard-with-typescript": "^24.0.0",
     "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.6.0",
+    "eslint-plugin-promise": "^6.1.1",
     "jest": "27.5.1",
     "nodemon": "2.0.15",
     "typescript": "^4.8.4"
