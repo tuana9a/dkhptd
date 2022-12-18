@@ -3,25 +3,16 @@
     <tr>
       <td>job._id</td>
       <td>job.username</td>
-      <td>job.password</td>
+      <td (click)="toggleShowPassword()" (dblclick)="null"><span>job.password</span><span><input type="checkbox" [(ngModel)]="showPassword"></span></td>
       <td>job.classIds</td>
       <td>job.timeToStart</td>
       <td>job.createdAt</td>
       <td>job.status</td>
       <td></td>
+      <td></td>
+      <td></td>
     </tr>
-    <tr *ngFor="let job of jobs">
-      <td>{{job._id}}</td>
-      <td>{{job.username}}</td>
-      <td>{{job.password}}</td>
-      <td>
-        <span class="classId mr-1" *ngFor="let classId of job?.classIds"><a routerLink="/search-class-to-register" [queryParams]="{q: 'classId==' + classId}">{{classId}}</a></span>
-      </td>
-      <td>{{job.timeToStart | date:'dd-MM-YYYY hh:mm:ss'}}</td>
-      <td>{{job.createdAt | date:'dd-MM-YYYY hh:mm:ss'}}</td>
-      <td>{{job.status | JobStatus}}</td>
-      <td><a [routerLink]="job._id" routerLinkActive="active" ariaCurrentWhenActive="page">DETAIL</a></td>
-    </tr>
+    <tr *ngFor="let job of jobs" app-dkhptd-job-row [job]="job" [showPassword]="showPassword"></tr>
   </table>
 </div>
 <div>

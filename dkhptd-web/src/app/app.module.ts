@@ -21,6 +21,8 @@ import { DkhptdJobComponent } from "./dkhptd-job/dkhptd-job.component";
 import { DkhptdJobLogsComponent } from "./dkhptd-job-logs/dkhptd-job-logs.component";
 import { ActionLogComponent } from "./action-log/action-log.component";
 import { ToJsonPipe } from "src/pipes/to-json.pipe";
+import { PasswordPipe } from "src/pipes/password.pipe";
+import { DkhptdJobRowComponent } from "./dkhptd-job-row/dkhptd-job-row.component";
 
 const routes: Routes = [
   { path: "login", component: LoginComponent },
@@ -51,9 +53,11 @@ const routes: Routes = [
     ManageDKHPTDJOBV1Component,
     JobStatusPipe,
     ToJsonPipe,
+    PasswordPipe,
     DkhptdJobComponent,
     DkhptdJobLogsComponent,
     ActionLogComponent,
+    DkhptdJobRowComponent,
   ],
   imports: [
     BrowserModule,

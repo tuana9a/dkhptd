@@ -10,6 +10,7 @@ import DKHPTDJobV1 from "src/entities/DKHPTDJobV1";
 export class ManageDKHPTDJOBV1Component implements OnInit {
   keys: Set<string> = new Set();
   jobs?: DKHPTDJobV1[] = [];
+  showPassword = false;
 
   constructor(private dkhptdV1sApi: DKHPTDV1sApi) {
   }
@@ -18,5 +19,9 @@ export class ManageDKHPTDJOBV1Component implements OnInit {
     this.dkhptdV1sApi.getCurrentDecryptedJobs().subscribe(res => {
       this.jobs = res.data;
     });
+  }
+
+  toggleShowPassword() {
+    this.showPassword = !this.showPassword;
   }
 }

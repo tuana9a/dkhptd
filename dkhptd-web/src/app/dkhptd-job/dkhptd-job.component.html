@@ -2,20 +2,23 @@
   <table>
     <tr>
       <td>job._id</td>
-      <td><span>{{job?._id}}</span></td>
+      <td class="ObjectId"><span>{{job?._id}}</span></td>
     </tr>
     <tr>
       <td>job.username</td>
       <td><span>{{job?.username}}</span></td>
     </tr>
     <tr>
-      <td>job.password</td>
-      <td><span>{{job?.password}}</span></td>
+      <td (click)="toggleShowPassword()">
+        <span>job.password</span>
+        <span><input type="checkbox" [(ngModel)]="showPassword"></span>
+      </td>
+      <td><span>{{job?.password | password: showPassword}}</span></td>
     </tr>
     <tr>
       <td>job.classIds</td>
       <td>
-        <span class="classId mr-1" *ngFor="let classId of job?.classIds"><a [href]="['/search-class-to-register', classId==classId]">{{classId}}</a></span>
+        <span class="classId mr-1" *ngFor="let classId of job?.classIds"><a routerLink="/search-class-to-register" [queryParams]="{q: 'classId==' + classId}">{{classId}}</a></span>
       </td>
     </tr>
     <tr>

@@ -39,4 +39,10 @@ export class NewJobV1 implements OnInit {
   onDeleteClassId(classId: string) {
     this.classIds = this.classIds.filter(x => x != classId);
   }
+
+  onKeyPressClassId(e: KeyboardEvent) {
+    if (e.key == "Enter") {
+      this.onAddClassId();
+    }
+  }
 }

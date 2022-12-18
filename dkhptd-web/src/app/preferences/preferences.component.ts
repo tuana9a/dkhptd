@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { AccountsPreferencesApi } from "src/apis/accounts-preferences.api";
+import { AccountsApi } from "src/apis/accounts.api";
 import AccountPreference from "src/entities/AccountPreference";
 
 @Component({
@@ -12,7 +12,7 @@ export class PreferencesComponent implements OnInit {
   newPreference: AccountPreference = new AccountPreference({ wantedSubjectIds: [] });
   message?: string;
 
-  constructor(private api: AccountsPreferencesApi) { }
+  constructor(private api: AccountsApi) { }
 
   ngOnInit(): void {
     this.api.currentPreferences().subscribe(res => {

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { AccountsPreferencesApi as AccountsPreferencesApi } from "src/apis/accounts-preferences.api";
+import { AccountsApi } from "src/apis/accounts.api";
 import AccountPreference from "src/entities/AccountPreference";
 
 @Component({
@@ -13,7 +13,7 @@ export class PreferenceComponent implements OnInit {
   @Input() showIdColumn = true;
   subjectId = "";
   message?= "";
-  constructor(private api: AccountsPreferencesApi) { }
+  constructor(private api: AccountsApi) { }
 
   ngOnInit(): void {
     //
@@ -36,5 +36,11 @@ export class PreferenceComponent implements OnInit {
         this.preference = res.data as AccountPreference;
       }
     });
+  }
+
+  onKeyPressSubjectId(e: KeyboardEvent) {
+    if (e.key == "Enter") {
+      this.onAddSubjectId();
+    }
   }
 }

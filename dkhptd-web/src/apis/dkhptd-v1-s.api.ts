@@ -35,4 +35,12 @@ export class DKHPTDV1sApi {
       timeToStart,
     });
   }
+
+  cancelJob(jobId?: string) {
+    return this.httpClient.put<BaseResponse<string>>(`/api/accounts/current/v1/dkhptd-s/${jobId}/cancel`, {});
+  }
+
+  retryJob(jobId?: string) {
+    return this.httpClient.post<BaseResponse<string>>(`/api/accounts/current/v1/dkhptd-s/${jobId}/retry`, {});
+  }
 }

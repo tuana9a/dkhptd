@@ -7,8 +7,13 @@ import ActionLog from "src/entities/ActionLog";
   styleUrls: ["./action-log.component.scss"]
 })
 export class ActionLogComponent implements OnInit {
+  @Input() showOutput = false;
   @Input() actionLog?: ActionLog;
   ngOnInit(): void {
     //
+  }
+
+  toggleShowOutput() {
+    this.showOutput = !this.showOutput;
   }
 }

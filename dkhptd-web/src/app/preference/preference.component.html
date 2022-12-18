@@ -17,7 +17,7 @@
               <td class=""><button (click)="onRemoveSubjectId(subjectId)">REMOVE</button></td>
             </tr>
             <tr>
-              <td class="border border-solid border-black"><input type="text" [(ngModel)]="subjectId"></td>
+              <td class="border border-solid border-black"><input type="text" [(ngModel)]="subjectId" (keypress)="onKeyPressSubjectId($event)"></td>
               <td class=""><button (click)="onAddSubjectId()">ADD</button></td>
             </tr>
           </table>

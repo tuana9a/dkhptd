@@ -13,6 +13,8 @@ export class DkhptdJobComponent implements OnInit {
   id = "";
   job?: DKHPTDJobV1;
   logs?: DKHPTDJobLogs[];
+  showPassword = false;
+
   constructor(private route: ActivatedRoute, private dkhptdV1sApi: DKHPTDV1sApi) { }
 
   ngOnInit(): void {
@@ -31,5 +33,9 @@ export class DkhptdJobComponent implements OnInit {
     this.dkhptdV1sApi.getCurrentJobDecryptLogs(this.id).subscribe(res => {
       this.logs = res.data;
     });
+  }
+
+  toggleShowPassword() {
+    this.showPassword = !this.showPassword;
   }
 }

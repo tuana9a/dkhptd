@@ -27,8 +27,8 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  onKeyPress(e: Event) {
-    if ((e as KeyboardEvent).key == "Enter") {
+  onKeyPress(e: KeyboardEvent) {
+    if (e.key == "Enter") {
       this.login();
     }
   }
