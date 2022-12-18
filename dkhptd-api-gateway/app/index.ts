@@ -11,9 +11,9 @@ import ExchangeName from "./configs/ExchangeName";
 import QueueName from "./configs/QueueName";
 import mongoConnectionPool from "./connections/MongoConnectionPool";
 import routes from "./routes";
-import backgroundSetup from "./backgrounds/setup";
-import listenerSetup from "./listeners/setup";
-import consumerSetup from "./consumers/setup";
+import backgrounds from "./backgrounds";
+import listeners from "./listeners";
+import consumers from "./consumers";
 import rabbitmqConnectionPool from "./connections/RabbitMQConnectionPool";
 
 const app = express();
@@ -25,8 +25,8 @@ app.use(routes);
 
 new MongoClient(cfg.MONGODB_CONNECTION_STRING).connect().then((client) => {
   mongoConnectionPool.addClient(client);
-  backgroundSetup.setup();
-  listenerSetup.setup();
+  backgrounds.setup();
+  listeners.setup();
 });
 
 amqplib.connect(cfg.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
@@ -49,7 +49,7 @@ amqplib.connect(cfg.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
     channel.assertExchange(ExchangeName.WORKER_DOING, "fanout", {});
     channel.assertExchange(ExchangeName.WORKER_PING, "fanout", {});
 
-    consumerSetup.setup();
+    consumers.setup();
   });
 });
 
