@@ -23,6 +23,7 @@ import { ActionLogComponent } from "./action-log/action-log.component";
 import { ToJsonPipe } from "src/pipes/to-json.pipe";
 import { PasswordPipe } from "src/pipes/password.pipe";
 import { DkhptdJobRowComponent } from "./dkhptd-job-row/dkhptd-job-row.component";
+import { UploadTkbXlsxComponent } from "./upload-tkb-xlsx/upload-tkb-xlsx.component";
 
 const routes: Routes = [
   { path: "login", component: LoginComponent },
@@ -37,6 +38,7 @@ const routes: Routes = [
   { path: "new-job-v1", component: NewJobV1 },
   { path: "search-class-to-register", component: SearchClassToRegisterComponent },
   { path: "preferences", component: PreferencesComponent },
+  { path: "upload-tkb-xlsx", component: UploadTkbXlsxComponent },
 ];
 
 @NgModule({
@@ -58,6 +60,7 @@ const routes: Routes = [
     DkhptdJobLogsComponent,
     ActionLogComponent,
     DkhptdJobRowComponent,
+    UploadTkbXlsxComponent,
   ],
   imports: [
     BrowserModule,

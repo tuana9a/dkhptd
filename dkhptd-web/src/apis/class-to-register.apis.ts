@@ -22,4 +22,9 @@ export class ClassToRegsitersApi {
   searchByClassIds() {
     return this.httpClient.get<BaseResponse<ClassToRegister[]>>("/api/class-to-registers/class-ids");
   }
+  uploadTkbXlsx(secret: string, file: File) {
+    const body = new FormData();
+    body.append("file", file);
+    return this.httpClient.post<BaseResponse<unknown>>("/api/class-to-register-file", body, { headers: { authorization: secret } });
+  }
 }

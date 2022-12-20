@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { DkhptdJobRowComponent } from "./dkhptd-job-row.component";
+import { UploadTkbXlsxComponent } from "./upload-tkb-xlsx.component";
 
-describe("DkhptdJobRowComponent", () => {
-  let component: DkhptdJobRowComponent;
-  let fixture: ComponentFixture<DkhptdJobRowComponent>;
+describe("UploadTkbXlsxComponent", () => {
+  let component: UploadTkbXlsxComponent;
+  let fixture: ComponentFixture<UploadTkbXlsxComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DkhptdJobRowComponent ]
+      declarations: [ UploadTkbXlsxComponent ]
     })
       .compileComponents();
 
-    fixture = TestBed.createComponent(DkhptdJobRowComponent);
+    fixture = TestBed.createComponent(UploadTkbXlsxComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

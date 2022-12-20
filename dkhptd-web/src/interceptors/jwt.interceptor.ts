@@ -16,11 +16,13 @@ export class JwtInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
     const token = this.cookieUtils.get("jwt");
-    request = request.clone({
-      setHeaders: {
-        Authorization: token,
-      },
-    });
+    if (!request.headers.get("authorization") && !request.headers.get("Authorization")) {
+      request = request.clone({
+        setHeaders: {
+          Authorization: token,
+        },
+      });
+    }
     return next.handle(request);
   }
 }

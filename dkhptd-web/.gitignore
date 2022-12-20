@@ -106,3 +106,4 @@ dist
 # @tuana9a
 .angular/
 .vscode/
+*tmp*
