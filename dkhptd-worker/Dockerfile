@@ -36,6 +36,6 @@ RUN mkdir jobs/
 
 COPY bin/ bin/
 
-COPY app/ app/
+COPY dist/ dist/
 
-CMD ["./bin/dkhptd-worker", "--config-file", "config.json", "--mode", "docker"]
+CMD ./bin/dkhptd-worker --config-file config.json --mode docker
