@@ -29,11 +29,12 @@ input {
 
 body,
 input,
-button {
+button,
+select {
   font-family: 'Times New Roman', Times, serif;
   font-size: 15px;
 }
 
 .ObjectId {
-  font-family: 'Courier New', Courier, monospace;
+  // font-family: monospace;
 }

@@ -1,59 +1,26 @@
 <div>
   <div>
-    <span><span>Query Example</span>&nbsp;<span class="bg-white text-black">classId==119861,termId==20201</span></span>
+    <span *ngIf="showExample"><span>Query Mẫu</span>&nbsp;<span class="bg-white text-black">classId==119861,termId==20201</span></span>
     <table class="w-full">
       <tr>
         <td class="w-[40px]"><span>Query</span></td>
         <td><input class="w-full" type="text" [(ngModel)]="q" (change)="onQueryChange()"></td>
+        <td class="w-[40px]"><button (click)="search()">SEARCH</button></td>
       </tr>
     </table>
   </div>
-  <div>
+  <div class="flex">
     <table class="">
       <tr>
-        <td>page</td>
-        <td><input type="number" [(ngModel)]="page" (change)="onQueryChange()"></td>
-        <td><button (click)="prevPage()">PREV</button></td>
-        <td><button (click)="nextPage()">NEXT</button></td>
-      </tr>
-      <tr>
-        <td>size</td>
-        <td><input type="number" [(ngModel)]="size" (change)="onQueryChange()"></td>
+        <td>Phân Trang</td>
+        <td><button class="" (click)="prevPage()">&lt;&lt;&lt;</button></td>
+        <td><input type="number" class="w-[50px] text-center" min="0" [(ngModel)]="page" (change)="onQueryChange()"></td>
+        <td><button class="" (click)="nextPage()">&gt;&gt;&gt;</button></td>
+        <td>Số Lượng</td>
+        <td><input type="number" max="20" min="0" class="w-[50px] text-center" [(ngModel)]="size" (change)="onQueryChange()"></td>
       </tr>
     </table>
   </div>
-  <table class="w-full">
-    <tr>
-      <td *ngIf="showIdColumn">_id</td>
-      <td>classId</td>
-      <td>secondClassId</td>
-      <td>classType</td>
-      <td>subjectId</td>
-      <td>subjectName</td>
-      <td>learnDayNumber</td>
-      <td>learnAtDayOfWeek</td>
-      <td>learnTime</td>
-      <td>learnRoom</td>
-      <td>learnWeek</td>
-      <td>describe</td>
-      <td>termId</td>
-      <td>createdAt</td>
-    </tr>
-    <tr *ngFor="let c of classToRegsiters">
-      <td *ngIf="showIdColumn">{{c._id}}</td>
-      <td>{{c.classId}}</td>
-      <td>{{c.secondClassId}}</td>
-      <td>{{c.classType}}</td>
-      <td>{{c.subjectId}}</td>
-      <td>{{c.subjectName}}</td>
-      <td>{{c.learnDayNumber}}</td>
-      <td>{{c.learnAtDayOfWeek}}</td>
-      <td>{{c.learnTime}}</td>
-      <td>{{c.learnRoom}}</td>
-      <td>{{c.learnWeek}}</td>
-      <td>{{c.describe}}</td>
-      <td>{{c.termId}}</td>
-      <td>{{c.createdAt | date:'dd-MM-YYYY hh:mm:ss'}}</td>
-    </tr>
+  <table class="w-full" (classClickedEvent)="onClassClickedEvent($event)" app-class-to-register-table [classes]="classes" [showIdColumn]="showIdColumn">
   </table>
 </div>

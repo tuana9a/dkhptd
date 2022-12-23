@@ -1,15 +1,16 @@
 <!-- This nav gives you links to click, which tells the router which route to use (defined in the routes constant in  AppRoutingModule) -->
 <nav class="overflow-auto">
   <div class="flex max-w-full flex-wrap">
-    <div class="p-1"><a routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">Login</a></div>
-    <div class="p-1"><a routerLink="/signup" routerLinkActive="active" ariaCurrentWhenActive="page">Signup</a></div>
-    <div class="p-1"><a routerLink="/home" routerLinkActive="active" ariaCurrentWhenActive="page">Home</a></div>
-    <div class="p-1"><a routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page">Profile</a></div>
-    <div class="p-1"><a routerLink="/manage-jobs" routerLinkActive="active" ariaCurrentWhenActive="page">Manage Jobs</a></div>
-    <div class="p-1"><a routerLink="/new-job-v1" routerLinkActive="active" ariaCurrentWhenActive="page">New Job</a></div>
-    <div class="p-1"><a routerLink="/search-class-to-register" routerLinkActive="active" ariaCurrentWhenActive="page">Search Class To Register</a></div>
-    <div class="p-1"><a routerLink="/preferences" routerLinkActive="active" ariaCurrentWhenActive="page">Preferences</a></div>
+    <div class="p-1"><a routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">Đăng Nhập</a></div>
+    <div class="p-1"><a routerLink="/signup" routerLinkActive="active" ariaCurrentWhenActive="page">Đăng Ký</a></div>
+    <!-- <div class="p-1"><a routerLink="/home" routerLinkActive="active" ariaCurrentWhenActive="page">Trang Chủ</a></div> -->
+    <div class="p-1"><a routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page">Cá Nhân</a></div>
+    <div class="p-1"><a routerLink="/manage-jobs" routerLinkActive="active" ariaCurrentWhenActive="page">Quản Lý Hẹn Giờ</a></div>
+    <div class="p-1"><a routerLink="/new-job-v1" routerLinkActive="active" ariaCurrentWhenActive="page">Tạo Hẹn Giờ Mới</a></div>
+    <div class="p-1"><a routerLink="/search-class-to-register" routerLinkActive="active" ariaCurrentWhenActive="page">Tìm Lớp Đăng Ký</a></div>
+    <div class="p-1"><a routerLink="/preferences" routerLinkActive="active" ariaCurrentWhenActive="page">Tùy chỉnh</a></div>
     <div class="p-1"><a routerLink="/upload-tkb-xlsx" routerLinkActive="active" ariaCurrentWhenActive="page">Upload TKB.xlsx</a></div>
+    <div class="p-1"><a routerLink="/messages" routerLinkActive="active" ariaCurrentWhenActive="page">Tin Nhắn ({{toastMessagesRepo.messages.length}})</a></div>
   </div>
 </nav>
 <!-- The routed views render in the <router-outlet>-->

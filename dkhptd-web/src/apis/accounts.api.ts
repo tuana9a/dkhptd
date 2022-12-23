@@ -23,7 +23,7 @@ export class AccountsApi {
     return this.httpClient.get<BaseResponse<AccountPreference[]>>("/api/accounts/current/preferences");
   }
 
-  addPreference(preference: AccountPreference) {
+  addPreference(preference?: AccountPreference) {
     return this.httpClient.post<BaseResponse<unknown>>("/api/accounts/current/preference", preference);
   }
 

@@ -3,12 +3,8 @@
     <tr>
       <td>secret</td>
       <td><input class="w-full" type="password" [(ngModel)]="secret"></td>
-    </tr>
-    <tr>
       <td>file</td>
       <td><input class="w-full" type="file" (change)="onFileSelected($event)"></td>
-    </tr>
-    <tr>
       <td><button (click)="upload()">UPLOAD</button></td>
     </tr>
   </table>

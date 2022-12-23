@@ -1,0 +1,13 @@
+<div>
+  <div>
+    <label>Chọn Kỳ Học</label>
+    <select [(ngModel)]="selectedTermId">
+      <option *ngFor="let p of preferences" [value]="p.termId">{{p.termId}}</option>
+    </select>
+  </div>
+  <div *ngFor="let p of preferencesBySelectedTermId()">
+    <div class="border border-solid border-white my-2" *ngFor="let s of p.wantedSubjectIds">
+      <div app-search-class-to-register (classClickedEvent)="onClassClickedEvent($event)" [q]="'termId==' + p.termId + ',subjectId==' + s" [showExample]="false" [navigateOnQueryChange]="false" [searchOnInit]="true"></div>  
+    </div>
+  </div>
+</div>

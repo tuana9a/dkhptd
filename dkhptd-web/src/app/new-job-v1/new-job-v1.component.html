@@ -1,34 +1,37 @@
-<div>
-  <table>
-    <tr>
-      <td>job.username</td>
-      <td><input class="w-full" type="text" [(ngModel)]="username"></td>
-    </tr>
-    <tr>
-      <td>job.password</td>
-      <td><input class="w-full" type="password" [(ngModel)]="password"></td>
-    </tr>
-    <tr>
-      <td>job.classIds</td>
-      <td>
-        <table>
-          <tr *ngFor="let classId of classIds">
-            <td class="border border-solid border-black">{{classId}}</td>
-            <td><button (click)="onDeleteClassId(classId)">DELETE</button></td>
-          </tr>
-          <tr>
-            <td class="border border-solid border-black"><input type="text" (keypress)="onKeyPressClassId($event)" [(ngModel)]="classId"></td>
-            <td><button (click)="onAddClassId()">ADD</button></td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-    <tr>
-      <td>job.timeToStart</td>
-      <td><input type="datetime-local" class="w-full" [(ngModel)]="timeToStart"></td>
-    </tr>
-  </table>
-  <button (click)="onSubmit()">SUBMIT</button>
+<div class="flex">
+  <div>
+    <table>
+      <tr>
+        <td>username</td>
+        <td><input class="w-full" type="text" [(ngModel)]="username"></td>
+      </tr>
+      <tr>
+        <td>password</td>
+        <td><input class="w-full" type="password" [(ngModel)]="password"></td>
+      </tr>
+      <tr>
+        <td>Danh Sách Mã Lớp</td>
+        <td>
+          <table>
+            <tr *ngFor="let classId of classIds">
+              <td class="border border-solid border-black">{{classId}}</td>
+              <td><button (click)="onDeleteClassId(classId)">DELETE</button></td>
+            </tr>
+            <tr>
+              <td class="border border-solid border-black"><input type="text" (keypress)="onKeyPressClassId($event)" [(ngModel)]="classId"></td>
+              <td><button (click)="onAddClassId()">Thêm</button></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>Hẹn Giờ</td>
+        <td><input type="datetime-local" class="w-full" [(ngModel)]="timeToStart"></td>
+      </tr>
+    </table>
+    <button class="px-1" (click)="onSubmit()">Gửi</button>
+  </div>
+  <div app-new-job-suggestion-box (classClickedEvent)="onClassClickedEvent($event)" class="max-h-[100%] overflow-auto"></div>
 </div>
 <div>
   <span>{{message}}</span>

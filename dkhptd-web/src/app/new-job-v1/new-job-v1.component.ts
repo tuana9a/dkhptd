@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { DKHPTDV1sApi } from "src/apis/dkhptd-v1-s.api";
+import ClassToRegister from "src/entities/ClassToRegister";
 
 @Component({
   selector: "app-new-job-v1",
@@ -43,6 +44,12 @@ export class NewJobV1 implements OnInit {
   onKeyPressClassId(e: KeyboardEvent) {
     if (e.key == "Enter") {
       this.onAddClassId();
+    }
+  }
+
+  onClassClickedEvent(c: ClassToRegister) {
+    if (c.classId) {
+      this.classIds.push(String(c.classId));
     }
   }
 }

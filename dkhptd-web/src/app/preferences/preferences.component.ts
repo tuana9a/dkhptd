@@ -9,7 +9,7 @@ import AccountPreference from "src/entities/AccountPreference";
 })
 export class PreferencesComponent implements OnInit {
   preferences?: AccountPreference[];
-  newPreference: AccountPreference = new AccountPreference({ wantedSubjectIds: [] });
+  newPreference?: AccountPreference = new AccountPreference({ termId: "", wantedSubjectIds: [] });
   message?: string;
 
   constructor(private api: AccountsApi) { }
@@ -25,7 +25,11 @@ export class PreferencesComponent implements OnInit {
   addPreference() {
     this.api.addPreference(this.newPreference).subscribe(res => {
       this.message = res.success ? "SUCCESS" : res.message;
-      this.ngOnInit();
+      this.api.currentPreferences().subscribe(res => {
+        if (res.success) {
+          this.preferences = res.data;
+        }
+      });
     });
   }
 }

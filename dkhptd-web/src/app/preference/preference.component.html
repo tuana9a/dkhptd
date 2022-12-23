@@ -3,33 +3,29 @@
     <table>
       <tr>
         <td *ngIf="showIdColumn">_id</td>
-        <td>termId</td>
-        <td>wantedSubjectIds</td>
-        <td></td>
+        <td>Kỳ Học</td>
+        <td>Mã Học Phần Mong Muốn</td>
+        <td *ngIf="showUpdateButton"></td>
       </tr>
-      <tr>
-        <td *ngIf="showIdColumn">{{preference._id}}</td>
+      <tr *ngIf="preference">
+        <td *ngIf="showIdColumn" class="ObjectId">{{preference._id}}</td>
         <td><input type="text" [(ngModel)]="preference.termId"></td>
         <td>
-          <table class="">
+          <table>
             <tr *ngFor="let subjectId of preference.wantedSubjectIds">
               <td class="border border-solid border-black">{{subjectId}}</td>
-              <td class=""><button (click)="onRemoveSubjectId(subjectId)">REMOVE</button></td>
+              <td class=""><button (click)="onRemoveSubjectId(subjectId)">Xóa</button></td>
             </tr>
             <tr>
               <td class="border border-solid border-black"><input type="text" [(ngModel)]="subjectId" (keypress)="onKeyPressSubjectId($event)"></td>
-              <td class=""><button (click)="onAddSubjectId()">ADD</button></td>
+              <td class=""><button (click)="onAddSubjectId()">Thêm</button></td>
             </tr>
           </table>
         </td>
         <td *ngIf="showUpdateButton">
-          <button (click)="onUpdatePreference()">UPDATE</button>
+          <button (click)="onUpdatePreference()">Cập Nhật</button>
         </td>
       </tr>
-      <!-- <tr>
-        <td>ownerAccountId</td>
-        <td>{{preference.ownerAccountId}}</td>
-      </tr> -->
     </table>
   </div>
 </div>

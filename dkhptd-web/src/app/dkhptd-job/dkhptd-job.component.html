@@ -1,36 +1,36 @@
 <div>
   <table>
     <tr>
-      <td>job._id</td>
+      <td>_id</td>
       <td class="ObjectId"><span>{{job?._id}}</span></td>
     </tr>
     <tr>
-      <td>job.username</td>
+      <td>username</td>
       <td><span>{{job?.username}}</span></td>
     </tr>
     <tr>
       <td (click)="toggleShowPassword()">
-        <span>job.password</span>
+        <span>password</span>
         <span><input type="checkbox" [(ngModel)]="showPassword"></span>
       </td>
       <td><span>{{job?.password | password: showPassword}}</span></td>
     </tr>
     <tr>
-      <td>job.classIds</td>
+      <td>Danh Sách Mã Lớp</td>
       <td>
         <span class="classId mr-1" *ngFor="let classId of job?.classIds"><a routerLink="/search-class-to-register" [queryParams]="{q: 'classId==' + classId}">{{classId}}</a></span>
       </td>
     </tr>
     <tr>
-      <td>job.timeToStart</td>
+      <td>Hẹn Giờ</td>
       <td><span>{{job?.timeToStart | date:'dd-MM-YYYY hh:mm:ss'}}</span></td>
     </tr>
     <tr>
-      <td>job.createdAt</td>
+      <td>Thời Gian Tạo</td>
       <td><span>{{job?.createdAt | date:'dd-MM-YYYY hh:mm:ss'}}</span></td>
     </tr>
     <tr>
-      <td>job.status</td>
+      <td>Trạng Thái</td>
       <td><span>{{job?.status | JobStatus}}</span></td>
     </tr>
   </table>

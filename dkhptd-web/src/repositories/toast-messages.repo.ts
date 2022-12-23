@@ -4,9 +4,9 @@ import { Injectable } from "@angular/core";
   providedIn: "root"
 })
 export class ToastMessagesRepo {
-  messages: string[] = [];
+  messages: (string | undefined)[] = [];
 
-  add(message: string) {
+  add(message: string | undefined) {
     this.messages.unshift(message);
   }
 }

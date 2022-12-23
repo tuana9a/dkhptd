@@ -7,6 +7,6 @@
 <td>{{job?.timeToStart | date:'dd-MM-YYYY hh:mm:ss'}}</td>
 <td>{{job?.createdAt | date:'dd-MM-YYYY hh:mm:ss'}}</td>
 <td>{{job?.status | JobStatus}}</td>
-<td><button [disabled]="!isCancelable()" (click)="onCancelJob()">CANCEL</button></td>
-<td><button [disabled]="!isRetryable()" (click)="onRetryJob()">RETRY</button></td>
-<td><a [routerLink]="job?._id" routerLinkActive="active" ariaCurrentWhenActive="page">DETAIL</a></td>
+<td><button [disabled]="!isCancelable()" (click)="onCancelJob()">Hủy</button></td>
+<td><button [disabled]="!isRetryable()" (click)="onRetryJob()">Thử Lại</button></td>
+<td><a [routerLink]="job?._id" routerLinkActive="active" ariaCurrentWhenActive="page">Chi Tiết</a></td>

@@ -24,6 +24,11 @@ import { ToJsonPipe } from "src/pipes/to-json.pipe";
 import { PasswordPipe } from "src/pipes/password.pipe";
 import { DkhptdJobRowComponent } from "./dkhptd-job-row/dkhptd-job-row.component";
 import { UploadTkbXlsxComponent } from "./upload-tkb-xlsx/upload-tkb-xlsx.component";
+import { NewJobSuggestionBoxComponent } from "./new-job-suggestion-box/new-job-suggestion-box.component";
+import { ClassToRegisterRowComponent } from "./class-to-register-row/class-to-register-row.component";
+import { ClassToRegisterTableComponent } from "./class-to-register-table/class-to-register-table.component";
+import { MessagesComponent } from "./messages/messages.component";
+import { HttpErrorInterceptor } from "src/interceptors/http-error.interceptor";
 
 const routes: Routes = [
   { path: "login", component: LoginComponent },
@@ -39,6 +44,7 @@ const routes: Routes = [
   { path: "search-class-to-register", component: SearchClassToRegisterComponent },
   { path: "preferences", component: PreferencesComponent },
   { path: "upload-tkb-xlsx", component: UploadTkbXlsxComponent },
+  { path: "messages", component: MessagesComponent },
 ];
 
 @NgModule({
@@ -61,6 +67,10 @@ const routes: Routes = [
     ActionLogComponent,
     DkhptdJobRowComponent,
     UploadTkbXlsxComponent,
+    NewJobSuggestionBoxComponent,
+    ClassToRegisterRowComponent,
+    ClassToRegisterTableComponent,
+    MessagesComponent,
   ],
   imports: [
     BrowserModule,
@@ -71,6 +81,7 @@ const routes: Routes = [
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: BaseUrlInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })
