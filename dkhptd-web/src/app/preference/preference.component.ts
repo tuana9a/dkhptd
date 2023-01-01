@@ -33,7 +33,7 @@ export class PreferenceComponent implements OnInit {
   onUpdatePreference() {
     if (!this.preference) return;
     this.api.changePreference(this.preference._id as string, this.preference).subscribe(res => {
-      this.message = res.success ? "SUCCESS" : res.message;
+      this.message = res.success ? "Thành Công" : res.message;
     });
   }
 

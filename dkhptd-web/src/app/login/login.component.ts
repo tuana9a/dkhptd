@@ -17,7 +17,7 @@ export class LoginComponent {
 
   login() {
     this.publicApi.login(this.username, this.password).subscribe((res) => {
-      this.message = res.success ? "SUCCESS" : res.message;
+      this.message = res.success ? "Thành Công" : res.message;
       this.toastMessagesRepo.add(this.message);
       if (res.success) {
         this.cookieUtils.set({ name: "jwt", value: res.data?.token });

@@ -24,7 +24,7 @@ export class PreferencesComponent implements OnInit {
 
   addPreference() {
     this.api.addPreference(this.newPreference).subscribe(res => {
-      this.message = res.success ? "SUCCESS" : res.message;
+      this.message = res.success ? "Thành Công" : res.message;
       this.api.currentPreferences().subscribe(res => {
         if (res.success) {
           this.preferences = res.data;
