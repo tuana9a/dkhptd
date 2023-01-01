@@ -29,6 +29,7 @@ import { ClassToRegisterRowComponent } from "./class-to-register-row/class-to-re
 import { ClassToRegisterTableComponent } from "./class-to-register-table/class-to-register-table.component";
 import { MessagesComponent } from "./messages/messages.component";
 import { HttpErrorInterceptor } from "src/interceptors/http-error.interceptor";
+import { UnauthorizedInterceptor } from "src/interceptors/unauthorized.interceptor";
 
 const routes: Routes = [
   { path: "login", component: LoginComponent },
@@ -82,6 +83,7 @@ const routes: Routes = [
     { provide: HTTP_INTERCEPTORS, useClass: BaseUrlInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })

@@ -10,8 +10,7 @@
     </tr>
     <tr>
       <td (click)="toggleShowPassword()">
-        <span>password</span>
-        <span><input type="checkbox" [(ngModel)]="showPassword"></span>
+        <button><span>password</span></button>
       </td>
       <td><span>{{job?.password | password: showPassword}}</span></td>
     </tr>
@@ -35,5 +34,8 @@
     </tr>
   </table>
   <!-- <div><button (click)="showLogs()">Show Logs</button></div> -->
-  <div *ngFor="let l of logs" app-dkhptd-job-logs [id]="id" [logs]="l.logs"></div>
+  <div *ngFor="let l of logs; let i = index">
+    <div><h2>Lần thứ {{i+1}}</h2></div>
+    <div app-dkhptd-job-logs [id]="id" [logs]="l.logs"></div>
+  </div>
 </div>

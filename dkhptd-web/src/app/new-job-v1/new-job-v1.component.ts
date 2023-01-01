@@ -11,7 +11,7 @@ export class NewJobV1 implements OnInit {
   username = "";
   password = "";
   timeToStart = "";
-  classIds: string[] = [];
+  classIds: Set<string> = new Set();
   classId = "";
   message?: string;
 
@@ -23,7 +23,7 @@ export class NewJobV1 implements OnInit {
 
   onSubmit() {
     const timeToStart = new Date(this.timeToStart).getTime();
-    const classIds = this.classIds.map(x => x.trim()).filter(x => x);
+    const classIds = Array.from(this.classIds).map(x => x.trim()).filter(x => x);
     this.api.submitCurrentNewJobV1(this.username, this.password, classIds, timeToStart).subscribe(res => {
       this.message = res.success ? "Thành Công" : res.message;
     }, err => {
@@ -33,12 +33,12 @@ export class NewJobV1 implements OnInit {
 
   onAddClassId() {
     if (this.classId && !this.classId.match(/^\s*$/)) {
-      this.classIds.push(this.classId);
+      this.classIds.add(this.classId);
     }
   }
 
   onDeleteClassId(classId: string) {
-    this.classIds = this.classIds.filter(x => x != classId);
+    this.classIds.delete(classId);
   }
 
   onKeyPressClassId(e: KeyboardEvent) {
@@ -49,7 +49,7 @@ export class NewJobV1 implements OnInit {
 
   onClassClickedEvent(c: ClassToRegister) {
     if (c.classId) {
-      this.classIds.push(String(c.classId));
+      this.classIds.add(String(c.classId));
     }
   }
 }

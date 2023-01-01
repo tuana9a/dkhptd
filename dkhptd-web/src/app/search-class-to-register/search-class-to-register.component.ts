@@ -11,6 +11,7 @@ import ClassToRegister from "src/entities/ClassToRegister";
 export class SearchClassToRegisterComponent implements OnInit {
   @Input() showIdColumn = false;
   @Input() navigateOnQueryChange = true;
+  @Input() showQueryKeys = true;
   @Input() q = "";
   @Input() page = 0;
   @Input() size = 10;

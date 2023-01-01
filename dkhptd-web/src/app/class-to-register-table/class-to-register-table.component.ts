@@ -9,6 +9,7 @@ import ClassToRegister from "src/entities/ClassToRegister";
 export class ClassToRegisterTableComponent {
   @Input() showIdColumn = false;
   @Input() showCreatedAtColumn = true;
+  @Input() showQueryKeys = true;
   @Input() classes: ClassToRegister[] = [];
   @Output() classClickedEvent = new EventEmitter<ClassToRegister>();
   @Input() hoverClass = "mouse-out";

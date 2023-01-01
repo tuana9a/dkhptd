@@ -1,17 +1,17 @@
-<tr>
+<tr (click)="showQueryKeys = !showQueryKeys">
   <td *ngIf="showIdColumn">_id</td>
-  <td>Mã Lớp</td>
-  <td>Mã Lớp Kèm</td>
-  <td>Loại Lớp</td>
-  <td>Mã Học Phần</td>
-  <td>Tên Học Phần</td>
-  <td>Buổi Học Số</td>
-  <td>Học Vào Thứ</td>
-  <td>Thời Gian Học</td>
-  <td>Phòng Học</td>
-  <td>Học Vào Các Tuần</td>
-  <td>Ghi Chú</td>
-  <td>Kỳ Học</td>
-  <td *ngIf="showCreatedAtColumn">Thời Cập Nhật</td>
+  <td><div><a>Mã Lớp</a></div><div *ngIf="showQueryKeys">classId</div></td>
+  <td><div><a>Mã Lớp Kèm</a></div><div *ngIf="showQueryKeys">secondClassId</div></td>
+  <td><div><a>Loại Lớp</a></div><div *ngIf="showQueryKeys">classType</div></td>
+  <td><div><a>Mã Học Phần</a></div><div *ngIf="showQueryKeys">subjectId</div></td>
+  <td><div><a>Tên Học Phần</a></div><div *ngIf="showQueryKeys">subjectName</div></td>
+  <td><div><a>Buổi Học Số</a></div><div *ngIf="showQueryKeys">learnDayNumber</div></td>
+  <td><div><a>Học Vào Thứ</a></div><div *ngIf="showQueryKeys">learnAtDayOfWeek</div></td>
+  <td><div><a>Thời Gian Học</a></div><div *ngIf="showQueryKeys">learnTime</div></td>
+  <td><div><a>Phòng Học</a></div><div *ngIf="showQueryKeys">learnRoom</div></td>
+  <td><div><a>Học Vào Các Tuần</a></div><div *ngIf="showQueryKeys">learnWeek</div></td>
+  <td><div><a>Ghi Chú</a></div><div *ngIf="showQueryKeys">describe</div></td>
+  <td><div><a>Kỳ Học</a></div><div *ngIf="showQueryKeys">termId</div></td>
+  <td *ngIf="showCreatedAtColumn"><div>Thời Cập Nhật</div><div *ngIf="showQueryKeys">createdAt</div></td>
 </tr>
 <tr app-class-to-register-row (click)="onClickClass(c)" [c]="c" [showIdColumn]="showIdColumn" [showCreatedAtColumn]="showCreatedAtColumn" *ngFor="let c of classes"></tr>

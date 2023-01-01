@@ -6,23 +6,26 @@ import {
   HttpErrorResponse
 } from "@angular/common/http";
 
-import { throwError } from "rxjs";
+import { EMPTY } from "rxjs";
 import { catchError } from "rxjs/operators";
-import { ToastMessagesRepo } from "src/repositories/toast-messages.repo";
+import { IsAuthorizedRepo } from "src/repositories/is-authorized.repo";
 
 @Injectable()
-export class HttpErrorInterceptor implements HttpInterceptor {
-  constructor(private toastMessagesRepo: ToastMessagesRepo) { }
+export class UnauthorizedInterceptor implements HttpInterceptor {
+  constructor(private isAuthorizedRepo: IsAuthorizedRepo) {
 
+  }
   intercept(request: HttpRequest<unknown>, next: HttpHandler) {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
-        this.toastMessagesRepo.add(error.message);
+        if (error.status == 401) {
+          this.isAuthorizedRepo.unAuthorized();
+        }
         // If you want to return a new response:
         //return of(new HttpResponse({body: [{name: "Default value..."}]}));
 
-        // If you want to return the error on the upper level:
-        return throwError(() => error);
+        // or just return nothing:
+        return EMPTY;
       })
     );
   }

@@ -1,5 +1,6 @@
 import { Component } from "@angular/core";
 import { PublicApi } from "src/apis/public.api";
+import { IsAuthorizedRepo } from "src/repositories/is-authorized.repo";
 import { ToastMessagesRepo } from "src/repositories/toast-messages.repo";
 import { CookieUtils } from "src/utils/cookie.utils";
 
@@ -13,7 +14,7 @@ export class LoginComponent {
   password = "";
   message?: string;
 
-  constructor(private publicApi: PublicApi, private cookieUtils: CookieUtils, private toastMessagesRepo: ToastMessagesRepo) { }
+  constructor(private publicApi: PublicApi, private cookieUtils: CookieUtils, private toastMessagesRepo: ToastMessagesRepo, private isAuthorizedRepo: IsAuthorizedRepo) { }
 
   login() {
     this.publicApi.login(this.username, this.password).subscribe((res) => {
@@ -21,6 +22,7 @@ export class LoginComponent {
       this.toastMessagesRepo.add(this.message);
       if (res.success) {
         this.cookieUtils.set({ name: "jwt", value: res.data?.token });
+        this.isAuthorizedRepo.authorized();
       }
     });
   }
