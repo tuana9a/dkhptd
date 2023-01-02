@@ -3,21 +3,21 @@
 import fs from "fs";
 import path from "path";
 import { ioc } from "tu9nioc";
-import { default as PuppeteerWorker } from "puppeteer-worker";
+import { ensurePageCount, PuppeteerWorker } from "puppeteer-worker";
 import { isValidJob } from "puppeteer-worker-job-builder";
 
-import SupportJobsDb from "./repositories/SupportJobsDb";
-import WorkerController from "./controllers/WorkerController";
-import PuppeteerDisconnectedError from "./errors/PuppeteerDisconnectedError";
-import logger from "./loggers/logger";
+import { SupportJobsDb } from "./repos";
+import WorkerController from "./controllers";
+import { PuppeteerDisconnectedError } from "./errors";
+import logger from "./logger";
 import loadConfig from "./loadConfig";
 import prepareWorkDirs from "./prepareWorkDirs";
 import { JobSupplier } from "./types";
-import { Config } from "./config";
+import { Config } from "./configs";
 
 export async function launch(initConfig: Config) {
   ioc.scan("dist/");
-  ioc.addClass(PuppeteerWorker, "puppeteerWorker");
+  ioc.addClass(PuppeteerWorker, "puppeteerWorker", { ignoreDeps: ["browser"] });
   ioc.di();
 
   const workerController: WorkerController = ioc.getBean("workerController").getInstance();
@@ -53,10 +53,16 @@ export async function launch(initConfig: Config) {
 
   logger.info(`Loaded Jobs:\n${loadedJobs.reduce((a, c) => `${a}${c.name} -> ${c.filepath}\n`, "")}`);
 
-  await workerController.puppeteer().launch();
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const browser = await require("puppeteer-core").launch(config.puppeteerLaunchOption);
+  await ensurePageCount(browser, 1);
 
-  workerController.puppeteer().onDisconnect(() => logger.error(new PuppeteerDisconnectedError()));
-  workerController.puppeteer().onDisconnect(() => setTimeout(() => process.exit(0), 100));
+  const puppeteerWorker: PuppeteerWorker = ioc.getBean(PuppeteerWorker).getInstance();
+  puppeteerWorker.setBrowser(browser);
+
+  browser.on("disconnected", () => logger.error(new PuppeteerDisconnectedError()));
+  browser.on("disconnected", () => logger.info("exiting..."));
+  browser.on("disconnected", () => setTimeout(() => process.exit(0), 1000));
 
   await workerController.auto().start();
 

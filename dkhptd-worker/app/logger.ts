@@ -9,12 +9,12 @@ export class Logger {
 
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    this.handler = require("./cs").default;
+    this.handler = require("./loggers/cs").default;
   }
 
   use(name) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    this.handler = require(`./${name}`).default;
+    this.handler = require(`./loggers/${name}`).default;
   }
 
   info(data) {

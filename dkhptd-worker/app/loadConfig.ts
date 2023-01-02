@@ -1,19 +1,19 @@
 import fs from "fs";
-import logger from "./loggers/logger";
-import config from "./config";
-import { Config } from "./config";
+import logger from "./logger";
+import { cfg } from "./configs";
+import { Config } from "./configs";
 
 export default (newConfig: Config) => {
   if (newConfig) {
     if (newConfig.configFile) {
       const data = fs.readFileSync(newConfig.configFile, { flag: "r", encoding: "utf-8" });
       const object = JSON.parse(data);
-      config.update(object);
+      cfg.update(object);
     }
-    config.update(newConfig);
-    config.defaultify();
-    logger.use(config.logDest);
-    logger.info(config.toString());
+    cfg.update(newConfig);
+    cfg.defaultify();
+    logger.use(cfg.logDest);
+    logger.info(cfg.toString());
   }
-  return config;
+  return cfg;
 };

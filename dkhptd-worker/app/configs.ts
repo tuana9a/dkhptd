@@ -1,7 +1,4 @@
-import { LaunchOptions } from "puppeteer";
-import options from "./common/PuppeteerLaunchOptions";
-import toJson from "./common/toJson";
-import update from "./common/update";
+import { update, toJson } from "./utils";
 
 export class Config {
   constructor(
@@ -19,8 +16,7 @@ export class Config {
     public httpWorkerPullConfigUrl?: string,
     public rabbitmqConnectionString?: string,
     public amqpEncryptionKey?: string,
-    public puppeteerMode?: string,
-    public puppeteerLaunchOption?: LaunchOptions,
+    public puppeteerLaunchOption?,
   ) {
     this.tmpDir = "./tmp/";
     this.logDir = "./logs/";
@@ -45,7 +41,6 @@ export class Config {
 
   update(object) {
     update(this, object);
-    this.puppeteerLaunchOption = options.get(this.puppeteerMode);
     return this;
   }
 
@@ -57,12 +52,24 @@ export class Config {
     this.logDir = "./logs/";
     this.logDest = this.logDest || "cs";
     this.maxTry = this.maxTry || 10;
-    this.puppeteerMode = this.puppeteerMode || "default";
-    this.puppeteerLaunchOption = options.get(this.puppeteerMode);
     return this;
   }
 }
 
-const config = new Config();
+export const cfg = new Config();
 
-export default config;
+export const ExchangeName = {
+  WORKER_PING: "dkhptd.worker-ping",
+  WORKER_DOING: "dkhptd.worker-doing",
+};
+
+export const QueueName = {
+  RUN_JOB: "dkhptd.run-job",
+  PROCESS_JOB_RESULT: "dkhptd.process-job-result",
+
+  RUN_JOB_V1: "dkhptd.run-job-v1",
+  PROCESS_JOB_V1_RESULT: "dkhptd.process-job-v1-result",
+
+  RUN_JOB_V2: "dkhptd.run-job-v2",
+  PROCESS_JOB_V2_RESULT: "dkhptd.process-job-v2-result",
+};

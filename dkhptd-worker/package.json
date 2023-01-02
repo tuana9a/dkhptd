@@ -25,13 +25,14 @@
     "axios": "0.25.0",
     "form-data": "4.0.0",
     "moment": "^2.29.4",
-    "puppeteer": "13.5.1",
-    "puppeteer-worker": "^3.0.0-a.1",
-    "puppeteer-worker-job-builder": "^2.0.0-a.2",
+    "puppeteer-core": "^13.5.1",
+    "puppeteer-worker": "^3.1.0",
+    "puppeteer-worker-job-builder": "^2.1.1",
     "tu9nioc": "^1.1.1",
     "yargs": "17.5.1"
   },
   "devDependencies": {
+    "@types/amqplib": "^0.10.1",
     "@typescript-eslint/eslint-plugin": "^5.46.1",
     "@typescript-eslint/parser": "^5.46.1",
     "eslint": "^8.30.0",

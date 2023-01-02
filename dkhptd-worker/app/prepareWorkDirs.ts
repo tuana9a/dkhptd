@@ -1,7 +1,7 @@
-import config from "./config";
+import { cfg } from "./configs";
 import ensureDirExists from "./ensureDirExists";
 
 export default () => {
-  ensureDirExists(config.tmpDir);
-  ensureDirExists(config.logDir);
+  ensureDirExists(cfg.tmpDir);
+  ensureDirExists(cfg.logDir);
 };

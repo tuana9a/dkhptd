@@ -1,7 +1,7 @@
 import path from "path";
 import axios from "axios";
-import logger from "./loggers/logger";
-import downloadFile from "./common/downloadFile";
+import logger from "./logger";
+import downloadFile from "./downloadFile";
 
 export default async (url: string, jobDir: string, headers = {}) => {
   const response = await axios.get(url, { headers }).then((res) => res.data);
