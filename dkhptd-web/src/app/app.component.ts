@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
 import { AccountsApi } from "src/apis/accounts.api";
 import { IsAuthorizedRepo } from "src/repositories/is-authorized.repo";
 import { ToastMessagesRepo } from "src/repositories/toast-messages.repo";
@@ -11,8 +12,13 @@ import { CookieUtils } from "src/utils/cookie.utils";
 })
 export class AppComponent implements OnInit {
   title = "dkhptd-web";
-  constructor(public toastMessagesRepo: ToastMessagesRepo, public cookieUtils: CookieUtils, public isAuthorizedRepo: IsAuthorizedRepo, public accountsApi: AccountsApi) {
-  }
+  constructor(
+    public toastMessagesRepo: ToastMessagesRepo,
+    public cookieUtils: CookieUtils,
+    public isAuthorizedRepo: IsAuthorizedRepo,
+    public accountsApi: AccountsApi,
+    public router: Router,
+  ) { }
   ngOnInit(): void {
     this.accountsApi.current().subscribe(res => {
       if (res.success) {
@@ -53,5 +59,6 @@ export class AppComponent implements OnInit {
   onLogout() {
     this.cookieUtils.set({ name: "jwt", value: "" });
     this.isAuthorizedRepo.unAuthorized();
+    this.router.navigate(["/login"]);
   }
 }
