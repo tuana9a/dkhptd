@@ -14,6 +14,8 @@ const {
   IsEqual,
   For,
   Job,
+  Break,
+  SetVars,
 } = require("puppeteer-worker-job-builder");
 const HustCaptchaToText = require("./builders/HustCaptchaToText");
 
@@ -65,7 +67,8 @@ module.exports = () => new Job({
     If(IsEqual(CurrentUrl(), LOGIN_URL /* van o trang dang nhap */)).Then([
       GetTextContent("#lbStatus"), // sai tai khoan
       GetTextContent("#ccCaptcha_TB_EC"), // sai captcha
-      BreakPoint(),
+      SetVars(x => x.isUserError = true),
+      Break(),
     ]),
     For(GetValueFromParams((x) => x.classIds)).Each([
       Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_tbDirectClassRegister_I", { clickCount: 3 }),
@@ -83,6 +86,6 @@ module.exports = () => new Job({
     Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_pcYesNo_pcYesNoBody1_ASPxRoundPanel1_btnYes"),
     PageEval(CrawlRegisterResultHandler),
     GoTo(LOGOUT_URL),
-    BreakPoint(),
+    Break(),
   ],
 });

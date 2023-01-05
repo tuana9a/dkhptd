@@ -13,6 +13,7 @@ const {
   If,
   IsEqual,
   Job,
+  Break,
 } = require("puppeteer-worker-job-builder");
 const HustCaptchaToText = require("./builders/HustCaptchaToText");
 
@@ -65,12 +66,12 @@ module.exports = () => new Job({
     If(IsEqual(CurrentUrl(), LOGIN_URL /* van o trang dang nhap */)).Then([
       GetTextContent("#ctl00_ctl00_contentPane_MainPanel_MainContent_FailureText"), /* sai tai khoan */
       GetTextContent("#ctl00_ctl00_contentPane_MainPanel_MainContent_ASPxCaptcha1_TB_EC"), /* sai captcha */
-      BreakPoint(),
+      Break(),
     ]).Else([
       GoTo(STUDENT_PROGRAM_URL),
       PageEval(CrawlStudentProgramHandler),
       GoTo(LOGOUT_URL),
-      BreakPoint(),
+      Break(),
     ]),
   ],
 });
