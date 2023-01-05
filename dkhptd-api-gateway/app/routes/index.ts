@@ -149,7 +149,7 @@ router.post("/api/accounts/current/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000,
 
   mustNotFalsy("job.username", job.username);
   notEmptyString("job.username", job.username);
-  lengthMustGreaterThan("job.username", job.username, 8);
+  lengthMustGreaterThan("job.username", job.username, 7);
 
   mustNotFalsy("job.password", job.password,);
   notEmptyString("job.password", job.password);
@@ -194,7 +194,7 @@ router.post("/api/accounts/current/dkhptd-s", RateLimit({ windowMs: 5 * 60 * 100
 
       mustNotFalsy("job.username", job.username);
       notEmptyString("job.username", job.username);
-      lengthMustGreaterThan("job.username", job.username, 8);
+      lengthMustGreaterThan("job.username", job.username, 7);
 
       mustNotFalsy("job.password", job.password);
       notEmptyString("job.password", job.password);
@@ -393,7 +393,7 @@ router.post("/api/accounts/current/v1/dkhptd", RateLimit({ windowMs: 5 * 60 * 10
 
   mustNotFalsy("job.username", job.username);
   notEmptyString("job.username", job.username);
-  lengthMustGreaterThan("job.username", job.username, 8);
+  lengthMustGreaterThan("job.username", job.username, 7);
 
   mustNotFalsy("job.password", job.password);
   notEmptyString("job.password", job.password);
@@ -437,7 +437,7 @@ router.post("/api/accounts/current/v1/dkhptd-s", RateLimit({ windowMs: 5 * 60 * 
 
       mustNotFalsy("job.username", job.username);
       notEmptyString("job.username", job.username);
-      lengthMustGreaterThan("job.username", job.username, 8);
+      lengthMustGreaterThan("job.username", job.username, 7);
 
       mustNotFalsy("job.password", job.password);
       notEmptyString("job.password", job.password);
@@ -571,7 +571,7 @@ router.post("/api/accounts/current/v2/dkhptd", RateLimit({ windowMs: 5 * 60 * 10
 
   mustNotFalsy("job.username", job.username);
   notEmptyString("job.username", job.username);
-  lengthMustGreaterThan("job.username", job.username, 8);
+  lengthMustGreaterThan("job.username", job.username, 7);
 
   mustNotFalsy("job.password", job.password);
   notEmptyString("job.password", job.password);
@@ -615,7 +615,7 @@ router.post("/api/accounts/current/v2/dkhptd-s", RateLimit({ windowMs: 5 * 60 * 
 
       mustNotFalsy("job.username", job.username);
       notEmptyString("job.username", job.username);
-      lengthMustGreaterThan("job.username", job.username, 8);
+      lengthMustGreaterThan("job.username", job.username, 7);
 
       mustNotFalsy("job.password", job.password);
       notEmptyString("job.password", job.password);
