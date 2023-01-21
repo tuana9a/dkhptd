@@ -25,6 +25,6 @@ export class ClassToRegsitersApi {
   uploadTkbXlsx(secret: string, file: File) {
     const body = new FormData();
     body.append("file", file);
-    return this.httpClient.post<BaseResponse<unknown>>("/api/class-to-register-file", body, { headers: { authorization: secret } });
+    return this.httpClient.post<BaseResponse<unknown>>("/api/class-to-registers/file", body, { headers: { authorization: secret } });
   }
 }

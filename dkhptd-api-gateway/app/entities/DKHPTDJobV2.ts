@@ -1,11 +1,9 @@
 import crypto from "crypto";
 import { ObjectId } from "mongodb";
-import toObjectId from "../utils/toObjectId";
-import ObjectModifer from "../modifiers/ObjectModifier";
-import { c } from "../utils/cypher";
+import { toObjectId } from "../to";
+import { c } from "../cypher";
 import BaseEntity from "./BaseEntity";
-import JobStatus from "../configs/JobStatus";
-import cfg from "../cfg";
+import { cfg, JobStatus } from "../cfg";
 
 export default class DKHPTDJobV2 extends BaseEntity {
   ownerAccountId: ObjectId;
@@ -48,7 +46,7 @@ export default class DKHPTDJobV2 extends BaseEntity {
   }
 
   toClient() {
-    return new ObjectModifer(this).collect();
+    return this;
   }
 
   decrypt() {
@@ -92,17 +90,5 @@ export default class DKHPTDJobV2 extends BaseEntity {
     output.doingAt = null;
     output.createdAt = Date.now();
     return output;
-  }
-
-  toWorker() {
-    return {
-      id: this._id.toHexString(),
-      name: "DangKyHocPhanTuDongV2",
-      params: {
-        username: this.username,
-        password: this.password,
-        classIds: this.classIds,
-      }
-    };
   }
 }

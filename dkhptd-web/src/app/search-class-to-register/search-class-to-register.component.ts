@@ -20,10 +20,10 @@ export class SearchClassToRegisterComponent implements OnInit {
   @Input() searchOnInit = true;
   @Output() classClickedEvent = new EventEmitter<ClassToRegister>();
 
-  constructor(private route: ActivatedRoute, private router: Router, private api: ClassToRegsitersApi) { }
+  constructor(private activatedRoute: ActivatedRoute, private router: Router, private api: ClassToRegsitersApi) { }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(query => {
+    this.activatedRoute.queryParams.subscribe(query => {
       this.q = query["q"] || this.q || "";
       this.page = parseInt(query["page"]) || 0;
       this.size = parseInt(query["size"]) || 10;

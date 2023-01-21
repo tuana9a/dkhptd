@@ -10,7 +10,7 @@ module.exports = {
   ],
   "overrides": [
   ],
-  // "ignorePatterns": "tests/**/*",
+  "ignorePatterns": ["tests/**/*", "dist/**/*"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",

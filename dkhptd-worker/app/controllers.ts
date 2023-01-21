@@ -44,8 +44,8 @@ export class PuppeteerWorkerController {
       FormData,
     };
 
-    const output = await puppeteerWorker.do(job, { onDoing: onDoing });
-    return output;
+    const context = await puppeteerWorker.do(job, { onDoing: onDoing });
+    return context;
   }
 }
 

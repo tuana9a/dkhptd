@@ -1,8 +1,7 @@
 import { ObjectId } from "mongodb";
-import { ActionLog } from "puppeteer-worker-job-builder/v1";
-import cfg from "../cfg";
-import { c } from "../utils/cypher";
-import toObjectId from "../utils/toObjectId";
+import { cfg } from "../cfg";
+import { c } from "../cypher";
+import { toObjectId } from "../to";
 import DKHPTDJobLogs from "./DKHPTDJobLogs";
 import BaseEntity from "./BaseEntity";
 
@@ -11,25 +10,28 @@ export default class DKHPTDJobV1Logs extends BaseEntity {
   workerId: string;
   ownerAccountId: ObjectId;
   logs: string; // encrypted
+  vars: string; // encrypted
   iv: string;
   createdAt: number;
 
-  constructor({ _id, jobId, ownerAccountId, workerId, logs, createdAt, iv }: {
+  constructor(o: {
     _id?: ObjectId;
     jobId?: ObjectId;
     ownerAccountId?: ObjectId;
     workerId?: string;
     logs?: string;
+    vars?: string;
     createdAt?: number;
     iv?: string;
   }) {
-    super(_id);
-    this.jobId = jobId;
-    this.workerId = workerId;
-    this.ownerAccountId = ownerAccountId;
-    this.logs = logs;
-    this.createdAt = createdAt;
-    this.iv = iv;
+    super(o._id);
+    this.jobId = o.jobId;
+    this.workerId = o.workerId;
+    this.ownerAccountId = o.ownerAccountId;
+    this.logs = o.logs;
+    this.vars = o.vars;
+    this.createdAt = o.createdAt;
+    this.iv = o.iv;
   }
 
   withJobId(id: string | ObjectId) {
@@ -47,14 +49,15 @@ export default class DKHPTDJobV1Logs extends BaseEntity {
   }
 
   decrypt() {
-    const text = c(cfg.JOB_ENCRYPTION_KEY).d(this.logs, this.iv);
-    const logs: ActionLog[] = JSON.parse(text);
+    const logs: [] = this.logs ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(this.logs, this.iv)) : [];
+    const vars = this.vars ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(this.vars, this.iv)) : {};
     return new DKHPTDJobLogs({
       _id: this._id,
       jobId: this.jobId,
       ownerAccountId: this.ownerAccountId,
       workerId: this.workerId,
       logs: logs,
+      vars: vars,
       createdAt: this.createdAt,
     });
   }

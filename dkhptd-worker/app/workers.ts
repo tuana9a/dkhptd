@@ -11,6 +11,7 @@ import { Component } from "tu9nioc";
 import { c } from "./cypher";
 import { toBuffer, toJson, toPrettyErr } from "./utils";
 import { ScheduleDirNotExistsError } from "./errors";
+import { DoingInfo } from "puppeteer-worker-job-builder";
 
 const axios = oxias.create();
 
@@ -79,7 +80,7 @@ export class RabbitWorker {
             try {
               const job = JSON.parse(msg.content.toString());
               logger.info(`Received: ${msg.fields.routingKey} ${toJson(job, 2)}`);
-              const { logs, vars } = await puppeteerWorkerController.do(job, (doing) => {
+              const { logs, vars } = await puppeteerWorkerController.do(job, (doing: DoingInfo) => {
                 logger.info(`Doing: ${job.id} ${toJson(doing, 2)}`);
                 channel.publish(ExchangeName.WORKER_DOING, "", toBuffer(toJson({
                   workerId: cfg.workerId,
@@ -139,7 +140,7 @@ export class RabbitWorkerV1 {
               const job = JSON.parse(c(cfg.amqpEncryptionKey).d(msg.content.toString(), msg.properties.headers.iv));
               logger.info(`Received: ${msg.fields.routingKey} ${toJson(job, 2)}`);
 
-              const { logs, vars } = await puppeteerWorkerController.do(job, (doing) => {
+              const { logs, vars } = await puppeteerWorkerController.do(job, (doing: DoingInfo) => {
                 logger.info(`Doing: ${job.id} ${toJson(doing, 2)}`);
                 channel.publish(ExchangeName.WORKER_DOING, "", toBuffer(toJson({ workerId: cfg.workerId, doing })));
               });
@@ -204,7 +205,7 @@ export class RabbitWorkerV2 {
               const job = JSON.parse(c(cfg.amqpEncryptionKey).d(msg.content.toString(), msg.properties.headers.iv));
               logger.info(`Received: ${msg.fields.routingKey} ${toJson(job, 2)}`);
 
-              const { logs, vars } = await puppeteerWorkerController.do(job, (doing) => {
+              const { logs, vars } = await puppeteerWorkerController.do(job, (doing: DoingInfo) => {
                 logger.info(`Doing: ${job.id} ${toJson(doing, 2)}`);
                 channel.publish(ExchangeName.WORKER_DOING, "", toBuffer(toJson({ workerId: cfg.workerId, doing })));
               });

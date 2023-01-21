@@ -9,6 +9,7 @@ module.exports = {
   ],
   "overrides": [
   ],
+  "ignorePatterns": ["jobs/**/*", "dist/**/*"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",

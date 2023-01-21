@@ -1,57 +1,48 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import http from "http";
 import express from "express";
 import * as amqplib from "amqplib/callback_api";
 import { MongoClient } from "mongodb";
 import cors from "cors";
 
-import cfg from "./cfg";
+import { cfg } from "./cfg";
 import logger from "./loggers/logger";
-import toKeyValueString from "./utils/toKeyValueString";
-import ExchangeName from "./configs/ExchangeName";
-import QueueName from "./configs/QueueName";
-import mongoConnectionPool from "./connections/MongoConnectionPool";
-import routes from "./routes";
-import backgrounds from "./backgrounds";
-import listeners from "./listeners";
-import consumers from "./consumers";
-import rabbitmqConnectionPool from "./connections/RabbitMQConnectionPool";
+import { toJson, toKeyValueString } from "./to";
+import { mongoConnectionPool, rabbitmqConnectionPool } from "./connections";
+import { tkbQueueName } from "./queue-name";
 
-const app = express();
-const server = http.createServer(app);
+async function main() {
+  logger.info(`Config: \n${toKeyValueString(cfg)}`);
 
-app.use(cors());
-app.use(express.json());
-app.use(routes);
+  const app = express();
+  app.use(cors());
+  app.use(express.json());
+  const server = http.createServer(app);
+  server.listen(cfg.PORT);
 
-new MongoClient(cfg.MONGODB_CONNECTION_STRING).connect().then((client) => {
+  const client = await new MongoClient(cfg.MONGODB_CONNECTION_STRING).connect();
   mongoConnectionPool.addClient(client);
-  backgrounds.setup();
-  listeners.setup();
-});
 
-amqplib.connect(cfg.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
-  if (error0) {
-    logger.error(error0);
-    return;
-  }
-  connection.createChannel((error1, channel) => {
-    if (error1) {
-      logger.error(error1);
+  amqplib.connect(cfg.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
+    if (error0) {
+      logger.error(error0);
       return;
     }
-    rabbitmqConnectionPool.addChannel(channel);
-
-    channel.assertQueue(QueueName.RUN_JOB, {});
-    channel.assertQueue(QueueName.RUN_JOB_V1, {});
-    channel.assertQueue(QueueName.RUN_JOB_V2, {});
-    channel.assertQueue(QueueName.PARSE_TKB_XLSX, {});
-
-    channel.assertExchange(ExchangeName.WORKER_DOING, "fanout", {});
-    channel.assertExchange(ExchangeName.WORKER_PING, "fanout", {});
-
-    consumers.setup();
+    connection.createChannel((error1, channel) => {
+      if (error1) {
+        logger.error(error1);
+        return;
+      }
+      rabbitmqConnectionPool.addChannel(channel);
+      channel.assertQueue(tkbQueueName.PARSE_TKB_XLSX);
+      channel.assertQueue(tkbQueueName.PROCESS_PARSE_TKB_XLSX_RESULT);
+      const routeInfo = {};
+      app.use(require("./auto-route").setup("./dist/routes", "", routeInfo));
+      logger.info(`Loaded routes ${toJson(routeInfo, 2)}`);
+      require("./auto-consumer").setup("./dist/consumers");
+      require("./auto-listener").setup("./dist/listeners");
+    });
   });
-});
+}
 
-logger.info(`Config: \n${toKeyValueString(cfg)}`);
-server.listen(cfg.PORT);
+main();

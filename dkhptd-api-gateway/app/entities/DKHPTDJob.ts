@@ -1,8 +1,7 @@
 import { ObjectId } from "mongodb";
-import toObjectId from "../utils/toObjectId";
-import ObjectModifer from "../modifiers/ObjectModifier";
+import { toObjectId } from "../to";
 import BaseEntity from "./BaseEntity";
-import JobStatus from "../configs/JobStatus";
+import { JobStatus } from "../cfg";
 
 export default class DKHPTDJob extends BaseEntity {
   ownerAccountId: ObjectId;
@@ -42,7 +41,7 @@ export default class DKHPTDJob extends BaseEntity {
   }
 
   toClient() {
-    return new ObjectModifer(this).collect();
+    return this;
   }
 
   toRetry() {
@@ -52,17 +51,5 @@ export default class DKHPTDJob extends BaseEntity {
     output.doingAt = null;
     output.createdAt = Date.now();
     return output;
-  }
-
-  toWorker() {
-    return {
-      id: this._id.toHexString(),
-      name: "DangKyHocPhanTuDong",
-      params: {
-        username: this.username,
-        password: this.password,
-        classIds: this.classIds,
-      }
-    };
   }
 }

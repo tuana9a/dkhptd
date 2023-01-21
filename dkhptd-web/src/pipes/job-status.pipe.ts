@@ -10,7 +10,7 @@ JobStatus.set(2, "Thất Bại");
 
 @Pipe({ name: "JobStatus" })
 export class JobStatusPipe implements PipeTransform {
-  transform(value?: number): string | undefined {
-    return JobStatus.get(value as number);
+  transform(value?: number) {
+    return JobStatus.get(value as number) || value;
   }
 }

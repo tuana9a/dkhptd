@@ -1,0 +1,27 @@
+{
+  "name": "dkhptd-scheduler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "test": "echo tuana9a"
+  },
+  "author": "Tuan Nguyen Minh",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "amqplib": "^0.10.3",
+    "dotenv": "^16.0.3",
+    "moment": "^2.29.4",
+    "mongodb": "^4.13.0",
+    "ms": "^2.1.3"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.1",
+    "@types/ms": "^0.7.31",
+    "@typescript-eslint/eslint-plugin": "^5.48.2",
+    "@typescript-eslint/parser": "^5.48.2",
+    "eslint": "^8.32.0",
+    "typescript": "^4.8.4"
+  }
+}

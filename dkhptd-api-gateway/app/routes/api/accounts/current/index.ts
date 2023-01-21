@@ -1,0 +1,131 @@
+import express from "express";
+import { Filter, ObjectId } from "mongodb";
+import { cfg } from "../../../../cfg";
+import { mongoConnectionPool } from "../../../../connections";
+import Account from "../../../../entities/Account";
+import AccountPreference from "../../../../entities/AccountPreference";
+import ExceptionHandlerWrapper from "../../../../middlewares/ExceptionHandlerWrapper";
+import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith, NormalizeArrayProp, SetProp } from "../../../../modifiers";
+import BaseResponse from "../../../../payloads/BaseResponse";
+import { toSHA256 } from "../../../../to";
+import JwtFilter from "../../../../middlewares/JwtFilter";
+import { isFalsy } from "../../../../utils";
+import { MissingRequestBodyDataError, UsernameNotFoundError } from "../../../../exceptions";
+
+const router = express.Router();
+
+router.use(JwtFilter(cfg.SECRET));
+
+router.get("", ExceptionHandlerWrapper(async (req, resp) => {
+  const accountId = req.__accountId;
+
+  const filter: Filter<Account> = { _id: new ObjectId(accountId) };
+  const account = await mongoConnectionPool
+    .getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(Account.name)
+    .findOne(filter);
+
+  if (isFalsy(account)) throw new UsernameNotFoundError(accountId);
+
+  resp.send(new BaseResponse().ok(new Account(account).toClient()));
+}));
+
+router.put("/password", ExceptionHandlerWrapper(async (req, resp) => {
+  const accountId = req.__accountId;
+
+  const body = modify(req.body, [
+    PickProps(["password"]),
+    NormalizeStringProp("password"),
+    ReplaceCurrentPropValueWith("password", (oldValue) => toSHA256(oldValue)),
+  ]);
+
+  const newHashedPassword = body.password;
+
+  const filter: Filter<Account> = { _id: new ObjectId(accountId) };
+
+  const account = await mongoConnectionPool
+    .getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(Account.name)
+    .findOne(filter);
+
+  if (isFalsy(account)) throw new UsernameNotFoundError(accountId);
+
+  await mongoConnectionPool
+    .getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(Account.name)
+    .updateOne(filter, { $set: { password: newHashedPassword } });
+
+  resp.send(new BaseResponse().ok(new Account(account).toClient()));
+}));
+
+router.get("/preferences", ExceptionHandlerWrapper(async (req, resp) => {
+  const accountId = req.__accountId;
+  const filter: Filter<AccountPreference> = {
+    ownerAccountId: new ObjectId(accountId),
+  };
+  const preferences = await mongoConnectionPool
+    .getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(AccountPreference.name)
+    .find(filter)
+    .toArray();
+  resp.send(new BaseResponse().ok(preferences));
+}));
+
+router.put("/preferences/:preferenceId", ExceptionHandlerWrapper(async (req, resp) => {
+  const accountId = req.__accountId;
+  const preferenceId = new ObjectId(req.params.preferenceId);
+
+  const data = req.body;
+
+  if (isFalsy(data)) throw new MissingRequestBodyDataError();
+
+  const body = modify(data, [
+    PickProps(["termId", "wantedSubjectIds"]),
+    NormalizeStringProp("termId"),
+    NormalizeArrayProp("wantedSubjectIds", "string"),
+  ]);
+
+  const filter: Filter<AccountPreference> = {
+    _id: preferenceId,
+    ownerAccountId: new ObjectId(accountId),
+  };
+  await mongoConnectionPool
+    .getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(AccountPreference.name)
+    .updateOne(filter, {
+      $set: {
+        termId: body.termId,
+        wantedSubjectIds: body.wantedSubjectIds,
+      },
+    });
+  resp.send(new BaseResponse().ok());
+}));
+
+router.post("/preference", ExceptionHandlerWrapper(async (req, resp) => {
+  const accountId = req.__accountId;
+  const data = req.body;
+
+  if (isFalsy(data)) throw new MissingRequestBodyDataError();
+
+  const body = modify(data, [
+    PickProps(["termId", "wantedSubjectIds"]),
+    NormalizeStringProp("termId"),
+    NormalizeArrayProp("wantedSubjectIds", "string"),
+    SetProp("ownerAccountId", new ObjectId(accountId)),
+  ]);
+
+  const newPreference = new AccountPreference(body);
+  await mongoConnectionPool
+    .getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(AccountPreference.name)
+    .insertOne(newPreference);
+  resp.send(new BaseResponse().ok());
+}));
+
+export default router;

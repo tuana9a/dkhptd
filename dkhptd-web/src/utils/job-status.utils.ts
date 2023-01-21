@@ -10,6 +10,6 @@ export class JobStatusUtils {
   }
 
   isRetryable(status?: number) {
-    return ([JobStatus.DONE, JobStatus.CANCELED] as (number | undefined)[]).includes(status);
+    return ([JobStatus.DONE, JobStatus.CANCELED, JobStatus.TIMEOUT_OR_STALE] as (number | undefined)[]).includes(status);
   }
 }
