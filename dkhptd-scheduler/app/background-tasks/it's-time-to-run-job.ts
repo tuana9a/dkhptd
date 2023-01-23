@@ -10,7 +10,6 @@ import ms from "ms";
 
 export const setup = () => loop.infinity(async () => {
   try {
-    logger.info("check run job");
     const cursor = mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(DKHPTDJob.name).find({
       timeToStart: { $lt: Date.now() }, /* less than now then it's time to run */
       status: JobStatus.READY,
@@ -18,14 +17,7 @@ export const setup = () => loop.infinity(async () => {
     while (await cursor.hasNext()) {
       const entry = await cursor.next();
       const job = new DKHPTDJob(entry);
-      jobBus.emit(jobEvent.NEW_JOB, {
-        name: "DangKyHocPhanTuDong",
-        params: {
-          username: job.username,
-          password: job.password,
-          classIds: job.classIds,
-        },
-      });
+      jobBus.emit(jobEvent.NEW_JOB, job.toWorker());
       await mongoConnectionPool.getClient()
         .db(cfg.DATABASE_NAME).collection(DKHPTDJob.name).updateOne({ _id: new ObjectId(job._id) }, {
           $set: {

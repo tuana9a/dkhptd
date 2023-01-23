@@ -77,17 +77,17 @@ export class RabbitWorker {
             return;
           }
           channel.consume(q.queue, async (msg) => {
+            const job = JSON.parse(msg.content.toString());
             try {
-              const job = JSON.parse(msg.content.toString());
-              logger.info(`Received: ${msg.fields.routingKey} ${toJson(job, 2)}`);
+              logger.info(`Received ${msg.fields.routingKey} ${toJson(job, 2)}`);
               const { logs, vars } = await puppeteerWorkerController.do(job, (doing: DoingInfo) => {
-                logger.info(`Doing: ${job.id} ${toJson(doing, 2)}`);
+                logger.info(`Doing ${job.id} ${toJson(doing, 2)}`);
                 channel.publish(ExchangeName.WORKER_DOING, "", toBuffer(toJson({
                   workerId: cfg.workerId,
                   doing,
                 })));
               });
-              logger.info(`Logs: ${job.id} ${toJson(logs, 2)}`);
+              logger.info(`Logs ${job.id} ${toJson(logs, 2)}`);
               channel.sendToQueue(QueueName.PROCESS_JOB_RESULT, toBuffer(toJson({
                 id: job.id,
                 workerId: cfg.workerId,
@@ -97,6 +97,7 @@ export class RabbitWorker {
             } catch (err) {
               logger.error(err);
               channel.sendToQueue(QueueName.PROCESS_JOB_RESULT, toBuffer(toJson({
+                id: job.id,
                 workerId: cfg.workerId,
                 err: toPrettyErr(err),
               })));
@@ -136,15 +137,15 @@ export class RabbitWorkerV1 {
             return;
           }
           channel.consume(q.queue, async (msg) => {
+            const job = JSON.parse(c(cfg.amqpEncryptionKey).d(msg.content.toString(), msg.properties.headers.iv));
             try {
-              const job = JSON.parse(c(cfg.amqpEncryptionKey).d(msg.content.toString(), msg.properties.headers.iv));
-              logger.info(`Received: ${msg.fields.routingKey} ${toJson(job, 2)}`);
+              logger.info(`Received ${msg.fields.routingKey} ${toJson(job, 2)}`);
 
               const { logs, vars } = await puppeteerWorkerController.do(job, (doing: DoingInfo) => {
-                logger.info(`Doing: ${job.id} ${toJson(doing, 2)}`);
+                logger.info(`Doing ${job.id} ${toJson(doing, 2)}`);
                 channel.publish(ExchangeName.WORKER_DOING, "", toBuffer(toJson({ workerId: cfg.workerId, doing })));
               });
-              logger.info(`Logs: ${job.id} ${toJson(logs, 2)}`);
+              logger.info(`Logs ${job.id} ${toJson(logs, 2)}`);
 
               const newIv = crypto.randomBytes(16).toString("hex");
               const eResult = c(cfg.amqpEncryptionKey).e(toJson({
@@ -160,6 +161,7 @@ export class RabbitWorkerV1 {
 
               const newIv = crypto.randomBytes(16).toString("hex");
               const eResult = c(cfg.amqpEncryptionKey).e(toJson({
+                id: job.id,
                 workerId: cfg.workerId,
                 err: toPrettyErr(err),
               }), newIv);
@@ -201,15 +203,15 @@ export class RabbitWorkerV2 {
             return;
           }
           channel.consume(q.queue, async (msg) => {
+            const job = JSON.parse(c(cfg.amqpEncryptionKey).d(msg.content.toString(), msg.properties.headers.iv));
             try {
-              const job = JSON.parse(c(cfg.amqpEncryptionKey).d(msg.content.toString(), msg.properties.headers.iv));
-              logger.info(`Received: ${msg.fields.routingKey} ${toJson(job, 2)}`);
+              logger.info(`Received ${msg.fields.routingKey} ${toJson(job, 2)}`);
 
               const { logs, vars } = await puppeteerWorkerController.do(job, (doing: DoingInfo) => {
-                logger.info(`Doing: ${job.id} ${toJson(doing, 2)}`);
+                logger.info(`Doing ${job.id} ${toJson(doing, 2)}`);
                 channel.publish(ExchangeName.WORKER_DOING, "", toBuffer(toJson({ workerId: cfg.workerId, doing })));
               });
-              logger.info(`Logs: ${job.id} ${toJson(logs, 2)}`);
+              logger.info(`Logs ${job.id} ${toJson(logs, 2)}`);
 
               const newIv = crypto.randomBytes(16).toString("hex");
               const eResult = c(cfg.amqpEncryptionKey).e(toJson({
@@ -225,6 +227,7 @@ export class RabbitWorkerV2 {
 
               const newIv = crypto.randomBytes(16).toString("hex");
               const eResult = c(cfg.amqpEncryptionKey).e(toJson({
+                id: job.id,
                 workerId: cfg.workerId,
                 err: toPrettyErr(err),
               }), newIv);
@@ -258,7 +261,7 @@ export class StandaloneWorker {
     for (const filepath of files) {
       const absoluteFilepath = path.resolve(dir, filepath);
       const job = JSON.parse(fs.readFileSync(absoluteFilepath, { flag: "r", encoding: "utf-8" }));
-      logger.info(`Schedule: loaded: ${toJson(job, 2)}`);
+      logger.info(`Schedule ${toJson(job, 2)}`);
       schedules.push(job);
     }
     schedules.sort((x1, x2) => x1.timeToStart - x2.timeToStart);

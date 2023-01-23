@@ -13,7 +13,7 @@ import { toJson } from "../to";
 export const setup = () => {
   jobV2Bus.on(jobV2Event.NEW_JOB_V2_RESULT, async (result) => {
     try {
-      logger.info(`Received job v2 result: ${toJson(result, 2)}`);
+      logger.info(`Received job v2 result ${toJson(result, 2)}`);
 
       const jobId = new ObjectId(result.id);
       const job = await mongoConnectionPool.getClient()
@@ -23,6 +23,35 @@ export const setup = () => {
 
       if (!job) {
         logger.warn(`Job ${result.id} not found for job result`);
+        return;
+      }
+
+      if (result.err) {
+        logger.info(`Received job v2 result with error ${toJson(result.err, 2)}`);
+        const jobId = new ObjectId(result.id);
+        await mongoConnectionPool.getClient()
+          .db(cfg.DATABASE_NAME)
+          .collection(DKHPTDJobV2.name)
+          .updateOne({ _id: jobId }, { $set: { status: JobStatus.UNKOWN_ERROR } });
+        return;
+      }
+
+      if (result.vars.systemError) {
+        logger.info(`Received job v2 result with systemError ${toJson(result.vars.systemError, 2)}`);
+        const jobId = new ObjectId(result.id);
+        if (job.no > cfg.JOB_MAX_TRY) { // max tries reach
+          logger.info(`Max retry reach for job v2 ${jobId}`);
+          await mongoConnectionPool.getClient()
+            .db(cfg.DATABASE_NAME)
+            .collection(DKHPTDJobV2.name)
+            .updateOne({ _id: jobId }, { $set: { status: JobStatus.MAX_RETRY_REACH } });
+          return;
+        }
+        logger.info(`Retry job v2 ${jobId} because of systemError`);
+        await mongoConnectionPool.getClient()
+          .db(cfg.DATABASE_NAME)
+          .collection(DKHPTDJobV2.name)
+          .updateOne({ _id: jobId }, { $set: { status: JobStatus.READY } }); // set READY for scheduler retry it
         return;
       }
 

@@ -9,7 +9,6 @@ import loop from "../loop";
 
 export const setup = () => loop.infinity(async () => {
   try {
-    logger.info("check dead job v1");
     const cursor = mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(DKHPTDJobV1.name).find({
       doingAt: { $lt: Date.now() - ms("1m") }, /* less than now - 1 minute then it's probaly dead or error */
       status: JobStatus.DOING,

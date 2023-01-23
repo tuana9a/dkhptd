@@ -15,8 +15,9 @@ export default class DKHPTDJobV1 extends BaseEntity {
   createdAt: number;
   doingAt: number;
   iv: string;
+  no: number; // lần thực thí thứ n
 
-  constructor({ _id, username, password, classIds, timeToStart, ownerAccountId, status, createdAt, doingAt, iv }: {
+  constructor(o: {
     _id?: ObjectId;
     username?: string;
     password?: string;
@@ -27,17 +28,19 @@ export default class DKHPTDJobV1 extends BaseEntity {
     createdAt?: number;
     doingAt?: number;
     iv?: string;
+    no?: number;
   }) {
-    super(_id);
-    this.ownerAccountId = ownerAccountId;
-    this.username = username;
-    this.password = password;
-    this.classIds = classIds;
-    this.timeToStart = timeToStart;
-    this.status = status;
-    this.createdAt = createdAt;
-    this.doingAt = doingAt;
-    this.iv = iv;
+    super(o._id);
+    this.ownerAccountId = o.ownerAccountId;
+    this.username = o.username;
+    this.password = o.password;
+    this.classIds = o.classIds;
+    this.timeToStart = o.timeToStart;
+    this.status = o.status;
+    this.createdAt = o.createdAt;
+    this.doingAt = o.doingAt || -1;
+    this.iv = o.iv;
+    this.no = o.no || 0;
   }
 
   withOwnerAccountId(id: string | ObjectId) {
@@ -62,6 +65,7 @@ export default class DKHPTDJobV1 extends BaseEntity {
       createdAt: this.createdAt,
       doingAt: this.doingAt,
       status: this.status,
+      no: this.no,
     });
   }
 

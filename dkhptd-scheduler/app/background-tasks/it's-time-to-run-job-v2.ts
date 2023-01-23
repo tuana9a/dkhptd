@@ -10,7 +10,6 @@ import loop from "../loop";
 
 export const setup = () => loop.infinity(async () => {
   try {
-    logger.info("check run job v2");
     const cursor = mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(DKHPTDJobV2.name).find({
       timeToStart: { $lt: Date.now() }, /* less than now then it's time to run */
       status: JobStatus.READY,

@@ -7,9 +7,10 @@ import cors from "cors";
 
 import { cfg } from "./cfg";
 import logger from "./loggers/logger";
-import { toJson, toKeyValueString } from "./to";
+import { toKeyValueString } from "./to";
 import { mongoConnectionPool, rabbitmqConnectionPool } from "./connections";
 import { tkbQueueName } from "./queue-name";
+import { getPrettyLoadedRoutes } from "./utils";
 
 async function main() {
   logger.info(`Config: \n${toKeyValueString(cfg)}`);
@@ -38,7 +39,7 @@ async function main() {
       channel.assertQueue(tkbQueueName.PROCESS_PARSE_TKB_XLSX_RESULT);
       const routeInfo = {};
       app.use(require("./auto-route").setup("./dist/routes", "", routeInfo));
-      logger.info(`Loaded routes ${toJson(routeInfo, 2)}`);
+      logger.info(`Loaded routes:\n${getPrettyLoadedRoutes(routeInfo).map(x => `${x.path} -> ${x.m}`).join("\n")}`);
       require("./auto-consumer").setup("./dist/consumers");
       require("./auto-listener").setup("./dist/listeners");
     });

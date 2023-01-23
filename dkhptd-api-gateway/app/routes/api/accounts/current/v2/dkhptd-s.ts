@@ -143,13 +143,12 @@ router.post("/:jobId/retry", ExceptionHandlerWrapper(async (req, resp) => {
 
   if (!existedJob) throw new JobNotFoundError(req.params.jobId);
 
-  const newJob = new DKHPTDJobV2(existedJob).decrypt().toRetry();
-  const eNewJob = newJob.encrypt();
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
     .collection(DKHPTDJobV2.name)
-    .insertOne(eNewJob);
+    .updateOne({ _id: new ObjectId(existedJob._id) }, { $set: { status: JobStatus.READY } });
+
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));
 

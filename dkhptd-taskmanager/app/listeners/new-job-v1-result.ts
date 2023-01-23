@@ -13,21 +13,45 @@ import { toJson } from "../to";
 export const setup = () => {
   jobV1Bus.on(jobV1Event.NEW_JOB_V1_RESULT, async (result) => {
     try {
-      if (result.err) {
-        logger.info(`Received job v1 result with error: ${toJson(result.err, 2)}`);
-        return;
-      }
-
       logger.info(`Received job v1 result: ${toJson(result, 2)}`);
 
       const jobId = new ObjectId(result.id);
-      const job = await mongoConnectionPool.getClient()
+      const job = new DKHPTDJobV1(await mongoConnectionPool.getClient()
         .db(cfg.DATABASE_NAME)
         .collection(DKHPTDJobV1.name)
-        .findOne({ _id: jobId });
+        .findOne({ _id: jobId }));
 
       if (!job) {
         logger.warn(`Job ${result.id} not found for job result`);
+        return;
+      }
+
+      if (result.err) {
+        logger.info(`Received job v1 result with error: ${toJson(result.err, 2)}`);
+        const jobId = new ObjectId(result.id);
+        await mongoConnectionPool.getClient()
+          .db(cfg.DATABASE_NAME)
+          .collection(DKHPTDJobV1.name)
+          .updateOne({ _id: jobId }, { $set: { status: JobStatus.UNKOWN_ERROR } });
+        return;
+      }
+
+      if (result.vars.systemError) {
+        logger.info(`Received job v1 result with systemError: ${toJson(result.vars.systemError, 2)}`);
+        const jobId = new ObjectId(result.id);
+        if (job.no > cfg.JOB_MAX_TRY) { // max tries reach
+          logger.info(`Max retry reach for job v1 ${jobId}`);
+          await mongoConnectionPool.getClient()
+            .db(cfg.DATABASE_NAME)
+            .collection(DKHPTDJobV1.name)
+            .updateOne({ _id: jobId }, { $set: { status: JobStatus.MAX_RETRY_REACH } });
+          return;
+        }
+        logger.info(`Retry job v1 ${jobId} because of systemError`);
+        await mongoConnectionPool.getClient()
+          .db(cfg.DATABASE_NAME)
+          .collection(DKHPTDJobV1.name)
+          .updateOne({ _id: jobId }, { $set: { status: JobStatus.READY } }); // set READY for scheduler retry it
         return;
       }
 

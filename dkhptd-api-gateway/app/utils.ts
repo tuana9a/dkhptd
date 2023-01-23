@@ -18,3 +18,20 @@ export const isFalsy = (input) => !input;
 export const isEmpty = (input: string) => input && input.match(/^\s*$/);
 
 export const isValidTermId = (input: string) => input.match(/^\d+\w*$/);
+
+export const getPrettyLoadedRoutes = (input) => {
+  const r = (o, previousPath: string) => {
+    const result = [];
+    const keys = Object.keys(o);
+    for (const key of keys) {
+      if (typeof o[key] == "string") {
+        result.push({ path: `${previousPath}/${key}`, m: o[key] });
+      } else {
+        const nestedResult = r(o[key], `${previousPath}/${key}`);
+        result.push(...nestedResult);
+      }
+    }
+    return result;
+  };
+  return r(input, "");
+};

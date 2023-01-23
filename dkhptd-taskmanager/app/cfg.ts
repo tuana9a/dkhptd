@@ -10,6 +10,7 @@ export const cfg = {
   RABBITMQ_CONNECTION_STRING: process.env.RABBITMQ_CONNECTION_STRING || "amqp://localhost:5672",
   MONGODB_CONNECTION_STRING: process.env.MONGODB_CONNECTION_STRING || "mongodb://localhost:27017",
   DATABASE_NAME: "dkhptd",
+  JOB_MAX_TRY: 10,
 };
 
 export const JobStatus = {
@@ -19,4 +20,6 @@ export const JobStatus = {
   DONE: 21,
   FAILED: 22,
   TIMEOUT_OR_STALE: 23,
+  UNKOWN_ERROR: 23,
+  MAX_RETRY_REACH: 24,
 };

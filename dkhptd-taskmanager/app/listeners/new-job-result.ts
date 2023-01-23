@@ -11,7 +11,7 @@ import { toJson } from "../to";
 export const setup = () => {
   jobBus.on(jobEvent.NEW_JOB_RESULT, async (result) => {
     try {
-      logger.info(`Received job result: ${toJson(result, 2)}`);
+      logger.info(`Received job result ${toJson(result, 2)}`);
       const jobId = new ObjectId(result.id);
       const job = await mongoConnectionPool.getClient()
         .db(cfg.DATABASE_NAME)
@@ -24,7 +24,10 @@ export const setup = () => {
       }
 
       await mongoConnectionPool.getClient()
-        .db(cfg.DATABASE_NAME).collection(DKHPTDJob.name).updateOne({ _id: jobId }, { $set: { status: JobStatus.DONE } });
+        .db(cfg.DATABASE_NAME)
+        .collection(DKHPTDJob.name)
+        .updateOne({ _id: jobId }, { $set: { status: JobStatus.DONE } });
+
       const logs = new DKHPTDJobLogs({
         jobId,
         workerId: result.workerId,
