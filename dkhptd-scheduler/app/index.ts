@@ -4,7 +4,7 @@ import { MongoClient } from "mongodb";
 import { cfg } from "./cfg";
 import { mongoConnectionPool, rabbitmqConnectionPool } from "./connections";
 import logger from "./loggers/logger";
-import { toJson, toKeyValueString } from "./to";
+import { toJson, toKeyValueString } from "./utils";
 
 async function main() {
   logger.info(toKeyValueString(cfg));

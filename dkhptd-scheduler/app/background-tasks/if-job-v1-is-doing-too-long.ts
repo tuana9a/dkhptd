@@ -3,9 +3,9 @@ import { jobV1Event } from "../app-event";
 import { jobV1Bus } from "../bus";
 import { cfg, JobStatus } from "../cfg";
 import { mongoConnectionPool } from "../connections";
-import DKHPTDJobV1 from "../entities/DKHPTDJobV1";
+import { DKHPTDJobV1 } from "../entities";
 import logger from "../loggers/logger";
-import loop from "../loop";
+import { decryptJobV1, loop } from "../utils";
 
 export const setup = () => loop.infinity(async () => {
   try {
@@ -15,7 +15,7 @@ export const setup = () => loop.infinity(async () => {
     }, { sort: { timeToStart: 1 } });
     while (await cursor.hasNext()) {
       const entry = await cursor.next();
-      const job = new DKHPTDJobV1(entry).decrypt();
+      const job = decryptJobV1(new DKHPTDJobV1(entry));
       logger.info(`Found stale job v1 ${job._id}`);
       jobV1Bus.emit(jobV1Event.STALE_JOB_V1, job._id);
     }

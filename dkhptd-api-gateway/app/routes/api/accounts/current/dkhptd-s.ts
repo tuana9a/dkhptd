@@ -2,16 +2,15 @@ import express from "express";
 import { Filter, ObjectId } from "mongodb";
 import { cfg, JobStatus } from "../../../../cfg";
 import { mongoConnectionPool } from "../../../../connections";
-import DKHPTDJob from "../../../../entities/DKHPTDJob";
-import DKHPTDJobLogs from "../../../../entities/DKHPTDJobLogs";
 import ExceptionHandlerWrapper from "../../../../middlewares/ExceptionHandlerWrapper";
 import RateLimit from "../../../../middlewares/RateLimit";
-import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "../../../../modifiers";
+import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "../../../../utils";
 import BaseResponse from "../../../../payloads/BaseResponse";
 import { resolveMongoFilter } from "../../../../merin";
 import { isFalsy } from "../../../../utils";
 import { isEmpty } from "lodash";
 import { FaslyValueError, EmptyStringError, RequireLengthFailed, JobNotFoundError, NotAnArrayError } from "../../../../exceptions";
+import { DKHPTDJobLogs, DKHPTDJob } from "../../../../entities";
 
 const router = express.Router();
 
@@ -27,7 +26,7 @@ router.get("/:jobId/logs", ExceptionHandlerWrapper(async (req, resp) => {
     .collection(DKHPTDJobLogs.name)
     .find(filter)
     .toArray();
-  const data = logs.map((x) => new DKHPTDJobLogs(x).toClient());
+  const data = logs.map((x) => new DKHPTDJobLogs(x));
   resp.send(new BaseResponse().ok(data));
 }));
 
@@ -43,7 +42,7 @@ router.get("", ExceptionHandlerWrapper(async (req, resp) => {
     .find(filter)
     .toArray();
 
-  const data = jobs.map((x) => new DKHPTDJob(x).toClient());
+  const data = jobs.map((x) => new DKHPTDJob(x));
   resp.send(new BaseResponse().ok(data));
 }));
 
@@ -119,7 +118,32 @@ router.delete("/:jobId", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));
 
+// use PUT instead
 router.post("/:jobId/retry", ExceptionHandlerWrapper(async (req, resp) => {
+  const accountId = req.__accountId;
+  const filter: Filter<DKHPTDJob> = {
+    _id: new ObjectId(req.params.jobId),
+    ownerAccountId: new ObjectId(accountId),
+  };
+
+  const existedJob = await mongoConnectionPool
+    .getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(DKHPTDJob.name)
+    .findOne(filter);
+
+  if (isFalsy(existedJob)) throw new JobNotFoundError(req.params.jobId);
+
+  await mongoConnectionPool
+    .getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(DKHPTDJob.name)
+    .updateOne({ _id: new ObjectId(existedJob._id) }, { $set: { status: JobStatus.READY } });
+
+  resp.send(new BaseResponse().ok(req.params.jobId));
+}));
+
+router.put("/:jobId/retry", ExceptionHandlerWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const filter: Filter<DKHPTDJob> = {
     _id: new ObjectId(req.params.jobId),

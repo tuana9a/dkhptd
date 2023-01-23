@@ -2,11 +2,11 @@ import express from "express";
 import { ObjectId } from "mongodb";
 import { cfg, JobStatus } from "../../../../cfg";
 import { mongoConnectionPool } from "../../../../connections";
-import DKHPTDJob from "../../../../entities/DKHPTDJob";
+import { DKHPTDJob } from "../../../../entities";
 import { EmptyStringError, FaslyValueError, MissingRequestBodyDataError, NotAnArrayError, RequireLengthFailed } from "../../../../exceptions";
 import ExceptionHandlerWrapper from "../../../../middlewares/ExceptionHandlerWrapper";
 import RateLimit from "../../../../middlewares/RateLimit";
-import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "../../../../modifiers";
+import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "../../../../utils";
 import BaseResponse from "../../../../payloads/BaseResponse";
 import { isEmpty, isFalsy } from "../../../../utils";
 

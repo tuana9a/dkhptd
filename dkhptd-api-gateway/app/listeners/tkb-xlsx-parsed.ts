@@ -2,9 +2,9 @@ import { tkbEvent } from "../app-event";
 import { tkbBus } from "../bus";
 import { cfg } from "../cfg";
 import { mongoConnectionPool } from "../connections";
-import ClassToRegister from "../entities/ClassToRegister";
+import { ClassToRegister } from "../entities";
 import logger from "../loggers/logger";
-import { modify, NormalizeIntProp, NormalizeStringProp, SetProp } from "../modifiers";
+import { modify, NormalizeIntProp, NormalizeStringProp, SetProp } from "../utils";
 import ParsedClassToRegister from "../payloads/ParsedClassToRegister";
 
 export const setup = () => {

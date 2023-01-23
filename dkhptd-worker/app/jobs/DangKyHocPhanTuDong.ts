@@ -70,7 +70,7 @@ export default () => new Job({
       WaitForTimeout(1000),
       /* xac nhan gui dang ky */
       Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_pcYesNo_pcYesNoBody1_ASPxRoundPanel1_btnYes"),
-      PageEval(CrawlRegisterResultHandler),
+      SetVars("registerResult", PageEval(CrawlRegisterResultHandler)),
       GoTo("http://dk-sis.hust.edu.vn/Users/Logout.aspx"),
     ]).Catch([
       err => SetVars("systemError", toPrettyErr(err)),

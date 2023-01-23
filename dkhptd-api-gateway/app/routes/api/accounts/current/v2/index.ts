@@ -2,13 +2,13 @@ import { ObjectId } from "mongodb";
 import express from "express";
 import { cfg, JobStatus } from "../../../../../cfg";
 import { mongoConnectionPool } from "../../../../../connections";
-import DKHPTDJobV2 from "../../../../../entities/DKHPTDJobV2";
 import ExceptionHandlerWrapper from "../../../../../middlewares/ExceptionHandlerWrapper";
 import RateLimit from "../../../../../middlewares/RateLimit";
-import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "../../../../../modifiers";
+import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp, encryptJobV2 } from "../../../../../utils";
 import BaseResponse from "../../../../../payloads/BaseResponse";
 import { isEmpty, isFalsy } from "../../../../../utils";
 import { EmptyStringError, FaslyValueError, MissingRequestBodyDataError, RequireLengthFailed } from "../../../../../exceptions";
+import { DKHPTDJobV2 } from "../../../../../entities";
 
 const router = express.Router();
 
@@ -43,7 +43,7 @@ router.post("/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), Exception
 
   if (isFalsy(job.timeToStart)) throw new FaslyValueError("job.timeToStart");
 
-  const eJob = job.encrypt();
+  const eJob = new DKHPTDJobV2(encryptJobV2(job));
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)

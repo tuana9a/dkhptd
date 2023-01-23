@@ -2,16 +2,15 @@ import express from "express";
 import { Filter, ObjectId } from "mongodb";
 import { cfg, JobStatus } from "../../../../../cfg";
 import { mongoConnectionPool } from "../../../../../connections";
-import DKHPTDJobV2 from "../../../../../entities/DKHPTDJobV2";
-import DKHPTDJobV2Logs from "../../../../../entities/DKHPTDJobV2Logs";
 import ExceptionHandlerWrapper from "../../../../../middlewares/ExceptionHandlerWrapper";
 import RateLimit from "../../../../../middlewares/RateLimit";
-import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "../../../../../modifiers";
+import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp, decryptJobV2Logs } from "../../../../../utils";
 import BaseResponse from "../../../../../payloads/BaseResponse";
 import { resolveMongoFilter } from "../../../../../merin";
 import { EmptyStringError, FaslyValueError, JobNotFoundError, NotAnArrayError, RequireLengthFailed } from "../../../../../exceptions";
 import { isEmpty } from "lodash";
 import { isFalsy } from "../../../../../utils";
+import { DKHPTDJobV2, DKHPTDJobV2Logs } from "../../../../../entities";
 
 const router = express.Router();
 
@@ -29,7 +28,7 @@ router.get("/:jobId/logs", ExceptionHandlerWrapper(async (req, resp) => {
     .collection(DKHPTDJobV2Logs.name)
     .find(filter)
     .toArray();
-  const data = logs.map((x) => new DKHPTDJobV2Logs(x).toClient());
+  const data = logs.map((x) => new DKHPTDJobV2Logs(x));
   resp.send(new BaseResponse().ok(data));
 }));
 
@@ -48,7 +47,7 @@ router.get("/:jobId/d/logs", ExceptionHandlerWrapper(async (req, resp) => {
     .collection(DKHPTDJobV2Logs.name)
     .find(filter)
     .toArray();
-  const data = logs.map((x) => new DKHPTDJobV2Logs(x).decrypt().toClient());
+  const data = logs.map((x) => decryptJobV2Logs(new DKHPTDJobV2Logs(x)));
   resp.send(new BaseResponse().ok(data));
 }));
 
@@ -66,7 +65,7 @@ router.get("", ExceptionHandlerWrapper(async (req, resp) => {
     .collection(DKHPTDJobV2.name)
     .find(filter)
     .toArray();
-  const data = jobs.map((x) => new DKHPTDJobV2(x).toClient());
+  const data = jobs.map((x) => new DKHPTDJobV2(x));
   resp.send(new BaseResponse().ok(data));
 }));
 

@@ -4,7 +4,7 @@ import { jobV1Bus } from "../bus";
 import { rabbitmqConnectionPool } from "../connections";
 import { jobV1ExchangeName } from "../exchange-name";
 import logger from "../loggers/logger";
-import { toBuffer } from "../to";
+import { toBuffer } from "../utils";
 
 export const setup = () => {
   rabbitmqConnectionPool.getChannel().assertExchange(jobV1ExchangeName.MAYBE_STALE_JOB_V1, "fanout");

@@ -2,11 +2,11 @@ import express from "express";
 import { Filter, ObjectId } from "mongodb";
 import { cfg } from "../../../../../../cfg";
 import { mongoConnectionPool } from "../../../../../../connections";
-import DKHPTDJobV2 from "../../../../../../entities/DKHPTDJobV2";
 import ExceptionHandlerWrapper from "../../../../../../middlewares/ExceptionHandlerWrapper";
-import { modify, PickProps } from "../../../../../../modifiers";
+import { decryptJobV2, modify, PickProps } from "../../../../../../utils";
 import BaseResponse from "../../../../../../payloads/BaseResponse";
 import { resolveMongoFilter } from "../../../../../../merin";
+import { DKHPTDJobV2 } from "../../../../../../entities";
 
 const router = express.Router();
 
@@ -22,7 +22,7 @@ router.get("/d/dkhptd-s", ExceptionHandlerWrapper(async (req, resp) => {
     .collection(DKHPTDJobV2.name)
     .find(filter)
     .toArray();
-  const data = jobs.map((x) => new DKHPTDJobV2(x).decrypt().toClient());
+  const data = jobs.map((x) => decryptJobV2(new DKHPTDJobV2(x)));
   resp.send(new BaseResponse().ok(data));
 }));
 

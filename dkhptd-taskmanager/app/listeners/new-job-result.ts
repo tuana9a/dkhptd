@@ -3,10 +3,9 @@ import { jobEvent } from "../app-event";
 import { jobBus } from "../bus";
 import { cfg, JobStatus } from "../cfg";
 import { mongoConnectionPool } from "../connections";
-import DKHPTDJob from "../entities/DKHPTDJob";
-import DKHPTDJobLogs from "../entities/DKHPTDJobLogs";
+import { DKHPTDJob, DKHPTDJobLogs } from "../entities";
 import logger from "../loggers/logger";
-import { toJson } from "../to";
+import { toJson } from "../utils";
 
 export const setup = () => {
   jobBus.on(jobEvent.NEW_JOB_RESULT, async (result) => {

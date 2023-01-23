@@ -3,7 +3,7 @@ import { jobEvent } from "../app-event";
 import { jobBus } from "../bus";
 import { rabbitmqConnectionPool } from "../connections";
 import { jobExchangeName } from "../exchange-name";
-import { toBuffer } from "../to";
+import { toBuffer } from "../utils";
 
 export const setup = () => {
   rabbitmqConnectionPool.getChannel().assertExchange(jobExchangeName.MAYBE_STALE_JOB, "fanout");

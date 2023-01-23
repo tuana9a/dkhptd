@@ -2,14 +2,14 @@ import express from "express";
 import { cfg } from "../../cfg";
 import jwt from "jsonwebtoken";
 import { mongoConnectionPool } from "../../connections";
-import Account from "../../entities/Account";
 import { UsernameNotFoundError, WrongPasswordError } from "../../exceptions";
 import ExceptionHandlerWrapper from "../../middlewares/ExceptionHandlerWrapper";
-import { modify, PickProps, NormalizeStringProp } from "../../modifiers";
+import { modify, PickProps, NormalizeStringProp } from "../../utils";
 import BaseResponse from "../../payloads/BaseResponse";
 import LoginResponse from "../../payloads/LoginResponse";
 import LoginWithUsernamePasswordRequest from "../../payloads/LoginWithUsernamePasswordRequest";
-import { toSHA256 } from "../../to";
+import { toSHA256 } from "../../utils";
+import { Account } from "../../entities";
 
 const router = express.Router();
 

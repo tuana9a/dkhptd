@@ -5,10 +5,9 @@ import { jobV1Bus } from "../bus";
 import { cfg, JobStatus } from "../cfg";
 import { mongoConnectionPool } from "../connections";
 import { c } from "../cypher";
-import DKHPTDJobV1 from "../entities/DKHPTDJobV1";
-import DKHPTDJobV1Logs from "../entities/DKHPTDJobV1Logs";
+import { DKHPTDJobV1, DKHPTDV1Result } from "../entities";
 import logger from "../loggers/logger";
-import { toJson } from "../to";
+import { toJson } from "../utils";
 
 export const setup = () => {
   jobV1Bus.on(jobV1Event.NEW_JOB_V1_RESULT, async (result) => {
@@ -61,7 +60,7 @@ export const setup = () => {
         .updateOne({ _id: jobId }, { $set: { status: JobStatus.DONE } });
 
       const newIv = crypto.randomBytes(16).toString("hex");
-      const logs = new DKHPTDJobV1Logs({
+      const logs = new DKHPTDV1Result({
         jobId,
         workerId: result.workerId,
         ownerAccountId: job.ownerAccountId,
@@ -73,7 +72,7 @@ export const setup = () => {
 
       await mongoConnectionPool.getClient()
         .db(cfg.DATABASE_NAME)
-        .collection(DKHPTDJobV1Logs.name)
+        .collection(DKHPTDV1Result.name)
         .insertOne(logs);
     } catch (err) {
       logger.error(err);

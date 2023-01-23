@@ -5,7 +5,7 @@ import { cfg } from "./cfg";
 import { mongoConnectionPool, rabbitmqConnectionPool } from "./connections";
 import { jobExchangeName, jobV1ExchangeName, jobV2ExchangeName } from "./exchange-name";
 import logger from "./loggers/logger";
-import { toJson, toKeyValueString } from "./to";
+import { toJson, toKeyValueString } from "./utils";
 
 async function main() {
   logger.info(`Config: \n${toKeyValueString(cfg)}`);

@@ -3,7 +3,7 @@ import { jobBus } from "../bus";
 import { rabbitmqConnectionPool } from "../connections";
 import logger from "../loggers/logger";
 import { jobQueueName } from "../queue-name";
-import { toJson, toBuffer } from "../to";
+import { toJson, toBuffer } from "../utils";
 
 export const setup = () => {
   rabbitmqConnectionPool.getChannel().assertQueue(jobQueueName.RUN_JOB, {});

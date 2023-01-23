@@ -1,4 +1,4 @@
-import { BringToFront, GoTo, WaitForTimeout, ScreenShot, TypeIn, Click, GetValueFromParams, CurrentUrl, GetTextContent, PageEval, If, IsEqual, Job, Break } from "puppeteer-worker-job-builder";
+import { BringToFront, GoTo, WaitForTimeout, ScreenShot, TypeIn, Click, GetValueFromParams, CurrentUrl, GetTextContent, PageEval, If, IsEqual, Job, Break, SetVars } from "puppeteer-worker-job-builder";
 import { HustCaptchaToText } from "../job-builders";
 
 const LOGIN_URL = "https://ctt-sis.hust.edu.vn/Account/Login.aspx";
@@ -48,7 +48,7 @@ export default () => new Job({
       Break(),
     ]),
     GoTo(STUDENT_TIMETABLE_URL),
-    PageEval(CrawlTimeTableHandler),
+    SetVars("studentTimeTable", PageEval(CrawlTimeTableHandler)),
     GoTo(LOGOUT_URL),
     Break(),
   ],

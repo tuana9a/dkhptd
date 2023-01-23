@@ -2,15 +2,15 @@ import express from "express";
 import { Filter, ObjectId } from "mongodb";
 import { cfg } from "../../../../../cfg";
 import { mongoConnectionPool } from "../../../../../connections";
-import ClassToRegister from "../../../../../entities/ClassToRegister";
 import ExceptionHandlerWrapper from "../../../../../middlewares/ExceptionHandlerWrapper";
 import SecretFilter from "../../../../../middlewares/SecretFilter";
-import { modify, PickProps } from "../../../../../modifiers";
+import { modify, PickProps } from "../../../../../utils";
 import BaseResponse from "../../../../../payloads/BaseResponse";
-import { toSafeInt, toNormalizedString, toSafeString } from "../../../../../to";
+import { toSafeInt, toNormalizedString, toSafeString } from "../../../../../utils";
 import { resolveMongoFilter } from "../../../../../merin";
 import { isValidTermId } from "../../../../../utils";
 import { InvalidTermIdError } from "../../../../../exceptions";
+import { ClassToRegister } from "../../../../../entities";
 
 const router = express.Router();
 

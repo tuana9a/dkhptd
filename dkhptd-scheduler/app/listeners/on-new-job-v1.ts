@@ -7,7 +7,7 @@ import { rabbitmqConnectionPool } from "../connections";
 import { c } from "../cypher";
 import logger from "../loggers/logger";
 import { jobV1QueueName } from "../queue-name";
-import { toJson, toBuffer } from "../to";
+import { toJson, toBuffer } from "../utils";
 
 export const setup = () => {
   rabbitmqConnectionPool.getChannel().assertQueue(jobV1QueueName.RUN_JOB_V1, {});

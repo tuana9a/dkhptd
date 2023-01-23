@@ -7,7 +7,7 @@ import cors from "cors";
 
 import { cfg } from "./cfg";
 import logger from "./loggers/logger";
-import { toKeyValueString } from "./to";
+import { toKeyValueString } from "./utils";
 import { mongoConnectionPool, rabbitmqConnectionPool } from "./connections";
 import { tkbQueueName } from "./queue-name";
 import { getPrettyLoadedRoutes } from "./utils";

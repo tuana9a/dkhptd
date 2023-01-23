@@ -2,15 +2,14 @@ import express from "express";
 import { Filter, ObjectId } from "mongodb";
 import { cfg } from "../../../../cfg";
 import { mongoConnectionPool } from "../../../../connections";
-import Account from "../../../../entities/Account";
-import AccountPreference from "../../../../entities/AccountPreference";
 import ExceptionHandlerWrapper from "../../../../middlewares/ExceptionHandlerWrapper";
-import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith, NormalizeArrayProp, SetProp } from "../../../../modifiers";
+import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith, NormalizeArrayProp, SetProp, accountToClient } from "../../../../utils";
 import BaseResponse from "../../../../payloads/BaseResponse";
-import { toSHA256 } from "../../../../to";
+import { toSHA256 } from "../../../../utils";
 import JwtFilter from "../../../../middlewares/JwtFilter";
 import { isFalsy } from "../../../../utils";
 import { MissingRequestBodyDataError, UsernameNotFoundError } from "../../../../exceptions";
+import { Account, AccountPreference } from "../../../../entities";
 
 const router = express.Router();
 
@@ -28,7 +27,7 @@ router.get("", ExceptionHandlerWrapper(async (req, resp) => {
 
   if (isFalsy(account)) throw new UsernameNotFoundError(accountId);
 
-  resp.send(new BaseResponse().ok(new Account(account).toClient()));
+  resp.send(new BaseResponse().ok(accountToClient(new Account(account))));
 }));
 
 router.put("/password", ExceptionHandlerWrapper(async (req, resp) => {
@@ -58,7 +57,7 @@ router.put("/password", ExceptionHandlerWrapper(async (req, resp) => {
     .collection(Account.name)
     .updateOne(filter, { $set: { password: newHashedPassword } });
 
-  resp.send(new BaseResponse().ok(new Account(account).toClient()));
+  resp.send(new BaseResponse().ok(accountToClient(new Account(account))));
 }));
 
 router.get("/preferences", ExceptionHandlerWrapper(async (req, resp) => {

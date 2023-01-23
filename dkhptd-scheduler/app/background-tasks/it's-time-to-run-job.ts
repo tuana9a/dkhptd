@@ -3,10 +3,10 @@ import { jobEvent } from "../app-event";
 import { jobBus } from "../bus";
 import { cfg, JobStatus } from "../cfg";
 import { mongoConnectionPool } from "../connections";
-import DKHPTDJob from "../entities/DKHPTDJob";
+import { DKHPTDJob } from "../entities";
 import logger from "../loggers/logger";
-import loop from "../loop";
 import ms from "ms";
+import { loop, jobToMessage } from "../utils";
 
 export const setup = () => loop.infinity(async () => {
   try {
@@ -17,7 +17,7 @@ export const setup = () => loop.infinity(async () => {
     while (await cursor.hasNext()) {
       const entry = await cursor.next();
       const job = new DKHPTDJob(entry);
-      jobBus.emit(jobEvent.NEW_JOB, job.toWorker());
+      jobBus.emit(jobEvent.NEW_JOB, jobToMessage(job));
       await mongoConnectionPool.getClient()
         .db(cfg.DATABASE_NAME).collection(DKHPTDJob.name).updateOne({ _id: new ObjectId(job._id) }, {
           $set: {

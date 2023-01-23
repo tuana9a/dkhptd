@@ -1,48 +1,9 @@
 /* eslint-disable no-param-reassign */
-
 import crypto from "crypto";
 import { ObjectId } from "mongodb";
 import { cfg } from "./cfg";
 import { c } from "./cypher";
-import { Account, DKHPTDJobV1, DKHPTDJobV1Logs, DKHPTDJobV2, DKHPTDJobV2Logs, DKHPTDResult, DKHPTDV1Result, DKHPTDV2Result } from "./entities";
-
-export const diff = (old, next, opts = { ignoreKeys: new Set() }) => {
-  const d = {};
-  const keys = new Set(Object.keys(old)
-    .concat(Object.keys(next))
-    .filter((key) => !opts?.ignoreKeys.has(key))
-    .filter((key) => next[key]));
-  for (const key of keys) {
-    // eslint-disable-next-line eqeqeq
-    if (old[key] != next[key]) {
-      d[key] = { old: old[key], next: next[key] };
-    }
-  }
-  return d;
-};
-
-export const isFalsy = (input) => !input;
-
-export const isEmpty = (input: string) => input && input.match(/^\s*$/);
-
-export const isValidTermId = (input: string) => input.match(/^\d+\w*$/);
-
-export const getPrettyLoadedRoutes = (input) => {
-  const r = (o, previousPath: string) => {
-    const result = [];
-    const keys = Object.keys(o);
-    for (const key of keys) {
-      if (typeof o[key] == "string") {
-        result.push({ path: `${previousPath}/${key}`, m: o[key] });
-      } else {
-        const nestedResult = r(o[key], `${previousPath}/${key}`);
-        result.push(...nestedResult);
-      }
-    }
-    return result;
-  };
-  return r(input, "");
-};
+import { DKHPTDJobV1Logs, DKHPTDJobV1, DKHPTDJobV2Logs, DKHPTDJobV2, DKHPTDV1Result, DKHPTDResult, DKHPTDV2Result } from "./entities";
 
 export const toBuffer = (input) => Buffer.from(input);
 export const toJson = (input, space?: string | number) => JSON.stringify(input, null, space);
@@ -68,6 +29,32 @@ export const toSafeArray = <T>(input): T[] => {
 export const toSafeInt = (input) => parseInt(input) || 0;
 export const toSafeString = (input) => String(input);
 export const toSHA256 = (input: string) => crypto.createHash("sha256").update(input).digest("hex");
+export const jobToMessage = (input) => ({
+  id: input._id,
+  name: "DangKyHocPhanTuDong",
+  username: input.username,
+  password: input.password,
+  classIds: input.classIds,
+});
+export const jobV1ToMessage = (input) => ({
+  id: input._id,
+  name: "DangKyHocPhanTuDongV1",
+  username: input.username,
+  password: input.password,
+  classIds: input.classIds,
+});
+export const jobV2ToMessage = (input) => ({
+  id: input._id,
+  name: "DangKyHocPhanTuDongV2",
+  username: input.username,
+  password: input.password,
+  classIds: input.classIds,
+});
+
+let n = 0;
+
+export const nextInt = () => n++;
+export const nextStr = () => String(n++);
 
 export const modify = (input, chains: ((...args) => unknown)[]) => {
   let output = input;
@@ -161,8 +148,14 @@ export const SetProp = (key: string, value: unknown) => (input) => {
   return input;
 };
 
-export const accountToClient = (input: Account) => {
-  return modify(input, [DropProps(["password"])]);
+export const loop = {
+  infinity: (fn: () => unknown, delay: number) => {
+    const call = async () => {
+      await fn();
+      setTimeout(call, delay);
+    };
+    call();
+  },
 };
 
 export const decryptJobV1Logs = (input: DKHPTDJobV1Logs) => {

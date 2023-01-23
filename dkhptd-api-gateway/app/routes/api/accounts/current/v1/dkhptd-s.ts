@@ -2,16 +2,14 @@ import { Filter, ObjectId } from "mongodb";
 import express from "express";
 import { cfg, JobStatus } from "../../../../../cfg";
 import { mongoConnectionPool } from "../../../../../connections";
-import DKHPTDJobV1 from "../../../../../entities/DKHPTDJobV1";
-import DKHPTDJobV1Logs from "../../../../../entities/DKHPTDJobV1Logs";
 import ExceptionHandlerWrapper from "../../../../../middlewares/ExceptionHandlerWrapper";
-import { modify, PickProps, NormalizeArrayProp, NormalizeIntProp, NormalizeStringProp, SetProp } from "../../../../../modifiers";
+import { modify, PickProps, NormalizeArrayProp, NormalizeIntProp, NormalizeStringProp, SetProp, decryptJobV1Logs, decryptResultV1 } from "../../../../../utils";
 import BaseResponse from "../../../../../payloads/BaseResponse";
 import { resolveMongoFilter } from "../../../../../merin";
-import DKHPTDJobV2 from "../../../../../entities/DKHPTDJobV2";
 import RateLimit from "../../../../../middlewares/RateLimit";
 import { FaslyValueError, NotAnArrayError, JobNotFoundError, EmptyStringError, RequireLengthFailed } from "../../../../../exceptions";
 import { isEmpty, isFalsy } from "../../../../../utils";
+import { DKHPTDJobLogs, DKHPTDJobV1, DKHPTDJobV1Logs, DKHPTDResult, DKHPTDV1Result } from "../../../../../entities";
 
 const router = express.Router();
 
@@ -29,7 +27,7 @@ router.get("/:jobId/logs", ExceptionHandlerWrapper(async (req, resp) => {
     .collection(DKHPTDJobV1Logs.name)
     .find(filter)
     .toArray();
-  const data = logs.map((x) => new DKHPTDJobV1Logs(x).toClient());
+  const data = logs.map((x) => new DKHPTDJobV1Logs(x));
   resp.send(new BaseResponse().ok(data));
 }));
 
@@ -47,7 +45,43 @@ router.get("/:jobId/d/logs", ExceptionHandlerWrapper(async (req, resp) => {
     .collection(DKHPTDJobV1Logs.name)
     .find(filter)
     .toArray();
-  const data = logs.map((x) => new DKHPTDJobV1Logs(x).decrypt().toClient());
+  const data = logs.map((x) => new DKHPTDJobLogs(decryptJobV1Logs(new DKHPTDJobV1Logs(x))));
+  resp.send(new BaseResponse().ok(data));
+}));
+
+router.get("/:jobId/results", ExceptionHandlerWrapper(async (req, resp) => {
+  const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
+  const accountId = req.__accountId;
+
+  const filter: Filter<DKHPTDV1Result> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
+  filter.ownerAccountId = new ObjectId(accountId);
+  filter.jobId = new ObjectId(req.params.jobId);
+
+  const logs = await mongoConnectionPool
+    .getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(DKHPTDV1Result.name)
+    .find(filter)
+    .toArray();
+  const data = logs.map((x) => new DKHPTDV1Result(x));
+  resp.send(new BaseResponse().ok(data));
+}));
+
+router.get("/:jobId/d/results", ExceptionHandlerWrapper(async (req, resp) => {
+  const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
+  const accountId = req.__accountId;
+
+  const filter: Filter<DKHPTDV1Result> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
+  filter.ownerAccountId = new ObjectId(accountId);
+  filter.jobId = new ObjectId(req.params.jobId);
+
+  const logs = await mongoConnectionPool
+    .getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(DKHPTDV1Result.name)
+    .find(filter)
+    .toArray();
+  const data = logs.map((x) => new DKHPTDResult(decryptResultV1(new DKHPTDV1Result(x))));
   resp.send(new BaseResponse().ok(data));
 }));
 
@@ -64,7 +98,7 @@ router.get("", ExceptionHandlerWrapper(async (req, resp) => {
     .collection(DKHPTDJobV1.name)
     .find(filter)
     .toArray();
-  const data = jobs.map((x) => new DKHPTDJobV1(x).toClient());
+  const data = jobs.map((x) => new DKHPTDJobV1(x));
   resp.send(new BaseResponse().ok(data));
 }));
 
@@ -180,28 +214,28 @@ router.delete("/:jobId", ExceptionHandlerWrapper(async (req, resp) => {
 
 router.put("/:jobId/cancel", ExceptionHandlerWrapper(async (req, resp) => {
   const accountId = req.__accountId;
-  const filter: Filter<DKHPTDJobV2> = {
+  const filter: Filter<DKHPTDJobV1> = {
     _id: new ObjectId(req.params.jobId),
     ownerAccountId: new ObjectId(accountId),
   };
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV2.name)
+    .collection(DKHPTDJobV1.name)
     .findOneAndUpdate(filter, { $set: { status: JobStatus.CANCELED } });
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));
 
 router.delete("/:jobId", ExceptionHandlerWrapper(async (req, resp) => {
   const accountId = req.__accountId;
-  const filter: Filter<DKHPTDJobV2> = {
+  const filter: Filter<DKHPTDJobV1> = {
     _id: new ObjectId(req.params.jobId),
     ownerAccountId: new ObjectId(accountId),
   };
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV2.name)
+    .collection(DKHPTDJobV1.name)
     .deleteOne(filter);
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));

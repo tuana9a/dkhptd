@@ -4,16 +4,16 @@ import multer from "multer";
 import { tkbBus } from "../../../bus";
 import { cfg } from "../../../cfg";
 import { mongoConnectionPool } from "../../../connections";
-import ClassToRegister from "../../../entities/ClassToRegister";
 import ExceptionHandlerWrapper from "../../../middlewares/ExceptionHandlerWrapper";
 import SecretFilter from "../../../middlewares/SecretFilter";
-import { modify, PickProps, NormalizeIntProp, NormalizeStringProp, SetProp } from "../../../modifiers";
+import { modify, PickProps, NormalizeIntProp, NormalizeStringProp, SetProp } from "../../../utils";
 import BaseResponse from "../../../payloads/BaseResponse";
-import { toNormalizedString, toSafeInt } from "../../../to";
+import { toNormalizedString, toSafeInt } from "../../../utils";
 import { resolveMongoFilter } from "../../../merin";
 import { FaslyValueError, InvalidTermIdError, NotAnArrayError } from "../../../exceptions";
 import { isFalsy, isValidTermId } from "../../../utils";
 import { tkbEvent } from "../../../app-event";
+import { ClassToRegister } from "../../../entities";
 
 const router = express.Router();
 

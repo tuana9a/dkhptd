@@ -3,7 +3,7 @@ import { jobEvent } from "../app-event";
 import { jobBus } from "../bus";
 import { cfg, JobStatus } from "../cfg";
 import { mongoConnectionPool } from "../connections";
-import DKHPTDJob from "../entities/DKHPTDJob";
+import { DKHPTDJob } from "../entities";
 import logger from "../loggers/logger";
 
 export const setup = () => {

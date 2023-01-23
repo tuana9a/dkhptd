@@ -1,13 +1,13 @@
 import express from "express";
 import { cfg } from "../../cfg";
 import { mongoConnectionPool } from "../../connections";
-import Account from "../../entities/Account";
+import { Account } from "../../entities";
 import { UsernameExistedError } from "../../exceptions";
 import ExceptionHandlerWrapper from "../../middlewares/ExceptionHandlerWrapper";
-import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith } from "../../modifiers";
+import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith, accountToClient } from "../../utils";
 import BaseResponse from "../../payloads/BaseResponse";
 import LoginWithUsernamePasswordRequest from "../../payloads/LoginWithUsernamePasswordRequest";
-import { toSHA256 } from "../../to";
+import { toSHA256 } from "../../utils";
 
 const router = express.Router();
 
@@ -41,7 +41,7 @@ router.post("", ExceptionHandlerWrapper(async (req, resp) => {
     .collection(Account.name)
     .insertOne(account);
 
-  resp.send(new BaseResponse().ok(account.toClient()));
+  resp.send(new BaseResponse().ok(accountToClient(account)));
 }));
 
 export default router;

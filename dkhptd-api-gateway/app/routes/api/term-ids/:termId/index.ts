@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import express, { RequestHandler } from "express";
-import { toSafeString } from "../../../../to";
+import { toSafeString } from "../../../../utils";
 
 const router = express.Router();
 

@@ -2,11 +2,11 @@ import { Filter, ObjectId } from "mongodb";
 import express from "express";
 import { cfg } from "../../../../../../cfg";
 import { mongoConnectionPool } from "../../../../../../connections";
-import DKHPTDJobV1 from "../../../../../../entities/DKHPTDJobV1";
 import ExceptionHandlerWrapper from "../../../../../../middlewares/ExceptionHandlerWrapper";
-import { PickProps, modify } from "../../../../../../modifiers";
+import { PickProps, modify, decryptJobV1 } from "../../../../../../utils";
 import BaseResponse from "../../../../../../payloads/BaseResponse";
 import { resolveMongoFilter } from "../../../../../../merin";
+import { DKHPTDJobV1 } from "../../../../../../entities";
 
 const router = express.Router();
 
@@ -23,7 +23,7 @@ router.get("/", ExceptionHandlerWrapper(async (req, resp) => {
     .collection(DKHPTDJobV1.name)
     .find(filter)
     .toArray();
-  const data = jobs.map((x) => new DKHPTDJobV1(x).decrypt().toClient());
+  const data = jobs.map((x) => decryptJobV1(new DKHPTDJobV1(x)));
   resp.send(new BaseResponse().ok(data));
 }));
 
@@ -38,7 +38,7 @@ router.get("/:jobId", ExceptionHandlerWrapper(async (req, resp) => {
     .collection(DKHPTDJobV1.name)
     .findOne(filter);
   const job = new DKHPTDJobV1(doc);
-  resp.send(new BaseResponse().ok(job.decrypt().toClient()));
+  resp.send(new BaseResponse().ok(decryptJobV1(job)));
 }));
 
 export default router;

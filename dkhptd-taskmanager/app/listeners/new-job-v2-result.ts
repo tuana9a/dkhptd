@@ -5,10 +5,9 @@ import { jobV2Bus } from "../bus";
 import { cfg, JobStatus } from "../cfg";
 import { mongoConnectionPool } from "../connections";
 import { c } from "../cypher";
-import DKHPTDJobV2 from "../entities/DKHPTDJobV2";
-import DKHPTDJobV2Logs from "../entities/DKHPTDJobV2Logs";
+import { DKHPTDJobV2, DKHPTDJobV2Logs } from "../entities";
 import logger from "../loggers/logger";
-import { toJson } from "../to";
+import { toJson } from "../utils";
 
 export const setup = () => {
   jobV2Bus.on(jobV2Event.NEW_JOB_V2_RESULT, async (result) => {
