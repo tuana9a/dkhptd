@@ -8,7 +8,7 @@ import crypto from "crypto";
 const ALGORITHM = "aes-256-cbc";
 
 class C {
-  private secret: string;
+  secret: string;
 
   constructor(secret: string) {
     this.secret = secret;

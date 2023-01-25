@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import ActionLog from "src/entities/ActionLog";
+import { ActionLog } from "src/entities";
 
 @Component({
   selector: "[app-action-log]",

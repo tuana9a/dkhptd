@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { AccountsApi } from "src/apis/accounts.api";
-import AccountPreference from "src/entities/AccountPreference";
+import { AccountPreference } from "src/entities";
 
 @Component({
   selector: "[app-preference]",

@@ -1,0 +1,18 @@
+<div>
+  <table>
+    <tr>
+      <td>_id</td>
+      <td>username</td>
+      <td (click)="toggleShowPassword()"><button><span>password</span></button></td>
+      <td>Danh Sách Mã Lớp</td>
+      <td>Hẹn Giờ</td>
+      <td>Thời Gian Tạo</td>
+      <td>Kỳ Học</td>
+      <td>Trạng Thái</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr *ngFor="let job of jobs" app-dkhptd-job-row [job]="job" [showPassword]="showPassword" [showTermId]="true"></tr>
+  </table>
+</div>

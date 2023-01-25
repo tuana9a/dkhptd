@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { AccountsApi } from "src/apis/accounts.api";
 import { ClassToRegsitersApi } from "src/apis/class-to-register.apis";
-import AccountPreference from "src/entities/AccountPreference";
-import ClassToRegister from "src/entities/ClassToRegister";
+import { AccountPreference } from "src/entities";
+import { ClassToRegister } from "src/entities";
 
 @Component({
   selector: "[app-new-job-suggestion-box]",
@@ -14,7 +14,7 @@ export class NewJobSuggestionBoxComponent implements OnInit {
   @Input() showCreatedAtColumn = false;
   preferences?: AccountPreference[] = [];
   suggestionClassToRegisterByPreferences: ClassToRegister[] = [];
-  @Input() selectedTermId? = "";
+  @Input() selectedTermId?= "";
   @Output() classClickedEvent = new EventEmitter<ClassToRegister>();
 
   constructor(private classToRegisterApi: ClassToRegsitersApi, private accountsApi: AccountsApi) { }

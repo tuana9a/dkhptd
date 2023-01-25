@@ -54,15 +54,6 @@ export class Account {
   }
 }
 
-/** @deprecated */
-export class BaseEntity {
-  _id: ObjectId;
-
-  constructor(_id: ObjectId) {
-    this._id = _id;
-  }
-}
-
 export class ClassToRegister {
   _id: ObjectId;
   classId: number;
@@ -76,7 +67,7 @@ export class ClassToRegister {
   learnRoom: string;
   learnWeek: string;
   describe: string;
-  termId: string;
+  termId: string | number;
   createdAt: number;
 
   constructor(o: {
@@ -92,7 +83,7 @@ export class ClassToRegister {
     learnRoom?: string;
     learnWeek?: string;
     describe?: string;
-    termId?: string;
+    termId?: string | number;
     createdAt?: number;
   }) {
     this._id = o._id;
@@ -151,6 +142,7 @@ export class DKHPTDJob {
   status: number;
   createdAt: number;
   doingAt: number;
+  termId: string;
 
   constructor(o: {
     _id?: ObjectId;
@@ -162,6 +154,7 @@ export class DKHPTDJob {
     status?: number;
     createdAt?: number;
     doingAt?: number;
+    termId?: string;
   }) {
     this._id = o._id;
     this.ownerAccountId = o.ownerAccountId;
@@ -172,6 +165,7 @@ export class DKHPTDJob {
     this.status = o.status;
     this.createdAt = o.createdAt;
     this.doingAt = o.doingAt;
+    this.termId = o.termId;
   }
 }
 
@@ -219,6 +213,7 @@ export class DKHPTDJobV1 {
   doingAt: number;
   iv: string;
   no: number; // lần thực thí thứ n
+  termId: string;
 
   constructor(o: {
     _id?: ObjectId;
@@ -232,6 +227,7 @@ export class DKHPTDJobV1 {
     doingAt?: number;
     iv?: string;
     no?: number;
+    termId?: string;
   }) {
     this._id = o._id;
     this.ownerAccountId = o.ownerAccountId;
@@ -244,6 +240,7 @@ export class DKHPTDJobV1 {
     this.doingAt = o.doingAt || -1;
     this.iv = o.iv;
     this.no = o.no || 0;
+    this.termId = o.termId;
   }
 }
 
@@ -443,5 +440,14 @@ export class Timestamp {
   constructor(date = new Date()) {
     this.n = date.getTime();
     this.s = date.toString();
+  }
+}
+
+export class TermId {
+  _id: ObjectId;
+  name: string;
+  constructor(o: { _id?: ObjectId, name?: string }) {
+    this._id = o._id;
+    this.name = o.name;
   }
 }

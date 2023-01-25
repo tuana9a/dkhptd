@@ -15,7 +15,7 @@
   </div>
   <div *ngFor="let p of preferencesBySelectedTermId()">
     <div class="border border-solid border-white my-2" *ngFor="let s of p.wantedSubjectIds">
-      <div app-search-class-to-register (classClickedEvent)="onClassClickedEvent($event)" [q]="'termId==' + p.termId + ',subjectId==' + s" [showExample]="false" [navigateOnQueryChange]="false" [searchOnInit]="true" [showQueryKeys]="false"></div>  
+      <div app-search-class-to-register (classClicked)="onClassClickedEvent($event)" [q]="'termId==' + p.termId + ',subjectId==' + s" [showExample]="false" [navigateOnQueryChange]="false" [searchOnInit]="true" [showQueryKeys]="false"></div>  
     </div>
   </div>
 </div>

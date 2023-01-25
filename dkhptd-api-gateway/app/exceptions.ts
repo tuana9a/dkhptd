@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import BaseResponse from "./payloads/BaseResponse";
 
 export class SafeError extends Error {
-  private code: number;
+  code: number;
 
   __isSafeError: boolean;
 

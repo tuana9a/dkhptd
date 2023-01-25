@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ClassToRegisterTableComponent } from './class-to-register-table.component';
+import { ClassToRegisterTableComponent } from "./class-to-register-table.component";
 
-describe('ClassToRegisterTableComponent', () => {
+describe("ClassToRegisterTableComponent", () => {
   let component: ClassToRegisterTableComponent;
   let fixture: ComponentFixture<ClassToRegisterTableComponent>;
 
@@ -10,14 +10,14 @@ describe('ClassToRegisterTableComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ ClassToRegisterTableComponent ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(ClassToRegisterTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

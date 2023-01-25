@@ -33,9 +33,12 @@
       <td><span>{{job?.status | JobStatus}}</span></td>
     </tr>
   </table>
-  <!-- <div><button (click)="showLogs()">Show Logs</button></div> -->
   <div *ngFor="let l of logs; let i = index">
     <div><h2>Lần thứ {{i+1}}</h2></div>
     <div app-dkhptd-job-logs [id]="id" [logs]="l.logs"></div>
+  </div>
+  <div *ngFor="let result of results; let i = index">
+    <div><h2>Lần thứ {{i+1}}</h2></div>
+    <div app-dkhptd-job-v1-result [id]="id" [result]="result"></div>
   </div>
 </div>

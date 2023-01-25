@@ -1,8 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import Account from "src/entities/Account";
-import AccountPreference from "src/entities/AccountPreference";
-import BaseResponse from "src/payloads/BaseResponse";
+import { Account, AccountPreference } from "src/entities";
+import { BaseResponse } from "src/payloads";
 
 @Injectable({
   providedIn: "root"
@@ -21,6 +20,10 @@ export class AccountsApi {
 
   currentPreferences() {
     return this.httpClient.get<BaseResponse<AccountPreference[]>>("/api/accounts/current/preferences");
+  }
+
+  currentPreferencesOfTermId(termId: string) {
+    return this.httpClient.get<BaseResponse<AccountPreference[]>>(`/api/accounts/current/term-ids/${termId}/preferences`);
   }
 
   addPreference(preference?: AccountPreference) {

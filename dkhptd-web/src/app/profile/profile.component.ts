@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { AccountsApi } from "src/apis/accounts.api";
-import Account from "src/entities/Account";
+import { Account } from "src/entities";
 
 @Component({
   selector: "app-profile",
@@ -8,7 +8,7 @@ import Account from "src/entities/Account";
   styleUrls: ["./profile.component.scss"]
 })
 export class ProfileComponent implements OnInit {
-  account: Account = new Account({});
+  account: Account = new Account({ username: "", password: "" });
   newPassword = "";
 
   constructor(private accountsApi: AccountsApi) { }

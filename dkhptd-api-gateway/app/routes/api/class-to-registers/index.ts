@@ -10,8 +10,8 @@ import { modify, PickProps, NormalizeIntProp, NormalizeStringProp, SetProp } fro
 import BaseResponse from "../../../payloads/BaseResponse";
 import { toNormalizedString, toSafeInt } from "../../../utils";
 import { resolveMongoFilter } from "../../../merin";
-import { FaslyValueError, InvalidTermIdError, NotAnArrayError } from "../../../exceptions";
-import { isFalsy, isValidTermId } from "../../../utils";
+import { FaslyValueError, NotAnArrayError } from "../../../exceptions";
+import { isFalsy } from "../../../utils";
 import { tkbEvent } from "../../../app-event";
 import { ClassToRegister } from "../../../entities";
 
@@ -58,8 +58,6 @@ router.post("/", SecretFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, r
       ]);
 
       const classToRegister = new ClassToRegister(classToRegisterConstruct);
-
-      if (!isValidTermId(classToRegister.termId)) throw new InvalidTermIdError(classToRegister.termId);
 
       classToRegistersToInsert.push(classToRegister);
       result.push(new BaseResponse().ok(classToRegister));
@@ -115,12 +113,10 @@ router.get("/", ExceptionHandlerWrapper(async (req, resp) => {
 router.get("/class-ids", ExceptionHandlerWrapper(async (req, resp) => {
   const classIds = toNormalizedString(req.query.classIds)
     .split(",")
-    .map((x) => toNormalizedString(x));
-  const termId = toNormalizedString(req.query.termId);
+    .map((x) => toSafeInt(x));
+  const termId = toSafeInt(req.query.termId);
 
-  if (!isValidTermId(termId)) throw new InvalidTermIdError(termId);
-
-  const filter = { classId: { $in: classIds }, termId: termId };
+  const filter: Filter<ClassToRegister> = { classId: { $in: classIds }, termId: termId };
   const classToRegisters = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
@@ -134,11 +130,9 @@ router.get("/class-ids/start-withs", ExceptionHandlerWrapper(async (req, resp) =
   const classIds = toNormalizedString(req.query.classIds)
     .split(",")
     .map((x) => toNormalizedString(x));
-  const termId = toNormalizedString(req.query.termId);
+  const termId = toSafeInt(req.query.termId);
 
-  if (!isValidTermId(termId)) throw new InvalidTermIdError(termId);
-
-  const filter = {
+  const filter: Filter<ClassToRegister> = {
     classId: {
       $or: classIds
         .map((x) => toSafeInt(x))
@@ -165,12 +159,10 @@ router.get("/class-ids/start-withs", ExceptionHandlerWrapper(async (req, resp) =
 }));
 
 router.get("/class-ids/:classId", ExceptionHandlerWrapper(async (req, resp) => {
-  const classId = toNormalizedString(req.params.classId);
-  const termId = toNormalizedString(req.query.termId);
+  const classId = toSafeInt(req.params.classId);
+  const termId = toSafeInt(req.query.termId);
 
-  if (!isValidTermId(termId)) throw new InvalidTermIdError(termId);
-
-  const filter = { classId: classId, termId: termId };
+  const filter: Filter<ClassToRegister> = { classId: classId, termId: termId };
   const classToRegister = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)

@@ -1,12 +1,15 @@
-<td class="ObjectId">{{job?._id}}</td>
+<td *ngIf="showId" class="ObjectId">{{job?._id}}</td>
 <td>{{job?.username}}</td>
 <td (click)="toggleShowPassword()">{{job?.password | password: showPassword}}</td>
 <td>
-  <span class="classId mr-1" *ngFor="let classId of job?.classIds"><a routerLink="/search-class-to-register" [queryParams]="{q: 'classId==' + classId}">{{classId}}</a></span>
+  <span class="classId mr-1" *ngFor="let classId of job?.classIds">
+    <a [routerLink]="['/search-class-to-register/term-ids', job?.termId]" [queryParams]="{q: 'classId==' + classId}">{{classId}}</a>
+  </span>
 </td>
 <td>{{job?.timeToStart | date:'dd-MM-YYYY hh:mm:ss'}}</td>
 <td>{{job?.createdAt | date:'dd-MM-YYYY hh:mm:ss'}}</td>
+<td *ngIf="showTermId">{{job?.termId}}</td>
 <td>{{job?.status | JobStatus}}</td>
 <td><button [disabled]="!isCancelable()" (click)="onCancelJob()">Hủy</button></td>
 <td><button [disabled]="!isRetryable()" (click)="onRetryJob()">Thử Lại</button></td>
-<td><a [routerLink]="job?._id" routerLinkActive="active" ariaCurrentWhenActive="page">Chi Tiết</a></td>
+<td><a [routerLink]="['/v1/dkhptd-s/', job?._id]" routerLinkActive="active" ariaCurrentWhenActive="page">Chi Tiết</a></td>

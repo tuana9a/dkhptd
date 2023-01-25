@@ -1,0 +1,8 @@
+<div app-new-job-v1 [termId]="termId" [classIds]="classIds"></div>
+<div><button (click)="openSearchBox()">Mở Search Box</button></div>
+<div class="absolute top-0 left-0 w-full h-screen search-box transition" [ngClass]="{ hide: hideSearchBox }">
+  <div class="w-full h-full relative flex justify-center">
+    <div class="absolute top-0 left-0 w-full h-full backdrop-blur-sm bg-white/30 z-0" (click)="closeSearchBox()"></div>
+    <div app-term-id-search-class-to-register (classClicked)="takeClickedClassToRegister($event)" class="absolute w-3/4 max-w-full overflow-auto z-10" [navigateOnQueryChange]="false"></div>
+  </div>
+</div>

@@ -1,9 +1,9 @@
 export default class BaseResponse<T> {
-  private code: number;
-  private message: string;
-  private data: T;
-  private error: T;
-  private success: boolean;
+  code: number;
+  message: string;
+  data: T;
+  error: T;
+  success: boolean;
 
   constructor() {
     this.message = null;

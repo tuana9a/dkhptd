@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { DKHPTDV1sApi } from "src/apis/dkhptd-v1-s.api";
-import DKHPTDJobLogs from "src/entities/DKHPTDJobLogs";
-import DKHPTDJobV1 from "src/entities/DKHPTDJobV1";
+import { DKHPTDJobLogs } from "src/entities";
+import { DKHPTDJobV1 } from "src/entities";
 import { JobStatusUtils } from "src/utils/job-status.utils";
 
 @Component({
@@ -14,6 +14,8 @@ export class DkhptdJobRowComponent implements OnInit {
   @Input() job?: DKHPTDJobV1;
   logs?: DKHPTDJobLogs[];
   @Input() showPassword = false;
+  @Input() showTermId = false;
+  @Input() showId = true;
 
   constructor(private api: DKHPTDV1sApi, private jobStatusUtils: JobStatusUtils) {
   }

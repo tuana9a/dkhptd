@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import DKHPTDJob from "src/entities/DKHPTDJob";
-import BaseResponse from "src/payloads/BaseResponse";
+import { DKHPTDJob } from "src/entities";
+import { BaseResponse } from "src/payloads";
 
 @Injectable({
   providedIn: "root"

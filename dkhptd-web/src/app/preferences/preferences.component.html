@@ -1,7 +1,30 @@
-<div *ngFor="let p of preferences" app-preference [preference]="p"></div>
 <div>
-  <div app-preference [preference]="newPreference" [showUpdateButton]="false" [showIdColumn]="false"></div>
-  <div><button (click)="addPreference()">Thêm Tùy Chọn</button></div>
+  <table>
+    <tr>
+      <td>_id</td>
+      <td>Kỳ Học</td>
+      <td>Mã Học Phần Mong Muốn</td>
+      <td></td>
+    </tr>
+    <tr *ngFor="let p of preferences" app-preference-row [preference]="p"></tr>
+    <tr *ngIf="showAddSection">
+      <td></td>
+      <td>{{termId}}</td>
+      <td>
+        <table>
+          <tr *ngFor="let subjectId of newWantedSubjectIds">
+            <td class="border border-solid border-black">{{subjectId}}</td>
+            <td class=""><button class="px-1" (click)="onRemoveNewSubjectId(subjectId)">-</button></td>
+          </tr>
+          <tr>
+            <td class="border border-solid border-black"><input type="text" [(ngModel)]="newSubjectId" (keypress)="onKeyPressNewSubjectId($event)"></td>
+            <td class=""><button class="px-1" (click)="onAddNewSubjectId()">+</button></td>
+          </tr>
+        </table>
+      </td>
+      <td><button (click)="addPreference()">Thêm</button></td>
+    </tr>
+  </table>
 </div>
 <div>
   <span>{{message}}</span>

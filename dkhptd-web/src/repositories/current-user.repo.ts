@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
-import Account from "src/entities/Account";
-import AccountPreference from "src/entities/AccountPreference";
+import { Account } from "src/entities";
+import { AccountPreference } from "src/entities";
 
 @Injectable({
   providedIn: "root"

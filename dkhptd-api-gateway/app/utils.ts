@@ -193,6 +193,7 @@ export const decryptJobV1 = (input: DKHPTDJobV1) => {
     doingAt: input.doingAt,
     status: input.status,
     no: input.no,
+    termId: input.termId,
   };
 };
 
@@ -211,6 +212,7 @@ export const encryptJobV1 = (input: DKHPTDJobV1) => {
     doingAt: input.doingAt,
     status: input.status,
     iv: iv,
+    termId: input.termId,
   };
 };
 

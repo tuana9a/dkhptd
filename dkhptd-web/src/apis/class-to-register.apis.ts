@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import ClassToRegister from "src/entities/ClassToRegister";
-import BaseResponse from "src/payloads/BaseResponse";
+import { ClassToRegister } from "src/entities";
+import { BaseResponse } from "src/payloads";
 
 @Injectable({
   providedIn: "root"
@@ -12,6 +12,15 @@ export class ClassToRegsitersApi {
 
   find(q: string, page: number, size: number) {
     return this.httpClient.get<BaseResponse<ClassToRegister[]>>("/api/class-to-registers", {
+      params: {
+        q: q,
+        page: page,
+        size: size,
+      }
+    });
+  }
+  findClassesOfTermId(termId: string, q: string, page: number, size: number) {
+    return this.httpClient.get<BaseResponse<ClassToRegister[]>>(`/api/term-ids/${termId}/class-to-registers`, {
       params: {
         q: q,
         page: page,

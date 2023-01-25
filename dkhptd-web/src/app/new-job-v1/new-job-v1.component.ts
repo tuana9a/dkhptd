@@ -1,18 +1,19 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { DKHPTDV1sApi } from "src/apis/dkhptd-v1-s.api";
-import ClassToRegister from "src/entities/ClassToRegister";
+import { ClassToRegister } from "src/entities";
 
 @Component({
-  selector: "app-new-job-v1",
+  selector: "[app-new-job-v1]",
   templateUrl: "./new-job-v1.component.html",
   styleUrls: ["./new-job-v1.component.scss"]
 })
 export class NewJobV1 implements OnInit {
+  @Input() termId = "";
   username = "";
   password = "";
-  timeToStart = "";
-  classIds: Set<string> = new Set();
-  classId = "";
+  @Input() timeToStart = "";
+  @Input() classIds: Set<string> = new Set();
+  @Input() classId = "";
   message?: string;
 
   constructor(private api: DKHPTDV1sApi) { }
@@ -26,8 +27,6 @@ export class NewJobV1 implements OnInit {
     const classIds = Array.from(this.classIds).map(x => x.trim()).filter(x => x);
     this.api.submitCurrentNewJobV1(this.username, this.password, classIds, timeToStart).subscribe(res => {
       this.message = res.success ? "Thành Công" : res.message;
-    }, err => {
-      this.message = err.message;
     });
   }
 

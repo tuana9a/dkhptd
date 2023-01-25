@@ -30,20 +30,50 @@ import { ClassToRegisterTableComponent } from "./class-to-register-table/class-t
 import { MessagesComponent } from "./messages/messages.component";
 import { HttpErrorInterceptor } from "src/interceptors/http-error.interceptor";
 import { UnauthorizedInterceptor } from "src/interceptors/unauthorized.interceptor";
+import { DkhptdJobV1ResultComponent } from "./dkhptd-job-v1-result/dkhptd-job-v1-result.component";
+import { DkhptdJobV1ResultPageComponent } from "./dkhptd-job-v1-result-page/dkhptd-job-v1-result-page.component";
+import { DkhptdJobPageComponent } from "./dkhptd-job-page/dkhptd-job-page.component";
+import { TermIdSearchClassToRegisterComponent } from "./term-id-search-class-to-register/term-id-search-class-to-register.component";
+import { SearchClassToRegisterOfTermIdPageComponent } from "./search-class-to-register-of-term-id-page/search-class-to-register-of-term-id-page.component";
+import { SearchClassToRegisterPageComponent } from "./search-class-to-register-page/search-class-to-register-page.component";
+import { ManagePreferencePageComponent } from "./manage-preference-page/manage-preference-page.component";
+import { PreferencesPageComponent } from "./preferences-page/preferences-page.component";
+import { PreferencesOfTermIdPageComponent } from "./preferences-of-term-id-page/preferences-of-term-id-page.component";
+import { PreferenceRowComponent } from "./preference-row/preference-row.component";
+import { ManageJobV1ByTermIdsComponent } from "./manage-job-v1-by-term-ids/manage-job-v1-by-term-ids.component";
+import { JobTableOfTermIdComponent } from "./job-table-of-term-id/job-table-of-term-id.component";
+import { JobV1TableOfTermIdComponent } from "./job-v1-table-of-term-id/job-v1-table-of-term-id.component";
+import { JobV1TableOfTermIdPageComponent } from "./job-v1-table-of-term-id-page/job-v1-table-of-term-id-page.component";
+import { NewJobV1PageComponent } from "./new-job-v1-page/new-job-v1-page.component";
+import { NewJobV1ForTermIdComponent } from "./new-job-v1-for-term-id/new-job-v1-for-term-id.component";
 
 const routes: Routes = [
   { path: "login", component: LoginComponent },
   { path: "signup", component: SignupComponent },
   { path: "profile", component: ProfileComponent },
   { path: "home", component: HomeComponent },
+  { path: "v1/manage-job", component: ManageDKHPTDJOBV1Component },
+  { path: "v1/dkhptd-s/:id", component: DkhptdJobPageComponent },
   {
-    path: "manage-jobs", component: ManageDKHPTDJOBV1Component, children: [
-      { path: ":id", component: DkhptdJobComponent }
+    path: "v1/new-jobs", component: NewJobV1PageComponent, children: [
+      { path: "term-ids/:termId", component: NewJobV1ForTermIdComponent }
     ]
   },
-  { path: "new-job-v1", component: NewJobV1 },
-  { path: "search-class-to-register", component: SearchClassToRegisterComponent },
-  { path: "preferences", component: PreferencesComponent },
+  {
+    path: "v1/manage-jobs/term-ids", component: ManageJobV1ByTermIdsComponent, children: [
+      { path: ":termId", component: JobV1TableOfTermIdPageComponent }
+    ]
+  },
+  {
+    path: "search-class-to-register", component: SearchClassToRegisterPageComponent, children: [
+      { path: "term-ids/:termId", component: SearchClassToRegisterOfTermIdPageComponent }
+    ]
+  },
+  {
+    path: "preferences", component: ManagePreferencePageComponent, children: [
+      { path: "term-ids/:termId", component: PreferencesOfTermIdPageComponent }
+    ]
+  },
   { path: "upload-tkb-xlsx", component: UploadTkbXlsxComponent },
   { path: "messages", component: MessagesComponent },
 ];
@@ -72,6 +102,22 @@ const routes: Routes = [
     ClassToRegisterRowComponent,
     ClassToRegisterTableComponent,
     MessagesComponent,
+    DkhptdJobV1ResultComponent,
+    DkhptdJobV1ResultPageComponent,
+    DkhptdJobPageComponent,
+    TermIdSearchClassToRegisterComponent,
+    SearchClassToRegisterOfTermIdPageComponent,
+    SearchClassToRegisterPageComponent,
+    ManagePreferencePageComponent,
+    PreferencesPageComponent,
+    PreferencesOfTermIdPageComponent,
+    PreferenceRowComponent,
+    ManageJobV1ByTermIdsComponent,
+    JobTableOfTermIdComponent,
+    JobV1TableOfTermIdComponent,
+    JobV1TableOfTermIdPageComponent,
+    NewJobV1PageComponent,
+    NewJobV1ForTermIdComponent,
   ],
   imports: [
     BrowserModule,

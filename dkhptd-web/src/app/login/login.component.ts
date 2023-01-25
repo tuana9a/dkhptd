@@ -30,7 +30,7 @@ export class LoginComponent {
       if (res.success) {
         this.cookieUtils.set({ name: "jwt", value: res.data?.token });
         this.isAuthorizedRepo.authorized();
-        this.router.navigate(["/manage-jobs"]);
+        this.router.navigate(["/v1/manage-job"]);
       }
     });
   }

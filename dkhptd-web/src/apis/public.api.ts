@@ -1,8 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import Account from "src/entities/Account";
-import BaseResponse from "src/payloads/BaseResponse";
-import LoginResponse from "src/payloads/LoginResponse";
+import { Account } from "src/entities";
+import { BaseResponse, LoginResponse } from "src/payloads";
 
 @Injectable({
   providedIn: "root"

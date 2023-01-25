@@ -1,0 +1,17 @@
+<td *ngIf="showIdColumn" class="ObjectId">{{preference._id}}</td>
+<td><input type="text" [(ngModel)]="preference.termId"></td>
+<td>
+  <table>
+    <tr *ngFor="let subjectId of preference.wantedSubjectIds">
+      <td class="border border-solid border-black">{{subjectId}}</td>
+      <td class=""><button class="px-1" (click)="onRemoveSubjectId(subjectId)">-</button></td>
+    </tr>
+    <tr>
+      <td class="border border-solid border-black"><input type="text" [(ngModel)]="subjectId" (keypress)="onKeyPressSubjectId($event)"></td>
+      <td class=""><button class="px-1" (click)="onAddSubjectId()">+</button></td>
+    </tr>
+  </table>
+</td>
+<td *ngIf="showUpdateButton">
+  <button (click)="onUpdatePreference()">Cập Nhật</button>
+</td>

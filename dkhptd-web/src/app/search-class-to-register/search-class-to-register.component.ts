@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ClassToRegsitersApi } from "src/apis/class-to-register.apis";
-import ClassToRegister from "src/entities/ClassToRegister";
+import { ClassToRegister } from "src/entities";
 
 @Component({
   selector: "[app-search-class-to-register]",
@@ -18,7 +18,7 @@ export class SearchClassToRegisterComponent implements OnInit {
   classes: ClassToRegister[] = [];
   @Input() showExample = true;
   @Input() searchOnInit = true;
-  @Output() classClickedEvent = new EventEmitter<ClassToRegister>();
+  @Output() classClicked = new EventEmitter<ClassToRegister>();
 
   constructor(private activatedRoute: ActivatedRoute, private router: Router, private api: ClassToRegsitersApi) { }
 
@@ -69,6 +69,6 @@ export class SearchClassToRegisterComponent implements OnInit {
   }
 
   onClassClickedEvent(c: ClassToRegister) {
-    this.classClickedEvent.emit(c);
+    this.classClicked.emit(c);
   }
 }

@@ -212,32 +212,4 @@ router.delete("/:jobId", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));
 
-router.put("/:jobId/cancel", ExceptionHandlerWrapper(async (req, resp) => {
-  const accountId = req.__accountId;
-  const filter: Filter<DKHPTDJobV1> = {
-    _id: new ObjectId(req.params.jobId),
-    ownerAccountId: new ObjectId(accountId),
-  };
-  await mongoConnectionPool
-    .getClient()
-    .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV1.name)
-    .findOneAndUpdate(filter, { $set: { status: JobStatus.CANCELED } });
-  resp.send(new BaseResponse().ok(req.params.jobId));
-}));
-
-router.delete("/:jobId", ExceptionHandlerWrapper(async (req, resp) => {
-  const accountId = req.__accountId;
-  const filter: Filter<DKHPTDJobV1> = {
-    _id: new ObjectId(req.params.jobId),
-    ownerAccountId: new ObjectId(accountId),
-  };
-  await mongoConnectionPool
-    .getClient()
-    .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV1.name)
-    .deleteOne(filter);
-  resp.send(new BaseResponse().ok(req.params.jobId));
-}));
-
 export default router;

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import ClassToRegister from "src/entities/ClassToRegister";
+import { ClassToRegister } from "src/entities";
 
 @Component({
   selector: "table[app-class-to-register-table]",

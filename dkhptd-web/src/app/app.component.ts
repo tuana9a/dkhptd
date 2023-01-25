@@ -50,6 +50,9 @@ export class AppComponent implements OnInit {
   showManageJobs() {
     return this.isAuthorizedRepo.isAuthorized;
   }
+  showManageJobByTermIds() {
+    return this.isAuthorizedRepo.isAuthorized;
+  }
   showProfile() {
     return this.isAuthorizedRepo.isAuthorized;
   }

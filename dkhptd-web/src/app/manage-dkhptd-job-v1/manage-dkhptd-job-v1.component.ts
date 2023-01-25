@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { DKHPTDV1sApi } from "src/apis/dkhptd-v1-s.api";
-import DKHPTDJobV1 from "src/entities/DKHPTDJobV1";
+import { DKHPTDJobV1 } from "src/entities";
 
 @Component({
   selector: "app-manage-dkhptd-job-v1",
