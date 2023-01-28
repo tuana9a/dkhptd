@@ -3,10 +3,10 @@ import { Injectable } from "@angular/core";
 @Injectable({
   providedIn: "root"
 })
-export class IsAuthorizedRepo {
+export class AuthorizationRepo {
   public isAuthorized = false;
 
-  authorized() {
+  ok() {
     this.isAuthorized = true;
   }
 

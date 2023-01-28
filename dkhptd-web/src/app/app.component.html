@@ -1,3 +1,4 @@
+<div class="fixed top-0 right-0" app-toast-message></div>
 <!-- This nav gives you links to click, which tells the router which route to use (defined in the routes constant in  AppRoutingModule) -->
 <nav class="overflow-auto">
   <div class="flex max-w-full flex-wrap">
@@ -7,7 +8,7 @@
     <div *ngIf="showManageJobByTermIds()" class="p-1"><a routerLink="/v1/manage-jobs/term-ids" routerLinkActive="active" ariaCurrentWhenActive="page">Quản Lý Hẹn Giờ (Theo Kỳ Học)</a></div>
     <div *ngIf="showNewJobV1()" class="p-1"><a routerLink="/v1/new-jobs" routerLinkActive="active" ariaCurrentWhenActive="page">Tạo Hẹn Giờ Mới</a></div>
     <div *ngIf="showSearchClassToRegister()" class="p-1"><a routerLink="/search-class-to-register" routerLinkActive="active" ariaCurrentWhenActive="page">Tìm Lớp Đăng Ký</a></div>
-    <div *ngIf="showPrefereces()" class="p-1"><a routerLink="/preferences" routerLinkActive="active" ariaCurrentWhenActive="page">Tùy chỉnh</a></div>
+    <div *ngIf="showPrefereces()" class="p-1"><a routerLink="/preferences" routerLinkActive="active" ariaCurrentWhenActive="page">Tùy chỉnh Nguyện Vọng</a></div>
     <div *ngIf="showUploadTKBXlsx()" class="p-1"><a routerLink="/upload-tkb-xlsx" routerLinkActive="active" ariaCurrentWhenActive="page">Upload TKB.xlsx</a></div>
     <div *ngIf="showMessages()" class="p-1"><a routerLink="/messages" routerLinkActive="active" ariaCurrentWhenActive="page">Tin Nhắn ({{toastMessagesRepo.messages.length}})</a></div>
     <div *ngIf="showProfile()" class="p-1"><a routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page">Cá Nhân</a></div>

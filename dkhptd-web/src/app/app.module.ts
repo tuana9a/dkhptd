@@ -46,6 +46,8 @@ import { JobV1TableOfTermIdComponent } from "./job-v1-table-of-term-id/job-v1-ta
 import { JobV1TableOfTermIdPageComponent } from "./job-v1-table-of-term-id-page/job-v1-table-of-term-id-page.component";
 import { NewJobV1PageComponent } from "./new-job-v1-page/new-job-v1-page.component";
 import { NewJobV1ForTermIdComponent } from "./new-job-v1-for-term-id/new-job-v1-for-term-id.component";
+import { ToastMessageComponent } from "./toast-message/toast-message.component";
+import { ToastMessageInterceptor } from "src/interceptors/toast-message.interceptor";
 
 const routes: Routes = [
   { path: "login", component: LoginComponent },
@@ -118,6 +120,7 @@ const routes: Routes = [
     JobV1TableOfTermIdPageComponent,
     NewJobV1PageComponent,
     NewJobV1ForTermIdComponent,
+    ToastMessageComponent,
   ],
   imports: [
     BrowserModule,
@@ -130,6 +133,7 @@ const routes: Routes = [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ToastMessageInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })

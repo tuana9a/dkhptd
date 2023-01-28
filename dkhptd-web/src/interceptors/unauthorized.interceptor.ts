@@ -8,12 +8,12 @@ import {
 
 import { EMPTY } from "rxjs";
 import { catchError } from "rxjs/operators";
-import { IsAuthorizedRepo } from "src/repositories/is-authorized.repo";
+import { AuthorizationRepo } from "src/repositories/is-authorized.repo";
 import { Router } from "@angular/router";
 
 @Injectable()
 export class UnauthorizedInterceptor implements HttpInterceptor {
-  constructor(private isAuthorizedRepo: IsAuthorizedRepo, private router: Router) {
+  constructor(private isAuthorizedRepo: AuthorizationRepo, private router: Router) {
 
   }
   intercept(request: HttpRequest<unknown>, next: HttpHandler) {

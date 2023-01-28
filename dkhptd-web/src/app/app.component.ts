@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { AccountsApi } from "src/apis/accounts.api";
-import { IsAuthorizedRepo } from "src/repositories/is-authorized.repo";
+import { AuthorizationRepo } from "src/repositories/is-authorized.repo";
 import { ToastMessagesRepo } from "src/repositories/toast-messages.repo";
 import { CookieUtils } from "src/utils/cookie.utils";
 
@@ -15,14 +15,14 @@ export class AppComponent implements OnInit {
   constructor(
     public toastMessagesRepo: ToastMessagesRepo,
     public cookieUtils: CookieUtils,
-    public isAuthorizedRepo: IsAuthorizedRepo,
+    public isAuthorizedRepo: AuthorizationRepo,
     public accountsApi: AccountsApi,
     public router: Router,
   ) { }
   ngOnInit(): void {
     this.accountsApi.current().subscribe(res => {
       if (res.success) {
-        this.isAuthorizedRepo.authorized();
+        this.isAuthorizedRepo.ok();
       }
     });
   }

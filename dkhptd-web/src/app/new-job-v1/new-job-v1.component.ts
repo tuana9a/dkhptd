@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { DKHPTDV1sApi } from "src/apis/dkhptd-v1-s.api";
+import { TermIdsJobV1sApi } from "src/apis/term-ids.dkhptd-v1-s.api";
 import { ClassToRegister } from "src/entities";
 
 @Component({
@@ -16,7 +16,7 @@ export class NewJobV1 implements OnInit {
   @Input() classId = "";
   message?: string;
 
-  constructor(private api: DKHPTDV1sApi) { }
+  constructor(private api: TermIdsJobV1sApi) { }
 
   ngOnInit(): void {
     //
@@ -25,9 +25,7 @@ export class NewJobV1 implements OnInit {
   onSubmit() {
     const timeToStart = new Date(this.timeToStart).getTime();
     const classIds = Array.from(this.classIds).map(x => x.trim()).filter(x => x);
-    this.api.submitCurrentNewJobV1(this.username, this.password, classIds, timeToStart).subscribe(res => {
-      this.message = res.success ? "Thành Công" : res.message;
-    });
+    this.api.submitCurrentNewJobV1(this.termId, this.username, this.password, classIds, timeToStart).subscribe();
   }
 
   onAddClassId() {

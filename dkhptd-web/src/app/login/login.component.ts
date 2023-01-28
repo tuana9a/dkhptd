@@ -1,8 +1,7 @@
 import { Component } from "@angular/core";
 import { Router } from "@angular/router";
 import { PublicApi } from "src/apis/public.api";
-import { IsAuthorizedRepo } from "src/repositories/is-authorized.repo";
-import { ToastMessagesRepo } from "src/repositories/toast-messages.repo";
+import { AuthorizationRepo } from "src/repositories/is-authorized.repo";
 import { CookieUtils } from "src/utils/cookie.utils";
 
 @Component({
@@ -18,18 +17,15 @@ export class LoginComponent {
   constructor(
     private publicApi: PublicApi,
     private cookieUtils: CookieUtils,
-    private toastMessagesRepo: ToastMessagesRepo,
-    private isAuthorizedRepo: IsAuthorizedRepo,
+    private isAuthorizedRepo: AuthorizationRepo,
     private router: Router
   ) { }
 
   login() {
     this.publicApi.login(this.username, this.password).subscribe((res) => {
-      this.message = res.success ? "Thành Công" : res.message;
-      this.toastMessagesRepo.add(this.message);
       if (res.success) {
         this.cookieUtils.set({ name: "jwt", value: res.data?.token });
-        this.isAuthorizedRepo.authorized();
+        this.isAuthorizedRepo.ok();
         this.router.navigate(["/v1/manage-job"]);
       }
     });

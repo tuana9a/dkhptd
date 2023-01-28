@@ -15,7 +15,7 @@
           <table>
             <tr *ngFor="let classId of classIds">
               <td class="border border-solid border-black">{{classId}}</td>
-              <td><button (click)="onDeleteClassId(classId)">DELETE</button></td>
+              <td><button (click)="onDeleteClassId(classId)">Xoá</button></td>
             </tr>
             <tr>
               <td class="border border-solid border-black"><input type="text" (keypress)="onKeyPressClassId($event)" [(ngModel)]="classId"></td>
@@ -31,7 +31,4 @@
     </table>
     <button class="px-1" (click)="onSubmit()">Gửi</button>
   </div>
-</div>
-<div>
-  <span>{{message}}</span>
 </div>

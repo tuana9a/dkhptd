@@ -3,6 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 
+$neon-color: rgb(30, 255, 0);
+$dark-neon-color: rgb(17, 145, 0);
+
 * {
   padding: 0;
   margin: 0;
@@ -37,4 +40,8 @@ select {
 
 .ObjectId {
   // font-family: monospace;
+}
+
+.neon {
+  color: $neon-color;
 }

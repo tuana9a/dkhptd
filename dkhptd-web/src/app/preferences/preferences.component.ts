@@ -23,13 +23,14 @@ export class PreferencesComponent implements OnInit {
 
   addPreference() {
     const p = new AccountPreference({ termId: this.termId, wantedSubjectIds: this.newWantedSubjectIds });
-    this.api.addPreference(p).subscribe(res => {
-      this.message = res.success ? "Thành Công" : res.message;
-      this.api.currentPreferences().subscribe(res => {
-        if (res.success) {
-          this.preferences = res.data;
-        }
-      });
+    this.api.addPreference(p).subscribe(res => this.fetchAll());
+  }
+
+  fetchAll() {
+    this.api.currentPreferences().subscribe(res => {
+      if (res.success) {
+        this.preferences = res.data;
+      }
     });
   }
 
