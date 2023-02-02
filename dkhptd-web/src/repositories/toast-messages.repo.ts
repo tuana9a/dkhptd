@@ -8,7 +8,7 @@ export class ToastMessagesRepo {
   messages: (string | undefined)[] = [];
 
   constructor() {
-    setInterval(() => this.visibleMessages.shift(), 2000);
+    //
   }
 
   add(message: string | undefined) {
@@ -18,5 +18,6 @@ export class ToastMessagesRepo {
   push(message: string | undefined) {
     this.add(message);
     this.visibleMessages.push({ i: this.messages.length, m: message });
+    setTimeout(() => this.visibleMessages.shift(), 2000);
   }
 }

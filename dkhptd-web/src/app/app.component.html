@@ -10,7 +10,7 @@
     <div *ngIf="showSearchClassToRegister()" class="p-1"><a routerLink="/search-class-to-register" routerLinkActive="active" ariaCurrentWhenActive="page">Tìm Lớp Đăng Ký</a></div>
     <div *ngIf="showPrefereces()" class="p-1"><a routerLink="/preferences" routerLinkActive="active" ariaCurrentWhenActive="page">Tùy chỉnh Nguyện Vọng</a></div>
     <div *ngIf="showUploadTKBXlsx()" class="p-1"><a routerLink="/upload-tkb-xlsx" routerLinkActive="active" ariaCurrentWhenActive="page">Upload TKB.xlsx</a></div>
-    <div *ngIf="showMessages()" class="p-1"><a routerLink="/messages" routerLinkActive="active" ariaCurrentWhenActive="page">Tin Nhắn ({{toastMessagesRepo.messages.length}})</a></div>
+    <div *ngIf="showMessages()" class="p-1"><a routerLink="/messages" routerLinkActive="active" ariaCurrentWhenActive="page">Thông Báo ({{toastMessagesRepo.messages.length}})</a></div>
     <div *ngIf="showProfile()" class="p-1"><a routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page">Cá Nhân</a></div>
     <div *ngIf="showLogout()" class="p-1"><a (click)="onLogout()">Đăng Xuất</a></div>
   </div>

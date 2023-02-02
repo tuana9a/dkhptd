@@ -18,7 +18,7 @@ router.get("", ExceptionHandlerWrapper(async (req, resp) => {
     NormalizeIntProp("page"),
     NormalizeIntProp("size"),
   ]);
-  const termId = toSafeInt(req.__termId);
+  const termId = req.__termId;
 
   const filter: Filter<ClassToRegister> = resolveMongoFilter(
     String(query.q).split(",")
@@ -42,7 +42,7 @@ router.get("", ExceptionHandlerWrapper(async (req, resp) => {
 
 router.get("/:id", ExceptionHandlerWrapper(async (req, resp) => {
   const id = toNormalizedString(req.params.id);
-  const termId = toSafeInt(req.__termId);
+  const termId = req.__termId;
   const filter: Filter<ClassToRegister> = { _id: new ObjectId(id) };
   filter.termId = termId;
   const classToRegister = await mongoConnectionPool
@@ -55,7 +55,7 @@ router.get("/:id", ExceptionHandlerWrapper(async (req, resp) => {
 
 router.delete("/class-ids/:classId/duplicates", SecretFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
   const classId = toSafeInt(req.params.classId);
-  const termId = toSafeInt(req.__termId);
+  const termId = req.__termId;
 
   const filter: Filter<ClassToRegister> = {
     classId: classId,

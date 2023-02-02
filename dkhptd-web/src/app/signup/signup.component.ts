@@ -17,10 +17,6 @@ export class SignupComponent implements OnInit {
   }
 
   signup() {
-    this.publicApi.signup(this.username, this.password).subscribe(res => {
-      if (res.success) {
-        // TODO
-      }
-    });
+    this.publicApi.signup(this.username, this.password).subscribe();
   }
 }

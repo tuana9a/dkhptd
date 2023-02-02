@@ -3,7 +3,7 @@ import * as amqplib from "amqplib/callback_api";
 import { MongoClient } from "mongodb";
 import { cfg } from "./cfg";
 import { mongoConnectionPool, rabbitmqConnectionPool } from "./connections";
-import { jobExchangeName, jobV1ExchangeName, jobV2ExchangeName } from "./exchange-name";
+import { jobExchangeName, jobV1ExchangeName, jobV2ExchangeName, WorkerExchange } from "./exchange-name";
 import logger from "./loggers/logger";
 import { toJson, toKeyValueString } from "./utils";
 
@@ -28,6 +28,9 @@ async function main() {
       channel.assertExchange(jobExchangeName.MAYBE_STALE_JOB, "fanout");
       channel.assertExchange(jobV1ExchangeName.MAYBE_STALE_JOB_V1, "fanout");
       channel.assertExchange(jobV2ExchangeName.MAYBE_STALE_JOB_V2, "fanout");
+
+      channel.assertExchange(WorkerExchange.WORKER_DOING, "fanout");
+      channel.assertExchange(WorkerExchange.WORKER_PING, "fanout");
 
       const loadedConsumers = require("./auto-consumer").setup("./dist/consumers");
       logger.info(`Loaded consumers: ${toJson(loadedConsumers, 2)}`);

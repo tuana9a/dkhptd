@@ -2,9 +2,9 @@ import express from "express";
 import { cfg } from "../../cfg";
 import { mongoConnectionPool } from "../../connections";
 import { Account } from "../../entities";
-import { UsernameExistedError } from "../../exceptions";
+import { FaslyValueError, UsernameExistedError } from "../../exceptions";
 import ExceptionHandlerWrapper from "../../middlewares/ExceptionHandlerWrapper";
-import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith, accountToClient } from "../../utils";
+import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith, accountToClient, isFalsy } from "../../utils";
 import BaseResponse from "../../payloads/BaseResponse";
 import LoginWithUsernamePasswordRequest from "../../payloads/LoginWithUsernamePasswordRequest";
 import { toSHA256 } from "../../utils";
@@ -22,6 +22,9 @@ router.post("", ExceptionHandlerWrapper(async (req, resp) => {
       ),
     ])
   );
+
+  if (isFalsy(body.username)) throw new FaslyValueError("body.username");
+  if (isFalsy(body.password)) throw new FaslyValueError("body.password");
 
   const isUsernameExists = await mongoConnectionPool
     .getClient()
