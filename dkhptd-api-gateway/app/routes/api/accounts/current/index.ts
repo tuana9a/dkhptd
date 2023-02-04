@@ -2,20 +2,20 @@ import express from "express";
 import { Filter, ObjectId } from "mongodb";
 import { cfg } from "../../../../cfg";
 import { mongoConnectionPool } from "../../../../connections";
-import ExceptionHandlerWrapper from "../../../../middlewares/ExceptionHandlerWrapper";
-import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith, NormalizeArrayProp, SetProp, accountToClient } from "../../../../utils";
+import { ExceptionWrapper } from "../../../../middlewares";
 import BaseResponse from "../../../../payloads/BaseResponse";
-import { toSHA256 } from "../../../../utils";
-import JwtFilter from "../../../../middlewares/JwtFilter";
+import { accountToClient, toSHA256 } from "../../../../utils";
+import { JwtFilter } from "../../../../middlewares";
 import { isFalsy } from "../../../../utils";
 import { MissingRequestBodyDataError, UsernameNotFoundError } from "../../../../exceptions";
 import { Account, AccountPreference } from "../../../../entities";
+import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith, NormalizeArrayProp, SetProp } from "../../../../modifiers";
 
 const router = express.Router();
 
 router.use(JwtFilter(cfg.SECRET));
 
-router.get("", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("", ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
 
   const filter: Filter<Account> = { _id: new ObjectId(accountId) };
@@ -30,7 +30,7 @@ router.get("", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(accountToClient(new Account(account))));
 }));
 
-router.put("/password", ExceptionHandlerWrapper(async (req, resp) => {
+router.put("/password", ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
 
   const body = modify(req.body, [
@@ -60,7 +60,7 @@ router.put("/password", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(accountToClient(new Account(account))));
 }));
 
-router.get("/preferences", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("/preferences", ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const filter: Filter<AccountPreference> = {
     ownerAccountId: new ObjectId(accountId),
@@ -74,7 +74,7 @@ router.get("/preferences", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(preferences));
 }));
 
-router.put("/preferences/:preferenceId", ExceptionHandlerWrapper(async (req, resp) => {
+router.put("/preferences/:preferenceId", ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const preferenceId = new ObjectId(req.params.preferenceId);
 
@@ -105,7 +105,7 @@ router.put("/preferences/:preferenceId", ExceptionHandlerWrapper(async (req, res
   resp.send(new BaseResponse().ok());
 }));
 
-router.post("/preference", ExceptionHandlerWrapper(async (req, resp) => {
+router.post("/preference", ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const data = req.body;
 

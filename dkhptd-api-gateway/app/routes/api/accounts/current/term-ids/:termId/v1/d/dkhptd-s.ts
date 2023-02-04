@@ -4,13 +4,14 @@ import { cfg } from "../../../../../../../../cfg";
 import { mongoConnectionPool } from "../../../../../../../../connections";
 import { DKHPTDJobV1 } from "../../../../../../../../entities";
 import { resolveMongoFilter } from "../../../../../../../../merin";
-import ExceptionHandlerWrapper from "../../../../../../../../middlewares/ExceptionHandlerWrapper";
+import { ExceptionWrapper } from "../../../../../../../../middlewares";
 import BaseResponse from "../../../../../../../../payloads/BaseResponse";
-import { modify, PickProps, decryptJobV1 } from "../../../../../../../../utils";
+import { modify, PickProps } from "../../../../../../../../modifiers";
+import { decryptJobV1 } from "../../../../../../../../utils";
 
 const router = express.Router();
 
-router.get("/", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("/", ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
   const termId = req.__termId;
@@ -30,7 +31,7 @@ router.get("/", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.get("/:jobId", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("/:jobId", ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const termId = req.__termId;
 

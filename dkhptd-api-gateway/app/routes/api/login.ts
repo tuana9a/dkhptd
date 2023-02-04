@@ -3,17 +3,16 @@ import { cfg } from "../../cfg";
 import jwt from "jsonwebtoken";
 import { mongoConnectionPool } from "../../connections";
 import { UsernameNotFoundError, WrongPasswordError } from "../../exceptions";
-import ExceptionHandlerWrapper from "../../middlewares/ExceptionHandlerWrapper";
-import { modify, PickProps, NormalizeStringProp } from "../../utils";
+import { ExceptionWrapper } from "../../middlewares";
+import { modify, PickProps, NormalizeStringProp } from "../../modifiers";
 import BaseResponse from "../../payloads/BaseResponse";
-import LoginResponse from "../../payloads/LoginResponse";
 import LoginWithUsernamePasswordRequest from "../../payloads/LoginWithUsernamePasswordRequest";
 import { toSHA256 } from "../../utils";
 import { Account } from "../../entities";
 
 const router = express.Router();
 
-router.post("", ExceptionHandlerWrapper(async (req, resp) => {
+router.post("", ExceptionWrapper(async (req, resp) => {
   const body = new LoginWithUsernamePasswordRequest(
     modify(req.body, [
       PickProps(["username", "password"]),
@@ -41,7 +40,7 @@ router.post("", ExceptionHandlerWrapper(async (req, resp) => {
   const token = jwt.sign({ id: account._id }, cfg.SECRET, {
     expiresIn: "1d",
   });
-  resp.send(new BaseResponse().ok(new LoginResponse(token)));
+  resp.send(new BaseResponse().ok({ token, username: account.username, role: account.role }));
 }));
 
 export default router;

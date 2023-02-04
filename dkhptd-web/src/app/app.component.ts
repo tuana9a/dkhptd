@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { AccountsApi } from "src/apis/accounts.api";
-import { AuthorizationRepo } from "src/repositories/is-authorized.repo";
+import { Session } from "src/repositories/is-authorized.repo";
 import { ToastMessagesRepo } from "src/repositories/toast-messages.repo";
 import { CookieUtils } from "src/utils/cookie.utils";
 
@@ -12,56 +12,57 @@ import { CookieUtils } from "src/utils/cookie.utils";
 })
 export class AppComponent implements OnInit {
   title = "dkhptd-web";
+  isAdminUser = false;
   constructor(
     public toastMessagesRepo: ToastMessagesRepo,
     public cookieUtils: CookieUtils,
-    public isAuthorizedRepo: AuthorizationRepo,
+    public session: Session,
     public accountsApi: AccountsApi,
     public router: Router,
   ) { }
   ngOnInit(): void {
     this.accountsApi.current().subscribe(res => {
       if (res.success) {
-        this.isAuthorizedRepo.ok();
+        this.session.authenticated(res.data);
       }
     });
   }
   showLogin() {
-    return !this.isAuthorizedRepo.isAuthorized;
+    return !this.session.isAuthorized;
   }
   showRegister() {
-    return !this.isAuthorizedRepo.isAuthorized;
+    return !this.session.isAuthorized;
   }
   showMessages() {
     return true;
   }
-  showUploadTKBXlsx() {
-    return this.isAuthorizedRepo.isAuthorized;
+  showUploadTKB() {
+    return this.session.isAdmin();
   }
   showPrefereces() {
-    return this.isAuthorizedRepo.isAuthorized;
+    return this.session.isAuthorized;
   }
   showSearchClassToRegister() {
     return true;
   }
   showNewJobV1() {
-    return this.isAuthorizedRepo.isAuthorized;
+    return this.session.isAuthorized;
   }
   showManageJobs() {
-    return this.isAuthorizedRepo.isAuthorized;
+    return this.session.isAuthorized;
   }
   showManageJobByTermIds() {
-    return this.isAuthorizedRepo.isAuthorized;
+    return this.session.isAuthorized;
   }
   showProfile() {
-    return this.isAuthorizedRepo.isAuthorized;
+    return this.session.isAuthorized;
   }
   showLogout() {
-    return this.isAuthorizedRepo.isAuthorized;
+    return this.session.isAuthorized;
   }
   onLogout() {
     this.cookieUtils.set({ name: "jwt", value: "" });
-    this.isAuthorizedRepo.unAuthorized();
+    this.session.unAuthorized();
     this.router.navigate(["/login"]);
   }
 }

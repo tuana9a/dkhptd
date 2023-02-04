@@ -2,9 +2,8 @@ import express from "express";
 import { Filter, ObjectId } from "mongodb";
 import { cfg } from "../../../../../cfg";
 import { mongoConnectionPool } from "../../../../../connections";
-import ExceptionHandlerWrapper from "../../../../../middlewares/ExceptionHandlerWrapper";
-import SecretFilter from "../../../../../middlewares/SecretFilter";
-import { modify, NormalizeIntProp, PickProps } from "../../../../../utils";
+import { ExceptionWrapper, IsAdminFilter, JwtFilter } from "../../../../../middlewares";
+import { modify, NormalizeIntProp, PickProps } from "../../../../../modifiers";
 import BaseResponse from "../../../../../payloads/BaseResponse";
 import { toSafeInt, toNormalizedString } from "../../../../../utils";
 import { resolveMongoFilter } from "../../../../../merin";
@@ -12,7 +11,7 @@ import { ClassToRegister } from "../../../../../entities";
 
 const router = express.Router();
 
-router.get("", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("", ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [
     PickProps(["q", "page", "size"], { dropFalsy: true }),
     NormalizeIntProp("page"),
@@ -40,7 +39,7 @@ router.get("", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(classToRegisters));
 }));
 
-router.get("/:id", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("/:id", ExceptionWrapper(async (req, resp) => {
   const id = toNormalizedString(req.params.id);
   const termId = req.__termId;
   const filter: Filter<ClassToRegister> = { _id: new ObjectId(id) };
@@ -53,7 +52,7 @@ router.get("/:id", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(classToRegister));
 }));
 
-router.delete("/class-ids/:classId/duplicates", SecretFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+router.delete("/class-ids/:classId/duplicates", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async (req, resp) => {
   const classId = toSafeInt(req.params.classId);
   const termId = req.__termId;
 

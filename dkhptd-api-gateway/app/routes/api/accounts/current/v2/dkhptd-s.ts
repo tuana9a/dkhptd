@@ -2,9 +2,10 @@ import express from "express";
 import { Filter, ObjectId } from "mongodb";
 import { cfg, JobStatus } from "../../../../../cfg";
 import { mongoConnectionPool } from "../../../../../connections";
-import ExceptionHandlerWrapper from "../../../../../middlewares/ExceptionHandlerWrapper";
-import RateLimit from "../../../../../middlewares/RateLimit";
-import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp, decryptJobV2Logs } from "../../../../../utils";
+import { ExceptionWrapper } from "../../../../../middlewares";
+import { RateLimit } from "../../../../../middlewares";
+import { decryptJobV2Logs } from "../../../../../utils";
+import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "../../../../../modifiers";
 import BaseResponse from "../../../../../payloads/BaseResponse";
 import { resolveMongoFilter } from "../../../../../merin";
 import { EmptyStringError, FaslyValueError, JobNotFoundError, NotAnArrayError, RequireLengthFailed } from "../../../../../exceptions";
@@ -14,7 +15,7 @@ import { DKHPTDJobV2, DKHPTDJobV2Logs } from "../../../../../entities";
 
 const router = express.Router();
 
-router.get("/:jobId/logs", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("/:jobId/logs", ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
@@ -32,7 +33,7 @@ router.get("/:jobId/logs", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.get("/:jobId/d/logs", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("/:jobId/d/logs", ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
@@ -51,7 +52,7 @@ router.get("/:jobId/d/logs", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.get("", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("", ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
@@ -69,7 +70,7 @@ router.get("", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.post("", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionHandlerWrapper(async (req, resp) => {
+router.post("", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionWrapper(async (req, resp) => {
   const data = req.body?.data;
 
   if (isFalsy(data)) throw new FaslyValueError("body.data");
@@ -112,7 +113,7 @@ router.post("", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionHandler
       if (err.__isSafeError) {
         result.push(err.toBaseResponse());
       } else {
-        result.push(new BaseResponse().failed(err).msg(err.message));
+        result.push(new BaseResponse().failed(err).m(err.message));
       }
     }
   }
@@ -128,7 +129,7 @@ router.post("", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionHandler
   resp.send(new BaseResponse().ok(result));
 }));
 
-router.post("/:jobId/retry", ExceptionHandlerWrapper(async (req, resp) => {
+router.post("/:jobId/retry", ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const filter: Filter<DKHPTDJobV2> = {
     _id: new ObjectId(req.params.jobId),

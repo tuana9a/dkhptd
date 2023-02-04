@@ -14,16 +14,13 @@ job_result_queue_name = qname.PROCESS_PARSE_TKD_XLSX_RESULT
 
 
 def on_message(ch, method, properties, body):
-    print(" [*] Received new job")
-    print(type(body))
+    print(f" [*] Received new job {type(body)}")
     classes = XlsxParser().parse(BytesIO(body))
-    print(f"classes_count = {len(classes)}")
     payload = {"data": list(map(lambda x: vars(x), classes))}
     ch.basic_publish(exchange='',
                      routing_key=job_result_queue_name,
                      body=json.dumps(payload))
     ch.basic_ack(delivery_tag=method.delivery_tag)
-    print("done")
 
 
 def main():
@@ -32,7 +29,7 @@ def main():
     channel = connection.channel()
     channel.queue_declare(queue=job_queue_name, durable=True)
     channel.queue_declare(queue=job_result_queue_name, durable=True)
-    channel.basic_qos(prefetch_count=1)
+    channel.basic_qos(prefetch_count=10)
     channel.basic_consume(queue=job_queue_name,
                           auto_ack=False,
                           on_message_callback=on_message)

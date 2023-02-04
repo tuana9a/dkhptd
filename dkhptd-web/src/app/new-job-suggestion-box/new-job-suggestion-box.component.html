@@ -1,21 +1,11 @@
+<h2>
+  <span>Gợi Ý Chọn Lớp Theo Tuỳ Chọn</span>
+</h2>
 <div>
-  <div class="flex">
-    <h2>
-      <span>Gợi Ý Chọn Lớp Theo Tuỳ Chọn</span>
-    </h2>
-    <div class="ml-1 flex items-center">
-      <label>Chọn Kỳ Học</label>
-      <select [(ngModel)]="selectedTermId">
-        <option *ngFor="let p of preferences" [value]="p.termId">{{p.termId}}</option>
-      </select>
-    </div>
-    <div class="ml-1 flex items-center">
-      <span>nhấn vào lớp bất kỳ để thêm vào danh sách đăng ký</span>
-    </div>
-  </div>
-  <div *ngFor="let p of preferencesBySelectedTermId()">
-    <div class="border border-solid border-white my-2" *ngFor="let s of p.wantedSubjectIds">
-      <div app-search-class-to-register (classClicked)="onClassClickedEvent($event)" [q]="'termId==' + p.termId + ',subjectId==' + s" [showExample]="false" [navigateOnQueryChange]="false" [searchOnInit]="true" [showQueryKeys]="false"></div>  
-    </div>
+  <span>nhấn vào lớp để thêm vào danh sách đăng ký</span>
+</div>
+<div *ngFor="let p of preferences">
+  <div *ngFor="let s of p.wantedSubjectIds">
+    <div app-term-id-search-class-to-register (classClicked)="onClassClickedEvent($event)" [termId]="p.termId" [q]="'subjectId==' + s" [showExample]="false" [navigateOnQueryChange]="false" [searchOnInit]="true" [showQueryKeys]="false"></div>
   </div>
 </div>

@@ -21,3 +21,7 @@ export const JobStatus = {
   DONE: 21,
   FAILED: 22,
 };
+
+export const Role = {
+  ADMIN: "ADMIN",
+};

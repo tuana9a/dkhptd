@@ -6,10 +6,9 @@ export class BaseResponse<T> {
   success?: boolean;
 }
 
-export class LoginResponse {
+export interface LoginResponse {
   token: string;
-
-  constructor(token: string) {
-    this.token = token;
-  }
+  username: string;
+  password: string;
+  role?: string;
 }

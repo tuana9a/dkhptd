@@ -12,7 +12,7 @@ export class SafeError extends Error {
   }
 
   toBaseResponse() {
-    return new BaseResponse().failed().msg(this.message).codee(this.code);
+    return new BaseResponse().failed().m(this.message).c(this.code);
   }
 }
 
@@ -53,7 +53,7 @@ export class FaslyValueError extends SafeError {
   }
 
   toBaseResponse() {
-    return new BaseResponse().failed({ message: this.message, value: this.value }).msg(this.message);
+    return new BaseResponse().failed({ message: this.message, value: this.value }).m(this.message);
   }
 }
 
@@ -66,7 +66,7 @@ export class InvalidClassIdsError extends SafeError {
   }
 
   toBaseResponse() {
-    return new BaseResponse().failed({ message: this.message, value: this.value }).msg(this.message);
+    return new BaseResponse().failed({ message: this.message, value: this.value }).m(this.message);
   }
 }
 
@@ -79,7 +79,7 @@ export class InvalidCttSisPassswordError extends SafeError {
   }
 
   toBaseResponse() {
-    return new BaseResponse().failed({ message: this.message, value: this.value }).msg(this.message);
+    return new BaseResponse().failed({ message: this.message, value: this.value }).m(this.message);
   }
 }
 
@@ -92,7 +92,7 @@ export class InvalidCttSisUsernameError extends SafeError {
   }
 
   toBaseResponse() {
-    return new BaseResponse().failed({ message: this.message, value: this.value }).msg(this.message);
+    return new BaseResponse().failed({ message: this.message, value: this.value }).m(this.message);
   }
 }
 
@@ -105,7 +105,7 @@ export class InvalidTermIdError extends SafeError {
   }
 
   toBaseResponse() {
-    return new BaseResponse().failed({ message: this.message, value: this.value }).msg(this.message);
+    return new BaseResponse().failed({ message: this.message, value: this.value }).m(this.message);
   }
 }
 
@@ -118,7 +118,7 @@ export class InvalidValueError extends SafeError {
   }
 
   toBaseResponse() {
-    return new BaseResponse().failed({ message: this.message, value: this.value }).msg(this.message);
+    return new BaseResponse().failed({ message: this.message, value: this.value }).m(this.message);
   }
 }
 
@@ -131,7 +131,7 @@ export class JobNotFoundError extends SafeError {
   }
 
   toBaseResponse(): BaseResponse<unknown> {
-    return new BaseResponse().failed(this.jobId).msg(this.message);
+    return new BaseResponse().failed(this.jobId).m(this.message);
   }
 }
 
@@ -147,7 +147,7 @@ export class MissingTimeToStartError extends SafeError {
   }
 
   toBaseResponse(): BaseResponse<unknown> {
-    return new BaseResponse().failed().msg(this.message);
+    return new BaseResponse().failed().m(this.message);
   }
 }
 
@@ -162,7 +162,7 @@ export class NotAnArrayError extends SafeError {
   }
 
   toBaseResponse() {
-    return new BaseResponse().failed({ message: this.message, value: this.value }).msg(this.message);
+    return new BaseResponse().failed({ message: this.message, value: this.value }).m(this.message);
   }
 }
 
@@ -179,7 +179,7 @@ export class RequireLengthFailed extends SafeError {
   }
 
   toBaseResponse() {
-    return new BaseResponse().failed({ input: this.input, comparator: this.comparator }).msg(this.message);
+    return new BaseResponse().failed({ input: this.input, comparator: this.comparator }).m(this.message);
   }
 }
 
@@ -197,7 +197,7 @@ export class RequireMatchFailed extends SafeError {
   }
 
   toBaseResponse() {
-    return new BaseResponse().failed({ input: this.input, regex: this.regex }).msg(this.message);
+    return new BaseResponse().failed({ input: this.input, regex: this.regex }).m(this.message);
   }
 }
 
@@ -214,7 +214,7 @@ export class TypeMismatchError extends SafeError {
   }
 
   toBaseResponse() {
-    return new BaseResponse().failed({ path: this.path, value: this.value, type: this.type }).msg(this.message);
+    return new BaseResponse().failed({ path: this.path, value: this.value, type: this.type }).m(this.message);
   }
 }
 
@@ -227,7 +227,7 @@ export class UsernameExistedError extends SafeError {
   }
 
   toBaseResponse() {
-    return new BaseResponse().failed(this.username).msg(this.message);
+    return new BaseResponse().failed(this.username).m(this.message);
   }
 }
 
@@ -240,7 +240,7 @@ export class UsernameNotFoundError extends SafeError {
   }
 
   toBaseResponse(): BaseResponse<unknown> {
-    return new BaseResponse().failed(this.accountId).msg(this.message);
+    return new BaseResponse().failed(this.accountId).m(this.message);
   }
 }
 
@@ -253,6 +253,6 @@ export class WrongPasswordError extends SafeError {
   }
 
   toBaseResponse(): BaseResponse<unknown> {
-    return new BaseResponse().failed(this.accountId).msg(this.message);
+    return new BaseResponse().failed(this.accountId).m(this.message);
   }
 }

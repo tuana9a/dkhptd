@@ -4,13 +4,14 @@ import { cfg } from "../../../../../../cfg";
 import { mongoConnectionPool } from "../../../../../../connections";
 import { AccountPreference } from "../../../../../../entities";
 import { MissingRequestBodyDataError } from "../../../../../../exceptions";
-import ExceptionHandlerWrapper from "../../../../../../middlewares/ExceptionHandlerWrapper";
+import { ExceptionWrapper } from "../../../../../../middlewares";
 import BaseResponse from "../../../../../../payloads/BaseResponse";
-import { isFalsy, modify, PickProps, NormalizeArrayProp, SetProp } from "../../../../../../utils";
+import { modify, PickProps, NormalizeArrayProp, SetProp } from "../../../../../../modifiers";
+import { isFalsy } from "../../../../../../utils";
 
 const router = express.Router();
 
-router.post("/preference", ExceptionHandlerWrapper(async (req, resp) => {
+router.post("/preference", ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const data = req.body;
   const termId = req.__termId;

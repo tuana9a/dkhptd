@@ -42,6 +42,16 @@ export class TermIdsJobV1sApi {
     });
   }
 
+  termIdSubmitCurrentNewJobV1(termId: string, username: string, password: string, classIds: string[], timeToStart: number) {
+    return this.httpClient.post<BaseResponse<unknown>>(`/api/accounts/current/term-ids/${termId}/v1/dkhptd`, {
+      username,
+      password,
+      classIds,
+      timeToStart,
+      termId,
+    });
+  }
+
   cancelJob(termId: string, jobId?: string) {
     return this.httpClient.put<BaseResponse<string>>(`/api/accounts/current/term-ids/${termId}/v1/dkhptd-s/${jobId}/cancel`, {});
   }

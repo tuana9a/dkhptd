@@ -1,7 +1,8 @@
 import { Component } from "@angular/core";
 import { Router } from "@angular/router";
 import { PublicApi } from "src/apis/public.api";
-import { AuthorizationRepo } from "src/repositories/is-authorized.repo";
+import { Account } from "src/entities";
+import { Session } from "src/repositories/is-authorized.repo";
 import { CookieUtils } from "src/utils/cookie.utils";
 
 @Component({
@@ -17,7 +18,7 @@ export class LoginComponent {
   constructor(
     private publicApi: PublicApi,
     private cookieUtils: CookieUtils,
-    private isAuthorizedRepo: AuthorizationRepo,
+    private session: Session,
     private router: Router
   ) { }
 
@@ -25,8 +26,8 @@ export class LoginComponent {
     this.publicApi.login(this.username, this.password).subscribe((res) => {
       if (res.success) {
         this.cookieUtils.set({ name: "jwt", value: res.data?.token });
-        this.isAuthorizedRepo.ok();
-        this.router.navigate(["/v1/manage-job"]);
+        this.session.authenticated(res.data);
+        this.router.navigate(["/term-ids"]);
       }
     });
   }

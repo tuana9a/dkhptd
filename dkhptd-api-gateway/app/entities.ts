@@ -40,17 +40,20 @@ export class Account {
   username: string;
   name: string;
   password: string;
+  role?: string;
 
   constructor(o: {
     _id?: ObjectId;
     username?: string;
     name?: string;
     password?: string;
+    role?: string;
   }) {
     this._id = o._id;
     this.username = o.username;
     this.name = o.name;
     this.password = o.password;
+    this.role = o.role;
   }
 }
 

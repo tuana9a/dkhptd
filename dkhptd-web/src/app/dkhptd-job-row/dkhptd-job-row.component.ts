@@ -37,14 +37,10 @@ export class DkhptdJobRowComponent implements OnInit {
   }
 
   onCancelJob() {
-    this.api.cancelJob(this.job?._id).subscribe(res => {
-      // TODO
-    });
+    this.api.cancelJob(this.job?._id).subscribe();
   }
 
   onRetryJob() {
-    this.api.retryJob(this.job?._id).subscribe(res => {
-      // TODO
-    });
+    this.api.retryJob(this.job?._id).subscribe();
   }
 }

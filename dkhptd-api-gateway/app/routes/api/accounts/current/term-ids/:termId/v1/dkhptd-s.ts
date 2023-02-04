@@ -6,14 +6,15 @@ import { mongoConnectionPool } from "../../../../../../../connections";
 import { DKHPTDV1Result, DKHPTDResult, DKHPTDJobV1 } from "../../../../../../../entities";
 import { FaslyValueError, NotAnArrayError, EmptyStringError, RequireLengthFailed, JobNotFoundError } from "../../../../../../../exceptions";
 import { resolveMongoFilter } from "../../../../../../../merin";
-import ExceptionHandlerWrapper from "../../../../../../../middlewares/ExceptionHandlerWrapper";
-import RateLimit from "../../../../../../../middlewares/RateLimit";
+import { ExceptionWrapper } from "../../../../../../../middlewares";
+import { RateLimit } from "../../../../../../../middlewares";
 import BaseResponse from "../../../../../../../payloads/BaseResponse";
-import { modify, PickProps, decryptResultV1, isFalsy, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "../../../../../../../utils";
+import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "../../../../../../../modifiers";
+import { decryptResultV1, isFalsy } from "../../../../../../../utils";
 
 const router = express.Router();
 
-router.get("/:jobId/results", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("/:jobId/results", ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
@@ -31,7 +32,7 @@ router.get("/:jobId/results", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.get("/:jobId/d/results", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("/:jobId/d/results", ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
@@ -49,7 +50,7 @@ router.get("/:jobId/d/results", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.get("", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("", ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
   const termId = req.__termId;
@@ -68,7 +69,7 @@ router.get("", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.post("", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionHandlerWrapper(async (req, resp) => {
+router.post("", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionWrapper(async (req, resp) => {
   const data = req.body?.data;
   const termId = req.__termId;
 
@@ -85,6 +86,7 @@ router.post("", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionHandler
         PickProps(["username", "password", "classIds", "timeToStart"]),
         NormalizeStringProp("username"),
         NormalizeStringProp("password"),
+        SetProp("termId", termId),
         NormalizeArrayProp("classIds", "string"),
         NormalizeIntProp("timeToStart"),
         SetProp("createdAt", Date.now()),
@@ -106,6 +108,7 @@ router.post("", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionHandler
       if (job.classIds.length == 0) throw new RequireLengthFailed("job.classIds");
 
       if (isFalsy(job.timeToStart)) throw new FaslyValueError("job.timeToStart");
+      if (isFalsy(job.termId)) throw new FaslyValueError("job.termId");
 
       jobsToInsert.push(job);
       result.push(new BaseResponse().ok(job));
@@ -113,7 +116,7 @@ router.post("", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionHandler
       if (err.__isSafeError) {
         result.push(err.toBaseResponse());
       } else {
-        result.push(new BaseResponse().failed(err).msg(err.message));
+        result.push(new BaseResponse().failed(err).m(err.message));
       }
     }
   }
@@ -129,7 +132,7 @@ router.post("", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionHandler
   resp.send(new BaseResponse().ok(result));
 }));
 
-router.post("/:jobId/retry", ExceptionHandlerWrapper(async (req, resp) => {
+router.post("/:jobId/retry", ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const termId = req.__termId;
 
@@ -155,7 +158,7 @@ router.post("/:jobId/retry", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));
 
-router.put("/:jobId/cancel", ExceptionHandlerWrapper(async (req, resp) => {
+router.put("/:jobId/cancel", ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const termId = req.__termId;
 
@@ -173,7 +176,7 @@ router.put("/:jobId/cancel", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));
 
-router.delete("/:jobId", ExceptionHandlerWrapper(async (req, resp) => {
+router.delete("/:jobId", ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const termId = req.__termId;
 

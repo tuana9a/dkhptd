@@ -5,14 +5,15 @@ import { JobStatus, cfg } from "../../../../../../../cfg";
 import { mongoConnectionPool } from "../../../../../../../connections";
 import { DKHPTDJobV1 } from "../../../../../../../entities";
 import { MissingRequestBodyDataError, FaslyValueError, EmptyStringError, RequireLengthFailed, InvalidTermIdError } from "../../../../../../../exceptions";
-import ExceptionHandlerWrapper from "../../../../../../../middlewares/ExceptionHandlerWrapper";
-import RateLimit from "../../../../../../../middlewares/RateLimit";
+import { ExceptionWrapper } from "../../../../../../../middlewares";
+import { RateLimit } from "../../../../../../../middlewares";
 import BaseResponse from "../../../../../../../payloads/BaseResponse";
-import { isFalsy, modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp, encryptJobV1, isValidTermId } from "../../../../../../../utils";
+import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "../../../../../../../modifiers";
+import { isFalsy, isValidTermId, encryptJobV1 } from "../../../../../../../utils";
 
 const router = express.Router();
 
-router.post("/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), ExceptionHandlerWrapper(async (req, resp) => {
+router.post("/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), ExceptionWrapper(async (req, resp) => {
   const data = req.body;
   const termId = req.__termId;
 
@@ -27,6 +28,7 @@ router.post("/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), Exception
     NormalizeStringProp("password"),
     NormalizeArrayProp("classIds", "string"),
     NormalizeIntProp("timeToStart"),
+    SetProp("termId", termId),
     SetProp("createdAt", Date.now()),
     SetProp("status", JobStatus.READY),
     SetProp("ownerAccountId", ownerAccountId),
@@ -46,6 +48,7 @@ router.post("/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), Exception
   if (job.classIds.length == 0) throw new RequireLengthFailed("job.classIds");
 
   if (isFalsy(job.timeToStart)) throw new FaslyValueError("job.timeToStart");
+  if (isFalsy(job.termId)) throw new FaslyValueError("job.termId");
 
   const eJob = new DKHPTDJobV1(encryptJobV1(job));
   await mongoConnectionPool

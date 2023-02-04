@@ -8,19 +8,19 @@ import {
 
 import { EMPTY } from "rxjs";
 import { catchError } from "rxjs/operators";
-import { AuthorizationRepo } from "src/repositories/is-authorized.repo";
+import { Session } from "src/repositories/is-authorized.repo";
 import { Router } from "@angular/router";
 
 @Injectable()
 export class UnauthorizedInterceptor implements HttpInterceptor {
-  constructor(private isAuthorizedRepo: AuthorizationRepo, private router: Router) {
+  constructor(private session: Session, private router: Router) {
 
   }
   intercept(request: HttpRequest<unknown>, next: HttpHandler) {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status == 401) {
-          this.isAuthorizedRepo.unAuthorized();
+          this.session.unAuthorized();
           this.router.navigate(["/login"]);
         }
         // If you want to return a new response:

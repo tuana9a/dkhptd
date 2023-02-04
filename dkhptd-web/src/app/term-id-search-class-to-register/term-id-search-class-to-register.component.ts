@@ -50,7 +50,7 @@ export class TermIdSearchClassToRegisterComponent implements OnInit {
     this.size = Math.max(parseInt(this.size as unknown as string), 0);
     if (this.navigateOnQueryChange) {
       setTimeout(() => {
-        this.router.navigate(["/search-class-to-register/term-ids", this.termId], {
+        this.router.navigate(["/term-ids", this.termId, "search-class-to-register"], {
           queryParams: {
             q: this.q,
             page: this.page,

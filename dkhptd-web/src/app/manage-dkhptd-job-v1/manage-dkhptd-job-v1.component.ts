@@ -7,7 +7,7 @@ import { DKHPTDJobV1 } from "src/entities";
   templateUrl: "./manage-dkhptd-job-v1.component.html",
   styleUrls: ["./manage-dkhptd-job-v1.component.scss"]
 })
-export class ManageDKHPTDJOBV1Component implements OnInit {
+export class ManageJobV1Component implements OnInit {
   keys: Set<string> = new Set();
   jobs?: DKHPTDJobV1[] = [];
   showPassword = false;

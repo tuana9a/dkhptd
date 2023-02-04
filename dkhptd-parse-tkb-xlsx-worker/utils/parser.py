@@ -1,3 +1,4 @@
+import time
 import openpyxl
 
 from models.ctr import ClassToRegister
@@ -34,8 +35,9 @@ def load_class_to_register(row, attribute_indexes, class_list: list, **kwargs):
 
 class XlsxParser:
 
-    def __init__(self):
+    def __init__(self, id=str(time.time_ns())):
         self.row_handler = find_attribute_indexes
+        self.id = id
 
     def parse(self, file):
         wb = openpyxl.load_workbook(file)
@@ -43,7 +45,7 @@ class XlsxParser:
         max_column = ws.max_column
         max_row = ws.max_row
         current_row = 0
-        class_list = []
+        learn_classes = []
 
         attribute_indexes = {
             "term_id": -1,
@@ -75,8 +77,8 @@ class XlsxParser:
             "Ghi_chú": "describe",
         }
 
-        print(f"max_column = {max_column}")
-        print(f"max_row = {max_row}")
+        print(f" [*] {self.id} max_column = {max_column}")
+        print(f" [*] {self.id} max_row = {max_row}")
 
         self.row_handler = find_attribute_indexes
 
@@ -86,6 +88,7 @@ class XlsxParser:
                 row,
                 attribute_indexes=attribute_indexes,
                 column_name_to_attribute_name=column_name_to_attribute_name,
-                class_list=class_list)
+                class_list=learn_classes)
 
-        return class_list
+        print(f" [*] {self.id} learn_class_count = {len(learn_classes)}")
+        return learn_classes

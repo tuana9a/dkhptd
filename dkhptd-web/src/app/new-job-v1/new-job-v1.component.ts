@@ -15,6 +15,7 @@ export class NewJobV1 implements OnInit {
   @Input() classIds: Set<string> = new Set();
   @Input() classId = "";
   message?: string;
+  @Input() hideSearchBox = true;
 
   constructor(private api: TermIdsJobV1sApi) { }
 
@@ -25,7 +26,7 @@ export class NewJobV1 implements OnInit {
   onSubmit() {
     const timeToStart = new Date(this.timeToStart).getTime();
     const classIds = Array.from(this.classIds).map(x => x.trim()).filter(x => x);
-    this.api.submitCurrentNewJobV1(this.termId, this.username, this.password, classIds, timeToStart).subscribe();
+    this.api.termIdSubmitCurrentNewJobV1(this.termId, this.username, this.password, classIds, timeToStart).subscribe();
   }
 
   onAddClassId() {
@@ -45,6 +46,20 @@ export class NewJobV1 implements OnInit {
   }
 
   onClassClickedEvent(c: ClassToRegister) {
+    if (c.classId) {
+      this.classIds.add(String(c.classId));
+    }
+  }
+
+  closeSearchBox() {
+    this.hideSearchBox = true;
+  }
+
+  openSearchBox() {
+    this.hideSearchBox = false;
+  }
+
+  takeClickedClassToRegister(c: ClassToRegister) {
     if (c.classId) {
       this.classIds.add(String(c.classId));
     }

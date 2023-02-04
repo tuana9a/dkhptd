@@ -1,0 +1,9 @@
+<nav class="overflow-auto">
+  <div class="flex max-w-full flex-wrap">
+    <div *ngIf="showManageJobByTermIds()" class="p-1"><a routerLink="v1/manage-jobs" routerLinkActive="active" ariaCurrentWhenActive="page">Quản Lý Hẹn Giờ</a></div>
+    <div *ngIf="showNewJobV1()" class="p-1"><a routerLink="v1/jobs/new" routerLinkActive="active" ariaCurrentWhenActive="page">Tạo Hẹn Giờ Mới</a></div>
+    <div *ngIf="showSearchClassToRegister()" class="p-1"><a routerLink="search-class-to-register" routerLinkActive="active" ariaCurrentWhenActive="page">Tìm Lớp Đăng Ký</a></div>
+    <div *ngIf="showPrefereces()" class="p-1"><a routerLink="preferences" routerLinkActive="active" ariaCurrentWhenActive="page">Tùy chỉnh Nguyện Vọng</a></div>
+  </div>
+</nav>
+<router-outlet></router-outlet>

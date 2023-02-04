@@ -23,12 +23,12 @@ export default class BaseResponse<T> {
     return this;
   }
 
-  msg(message: string) {
+  m(message: string) {
     this.message = message;
     return this;
   }
 
-  codee(code: number) {
+  c(code: number) {
     this.code = code;
     return this;
   }

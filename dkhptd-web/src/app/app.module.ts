@@ -15,7 +15,7 @@ import { ProfileComponent } from "./profile/profile.component";
 import { HomeComponent } from "./home/home.component";
 import { SignupComponent } from "./signup/signup.component";
 import { FormsModule } from "@angular/forms";
-import { ManageDKHPTDJOBV1Component } from "./manage-dkhptd-job-v1/manage-dkhptd-job-v1.component";
+import { ManageJobV1Component } from "./manage-dkhptd-job-v1/manage-dkhptd-job-v1.component";
 import { JobStatusPipe } from "src/pipes/job-status.pipe";
 import { DkhptdJobComponent } from "./dkhptd-job/dkhptd-job.component";
 import { DkhptdJobLogsComponent } from "./dkhptd-job-logs/dkhptd-job-logs.component";
@@ -48,36 +48,30 @@ import { NewJobV1PageComponent } from "./new-job-v1-page/new-job-v1-page.compone
 import { NewJobV1ForTermIdComponent } from "./new-job-v1-for-term-id/new-job-v1-for-term-id.component";
 import { ToastMessageComponent } from "./toast-message/toast-message.component";
 import { ToastMessageInterceptor } from "src/interceptors/toast-message.interceptor";
+import { ChooseTermIdPageComponent } from "./choose-term-id-page/choose-term-id-page.component";
+import { NavbarOfTermIdComponent } from "./navbar-of-term-id/navbar-of-term-id.component";
 
 const routes: Routes = [
   { path: "login", component: LoginComponent },
   { path: "signup", component: SignupComponent },
   { path: "profile", component: ProfileComponent },
   { path: "home", component: HomeComponent },
-  { path: "v1/manage-job", component: ManageDKHPTDJOBV1Component },
+  { path: "v1/manage-job", component: ManageJobV1Component },
   { path: "v1/dkhptd-s/:id", component: DkhptdJobPageComponent },
-  {
-    path: "v1/new-jobs", component: NewJobV1PageComponent, children: [
-      { path: "term-ids/:termId", component: NewJobV1ForTermIdComponent }
-    ]
-  },
-  {
-    path: "v1/manage-jobs/term-ids", component: ManageJobV1ByTermIdsComponent, children: [
-      { path: ":termId", component: JobV1TableOfTermIdPageComponent }
-    ]
-  },
-  {
-    path: "search-class-to-register", component: SearchClassToRegisterPageComponent, children: [
-      { path: "term-ids/:termId", component: SearchClassToRegisterOfTermIdPageComponent }
-    ]
-  },
-  {
-    path: "preferences", component: ManagePreferencePageComponent, children: [
-      { path: "term-ids/:termId", component: PreferencesOfTermIdPageComponent }
-    ]
-  },
   { path: "upload-tkb-xlsx", component: UploadTkbXlsxComponent },
   { path: "messages", component: MessagesComponent },
+  {
+    path: "term-ids", component: ChooseTermIdPageComponent, children: [
+      {
+        path: ":termId", component: NavbarOfTermIdComponent, children: [
+          { path: "v1/jobs/new", component: NewJobV1ForTermIdComponent },
+          { path: "v1/manage-jobs", component: JobV1TableOfTermIdPageComponent },
+          { path: "search-class-to-register", component: SearchClassToRegisterOfTermIdPageComponent },
+          { path: "preferences", component: PreferencesOfTermIdPageComponent }
+        ]
+      }
+    ]
+  }
 ];
 
 @NgModule({
@@ -91,7 +85,7 @@ const routes: Routes = [
     ProfileComponent,
     HomeComponent,
     SignupComponent,
-    ManageDKHPTDJOBV1Component,
+    ManageJobV1Component,
     JobStatusPipe,
     ToJsonPipe,
     PasswordPipe,
@@ -121,11 +115,13 @@ const routes: Routes = [
     NewJobV1PageComponent,
     NewJobV1ForTermIdComponent,
     ToastMessageComponent,
+    ChooseTermIdPageComponent,
+    NavbarOfTermIdComponent,
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    HttpClientModule, RouterModule.forRoot(routes),
+    HttpClientModule, RouterModule.forRoot(routes, { paramsInheritanceStrategy: "always" }),
   ],
   exports: [RouterModule],
   providers: [

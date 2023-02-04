@@ -1,3 +1,7 @@
+export const Role = {
+  ADMIN: "ADMIN",
+};
+
 export class AccountHasStudent {
   _id: string;
   accountId: string;
@@ -38,17 +42,20 @@ export class Account {
   username: string;
   name?: string;
   password: string;
+  role?: string;
 
   constructor(o: {
     _id?: string;
     username: string;
     name?: string;
     password: string;
+    role?: string;
   }) {
     this._id = o._id;
     this.username = o.username;
     this.name = o.name;
     this.password = o.password;
+    this.role = o.role;
   }
 }
 

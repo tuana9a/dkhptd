@@ -10,7 +10,7 @@
         <td><input class="w-full" type="password" [(ngModel)]="password"></td>
       </tr>
       <tr>
-        <td>Danh Sách Mã Lớp</td>
+      <td><a href="javascript:void" (click)="openSearchBox()">Danh Sách Mã Lớp</a></td>
         <td>
           <table>
             <tr *ngFor="let classId of classIds">
@@ -30,5 +30,14 @@
       </tr>
     </table>
     <button class="px-1" (click)="onSubmit()">Gửi</button>
+  </div>
+</div>
+<div *ngIf="!hideSearchBox" class="fixed w-screen h-screen search-box top-0">
+  <div class="w-full h-full relative flex justify-center overflow-auto">
+    <div class="absolute top-0 left-0 w-full h-full backdrop-blur-sm bg-white/30 z-0" (click)="closeSearchBox()"></div>
+    <div class="absolute w-3/4 max-w-full max-h-full overflow-auto z-10 bg-black p-1">
+      <div app-term-id-search-class-to-register (classClicked)="takeClickedClassToRegister($event)" [navigateOnQueryChange]="false"></div>
+      <div app-new-job-suggestion-box (classClicked)="takeClickedClassToRegister($event)"></div>
+    </div>
   </div>
 </div>

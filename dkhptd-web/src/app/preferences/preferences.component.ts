@@ -9,9 +9,8 @@ import { AccountPreference } from "src/entities";
 })
 export class PreferencesComponent implements OnInit {
   @Input() termId = "";
-  @Input() preferences?: AccountPreference[];
+  @Input() preferences?: AccountPreference[] = [];
   message?: string;
-  @Input() showAddSection = true;
   newWantedSubjectIds: string[] = [];
   newSubjectId = "";
 
@@ -19,6 +18,10 @@ export class PreferencesComponent implements OnInit {
 
   ngOnInit(): void {
     //
+  }
+
+  showAddSection() {
+    return this.preferences?.length == 0;
   }
 
   addPreference() {

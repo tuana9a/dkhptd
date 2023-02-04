@@ -7,7 +7,7 @@
       <td></td>
     </tr>
     <tr *ngFor="let p of preferences" app-preference-row [preference]="p"></tr>
-    <tr *ngIf="showAddSection">
+    <tr *ngIf="showAddSection()">
       <td></td>
       <td>{{termId}}</td>
       <td>

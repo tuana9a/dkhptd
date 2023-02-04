@@ -6,14 +6,13 @@ import { cfg } from "../../../cfg";
 import { mongoConnectionPool } from "../../../connections";
 import { TermId } from "../../../entities";
 import { FaslyValueError, NotAnArrayError } from "../../../exceptions";
-import ExceptionHandlerWrapper from "../../../middlewares/ExceptionHandlerWrapper";
-import SecretFilter from "../../../middlewares/SecretFilter";
+import { ExceptionWrapper, IsAdminFilter, JwtFilter } from "../../../middlewares";
 import BaseResponse from "../../../payloads/BaseResponse";
 import { isFalsy } from "../../../utils";
 
 const router = express.Router();
 
-router.get("", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("", ExceptionWrapper(async (req, resp) => {
   const termIds = await mongoConnectionPool.getClient()
     .db(cfg.DATABASE_NAME)
     .collection(TermId.name)
@@ -22,7 +21,7 @@ router.get("", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(termIds.map(x => new TermId(x))));
 }));
 
-router.post("", SecretFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+router.post("", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async (req, resp) => {
   const data = req.body.data;
   if (isFalsy(data)) throw new FaslyValueError("body.data");
   if (!Array.isArray(data)) throw new NotAnArrayError("body.data");
@@ -31,7 +30,7 @@ router.post("", SecretFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, re
   resp.send(new BaseResponse().ok(termIds));
 }));
 
-router.delete("/duplicates", SecretFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+router.delete("/duplicates", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async (req, resp) => {
   const docs = await mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(TermId.name).find().toArray();
   const termIds = docs.map(x => new TermId(x));
   const toBeDeletedIds: ObjectId[] = [];

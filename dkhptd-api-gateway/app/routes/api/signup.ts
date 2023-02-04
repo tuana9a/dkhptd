@@ -3,15 +3,16 @@ import { cfg } from "../../cfg";
 import { mongoConnectionPool } from "../../connections";
 import { Account } from "../../entities";
 import { FaslyValueError, UsernameExistedError } from "../../exceptions";
-import ExceptionHandlerWrapper from "../../middlewares/ExceptionHandlerWrapper";
-import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith, accountToClient, isFalsy } from "../../utils";
+import { ExceptionWrapper } from "../../middlewares";
+import { accountToClient, isFalsy } from "../../utils";
+import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith } from "../../modifiers";
 import BaseResponse from "../../payloads/BaseResponse";
 import LoginWithUsernamePasswordRequest from "../../payloads/LoginWithUsernamePasswordRequest";
 import { toSHA256 } from "../../utils";
 
 const router = express.Router();
 
-router.post("", ExceptionHandlerWrapper(async (req, resp) => {
+router.post("", ExceptionWrapper(async (req, resp) => {
   const body = new LoginWithUsernamePasswordRequest(
     modify(req.body, [
       PickProps(["username", "password"]),

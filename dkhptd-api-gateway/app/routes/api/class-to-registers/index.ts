@@ -4,9 +4,8 @@ import multer from "multer";
 import { tkbBus } from "../../../bus";
 import { cfg } from "../../../cfg";
 import { mongoConnectionPool } from "../../../connections";
-import ExceptionHandlerWrapper from "../../../middlewares/ExceptionHandlerWrapper";
-import SecretFilter from "../../../middlewares/SecretFilter";
-import { modify, PickProps, NormalizeIntProp, NormalizeStringProp, SetProp } from "../../../utils";
+import { ExceptionWrapper, IsAdminFilter, JwtFilter } from "../../../middlewares";
+import { modify, PickProps, NormalizeIntProp, NormalizeStringProp, SetProp } from "../../../modifiers";
 import BaseResponse from "../../../payloads/BaseResponse";
 import { toNormalizedString, toSafeInt } from "../../../utils";
 import { resolveMongoFilter } from "../../../merin";
@@ -17,7 +16,7 @@ import { ClassToRegister } from "../../../entities";
 
 const router = express.Router();
 
-router.post("/", SecretFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+router.post("/", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async (req, resp) => {
   const data = req.body?.data;
 
   if (isFalsy(data)) throw new FaslyValueError("body.data");
@@ -65,7 +64,7 @@ router.post("/", SecretFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, r
       if (err.__isSafeError) {
         result.push(err.toBaseResponse());
       } else {
-        result.push(new BaseResponse().failed(err).msg(err.message));
+        result.push(new BaseResponse().failed(err).m(err.message));
       }
     }
   }
@@ -78,13 +77,13 @@ router.post("/", SecretFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, r
   resp.send(new BaseResponse().ok(result));
 }));
 
-router.post("/file", SecretFilter(cfg.SECRET), multer({ limits: { fileSize: 5 * 1000 * 1000 /* 5mb */ } }).single("file"), ExceptionHandlerWrapper(async (req, resp) => {
+router.post("/file", JwtFilter(cfg.SECRET), IsAdminFilter(), multer({ limits: { fileSize: 5 * 1000 * 1000 /* 5mb */ } }).single("file"), ExceptionWrapper(async (req, resp) => {
   const file = req.file;
   tkbBus.emit(tkbEvent.TKB_XLSX_UPLOADED, file.buffer);
   resp.send(new BaseResponse().ok());
 }));
 
-router.get("/", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("/", ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [
     PickProps(["q", "page", "size"], { dropFalsy: true }),
     NormalizeIntProp("page"),
@@ -110,7 +109,7 @@ router.get("/", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.get("/class-ids", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("/class-ids", ExceptionWrapper(async (req, resp) => {
   const classIds = toNormalizedString(req.query.classIds)
     .split(",")
     .map((x) => toSafeInt(x));
@@ -126,7 +125,7 @@ router.get("/class-ids", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(classToRegisters));
 }));
 
-router.get("/class-ids/start-withs", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("/class-ids/start-withs", ExceptionWrapper(async (req, resp) => {
   const classIds = toNormalizedString(req.query.classIds)
     .split(",")
     .map((x) => toNormalizedString(x));
@@ -158,7 +157,7 @@ router.get("/class-ids/start-withs", ExceptionHandlerWrapper(async (req, resp) =
   resp.send(new BaseResponse().ok(classToRegisters));
 }));
 
-router.get("/class-ids/:classId", ExceptionHandlerWrapper(async (req, resp) => {
+router.get("/class-ids/:classId", ExceptionWrapper(async (req, resp) => {
   const classId = toSafeInt(req.params.classId);
   const termId = toSafeInt(req.query.termId);
 
@@ -171,7 +170,7 @@ router.get("/class-ids/:classId", ExceptionHandlerWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(classToRegister));
 }));
 
-router.delete("/", SecretFilter(cfg.SECRET), ExceptionHandlerWrapper(async (req, resp) => {
+router.delete("/", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const filter: Filter<ClassToRegister> = resolveMongoFilter(
     String(query.q).split(",")

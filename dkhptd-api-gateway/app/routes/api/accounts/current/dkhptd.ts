@@ -4,15 +4,15 @@ import { cfg, JobStatus } from "../../../../cfg";
 import { mongoConnectionPool } from "../../../../connections";
 import { DKHPTDJob } from "../../../../entities";
 import { EmptyStringError, FaslyValueError, MissingRequestBodyDataError, NotAnArrayError, RequireLengthFailed } from "../../../../exceptions";
-import ExceptionHandlerWrapper from "../../../../middlewares/ExceptionHandlerWrapper";
-import RateLimit from "../../../../middlewares/RateLimit";
-import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "../../../../utils";
+import { ExceptionWrapper } from "../../../../middlewares";
+import { RateLimit } from "../../../../middlewares";
+import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "../../../../modifiers";
 import BaseResponse from "../../../../payloads/BaseResponse";
 import { isEmpty, isFalsy } from "../../../../utils";
 
 const router = express.Router();
 
-router.post("/api/accounts/current/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), ExceptionHandlerWrapper(async (req, resp) => {
+router.post("/api/accounts/current/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), ExceptionWrapper(async (req, resp) => {
   const data = req.body;
 
   if (isFalsy(data)) throw new MissingRequestBodyDataError();
