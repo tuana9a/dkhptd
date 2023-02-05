@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { AccountsApi } from "src/apis/accounts.api";
 import { AccountPreference } from "src/entities";
+import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "[app-preferences]",
@@ -13,6 +14,8 @@ export class PreferencesComponent implements OnInit {
   message?: string;
   newWantedSubjectIds: string[] = [];
   newSubjectId = "";
+  faPlus = faPlus;
+  faMinus = faMinus;
 
   constructor(private api: AccountsApi) { }
 
@@ -26,7 +29,7 @@ export class PreferencesComponent implements OnInit {
 
   addPreference() {
     const p = new AccountPreference({ termId: this.termId, wantedSubjectIds: this.newWantedSubjectIds });
-    this.api.addPreference(p).subscribe(res => this.fetchAll());
+    this.api.addPreference(p).subscribe(() => this.fetchAll());
   }
 
   fetchAll() {

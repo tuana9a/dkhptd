@@ -18,7 +18,7 @@
           </tr>
           <tr>
             <td class="border border-solid border-black"><input type="text" [(ngModel)]="newSubjectId" (keypress)="onKeyPressNewSubjectId($event)"></td>
-            <td class=""><button class="px-1" (click)="onAddNewSubjectId()">+</button></td>
+            <td class=""><fa-icon class="p-1 bg-black flex items-center" [styles]="{'stroke': '#1eff00', 'color': '#1eff00'}" [icon]="faPlus" (click)="onAddNewSubjectId()"></fa-icon></td>
           </tr>
         </table>
       </td>

@@ -1,4 +1,5 @@
 <td *ngIf="showIdColumn">{{c._id}}</td>
+<td>{{c.termId}}</td>
 <td>{{c.classId}}</td>
 <td>{{c.secondClassId}}</td>
 <td>{{c.classType}}</td>
@@ -10,5 +11,4 @@
 <td>{{c.learnRoom}}</td>
 <td>{{c.learnWeek}}</td>
 <td>{{c.describe}}</td>
-<td>{{c.termId}}</td>
 <td *ngIf="showCreatedAtColumn">{{c.createdAt | date:'dd-MM-YYYY hh:mm:ss'}}</td>

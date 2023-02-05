@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { AccountsApi } from "src/apis/accounts.api";
 import { AccountPreference } from "src/entities";
+import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "[app-preference-row]",
@@ -13,6 +14,9 @@ export class PreferenceRowComponent implements OnInit {
   @Input() showIdColumn = true;
   subjectId = "";
   message?= "";
+  faPlus = faPlus;
+  faMinus = faMinus;
+
   constructor(private api: AccountsApi) { }
 
   ngOnInit(): void {

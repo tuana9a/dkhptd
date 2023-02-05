@@ -9,15 +9,13 @@
       <td><span>{{job?.username}}</span></td>
     </tr>
     <tr>
-      <td (click)="toggleShowPassword()">
-        <button><span>password</span></button>
-      </td>
+      <td><span class="mr-1">password</span><fa-icon [icon]="faEye" (click)="toggleShowPassword()"></fa-icon></td>
       <td><span>{{job?.password | password: showPassword}}</span></td>
     </tr>
     <tr>
       <td>Danh Sách Mã Lớp</td>
       <td>
-        <span class="classId mr-1" *ngFor="let classId of job?.classIds"><a routerLink="/search-class-to-register" [queryParams]="{q: 'classId==' + classId}">{{classId}}</a></span>
+        <span class="classId mr-1" *ngFor="let classId of job?.classIds"><a [routerLink]="['/term-ids', job?.termId, 'search-class-to-register' ]" [queryParams]="{q: 'classId==' + classId}">{{classId}}</a></span>
       </td>
     </tr>
     <tr>

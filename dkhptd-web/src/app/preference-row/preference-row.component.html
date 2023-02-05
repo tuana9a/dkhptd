@@ -4,11 +4,11 @@
   <table>
     <tr *ngFor="let subjectId of preference.wantedSubjectIds">
       <td class="border border-solid border-black">{{subjectId}}</td>
-      <td class=""><button class="px-1" (click)="onRemoveSubjectId(subjectId)">-</button></td>
+      <td class=""><fa-icon class="p-1 bg-black flex items-center" [styles]="{'stroke': 'red', 'color': 'red'}" [icon]="faMinus" (click)="onRemoveSubjectId(subjectId)"></fa-icon></td>
     </tr>
     <tr>
       <td class="border border-solid border-black"><input type="text" [(ngModel)]="subjectId" (keypress)="onKeyPressSubjectId($event)"></td>
-      <td class=""><button class="px-1" (click)="onAddSubjectId()">+</button></td>
+      <td class=""><fa-icon class="p-1 bg-black flex items-center" [styles]="{'stroke': '#1eff00', 'color': '#1eff00'}" [icon]="faPlus" (click)="onAddSubjectId()"></fa-icon></td>
     </tr>
   </table>
 </td>

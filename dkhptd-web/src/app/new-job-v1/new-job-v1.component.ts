@@ -15,7 +15,8 @@ export class NewJobV1 implements OnInit {
   @Input() classIds: Set<string> = new Set();
   @Input() classId = "";
   message?: string;
-  @Input() hideSearchBox = true;
+  @Input() showSearchBox = false;
+  @Input() showSuggestBox = false;
 
   constructor(private api: TermIdsJobV1sApi) { }
 
@@ -52,11 +53,19 @@ export class NewJobV1 implements OnInit {
   }
 
   closeSearchBox() {
-    this.hideSearchBox = true;
+    this.showSearchBox = false;
   }
 
   openSearchBox() {
-    this.hideSearchBox = false;
+    this.showSearchBox = true;
+  }
+
+  closeSuggestBox() {
+    this.showSuggestBox = false;
+  }
+
+  openSuggestBox() {
+    this.showSuggestBox = true;
   }
 
   takeClickedClassToRegister(c: ClassToRegister) {

@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { TermIdsJobV1sApi } from "src/apis/term-ids.dkhptd-v1-s.api";
 import { DKHPTDJobV1 } from "src/entities";
 
@@ -12,6 +13,7 @@ export class JobV1TableOfTermIdComponent implements OnInit {
   @Input() termId = "";
   @Input() jobs?: DKHPTDJobV1[] = [];
   @Input() showPassword = false;
+  faEye = faEye;
 
   constructor(private api: TermIdsJobV1sApi) {
   }

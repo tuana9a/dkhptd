@@ -41,7 +41,6 @@ import { PreferencesPageComponent } from "./preferences-page/preferences-page.co
 import { PreferencesOfTermIdPageComponent } from "./preferences-of-term-id-page/preferences-of-term-id-page.component";
 import { PreferenceRowComponent } from "./preference-row/preference-row.component";
 import { ManageJobV1ByTermIdsComponent } from "./manage-job-v1-by-term-ids/manage-job-v1-by-term-ids.component";
-import { JobTableOfTermIdComponent } from "./job-table-of-term-id/job-table-of-term-id.component";
 import { JobV1TableOfTermIdComponent } from "./job-v1-table-of-term-id/job-v1-table-of-term-id.component";
 import { JobV1TableOfTermIdPageComponent } from "./job-v1-table-of-term-id-page/job-v1-table-of-term-id-page.component";
 import { NewJobV1PageComponent } from "./new-job-v1-page/new-job-v1-page.component";
@@ -50,6 +49,8 @@ import { ToastMessageComponent } from "./toast-message/toast-message.component";
 import { ToastMessageInterceptor } from "src/interceptors/toast-message.interceptor";
 import { ChooseTermIdPageComponent } from "./choose-term-id-page/choose-term-id-page.component";
 import { NavbarOfTermIdComponent } from "./navbar-of-term-id/navbar-of-term-id.component";
+import { QPipe } from "./q.pipe";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 const routes: Routes = [
   { path: "login", component: LoginComponent },
@@ -109,7 +110,6 @@ const routes: Routes = [
     PreferencesOfTermIdPageComponent,
     PreferenceRowComponent,
     ManageJobV1ByTermIdsComponent,
-    JobTableOfTermIdComponent,
     JobV1TableOfTermIdComponent,
     JobV1TableOfTermIdPageComponent,
     NewJobV1PageComponent,
@@ -117,11 +117,12 @@ const routes: Routes = [
     ToastMessageComponent,
     ChooseTermIdPageComponent,
     NavbarOfTermIdComponent,
+    QPipe,
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    HttpClientModule, RouterModule.forRoot(routes, { paramsInheritanceStrategy: "always" }),
+    HttpClientModule, RouterModule.forRoot(routes, { paramsInheritanceStrategy: "always" }), FontAwesomeModule,
   ],
   exports: [RouterModule],
   providers: [

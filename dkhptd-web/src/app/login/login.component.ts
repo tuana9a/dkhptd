@@ -1,7 +1,6 @@
 import { Component } from "@angular/core";
 import { Router } from "@angular/router";
 import { PublicApi } from "src/apis/public.api";
-import { Account } from "src/entities";
 import { Session } from "src/repositories/is-authorized.repo";
 import { CookieUtils } from "src/utils/cookie.utils";
 

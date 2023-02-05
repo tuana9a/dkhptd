@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { DKHPTDV1sApi } from "src/apis/dkhptd-v1-s.api";
-import { DKHPTDJobLogs } from "src/entities";
 import { DKHPTDJobV1 } from "src/entities";
 import { JobStatusUtils } from "src/utils/job-status.utils";
 
@@ -12,10 +12,10 @@ import { JobStatusUtils } from "src/utils/job-status.utils";
 export class DkhptdJobRowComponent implements OnInit {
   id = "";
   @Input() job?: DKHPTDJobV1;
-  logs?: DKHPTDJobLogs[];
   @Input() showPassword = false;
   @Input() showTermId = false;
   @Input() showId = true;
+  faEye = faEye;
 
   constructor(private api: DKHPTDV1sApi, private jobStatusUtils: JobStatusUtils) {
   }
