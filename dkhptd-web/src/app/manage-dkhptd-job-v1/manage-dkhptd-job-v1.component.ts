@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { DKHPTDV1sApi } from "src/apis/dkhptd-v1-s.api";
 import { DKHPTDJobV1 } from "src/entities";
 
@@ -11,6 +12,7 @@ export class ManageJobV1Component implements OnInit {
   keys: Set<string> = new Set();
   jobs?: DKHPTDJobV1[] = [];
   showPassword = false;
+  faEye = faEye;
 
   constructor(private dkhptdV1sApi: DKHPTDV1sApi) {
   }

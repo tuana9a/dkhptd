@@ -6,7 +6,7 @@ import json
 from io import BytesIO
 from configs import cfg
 from configs import qname
-from utils.parser import XlsxParser
+from utils.parser import Parser
 
 connection_string = cfg.RABBITMQ_CONNECTION_STRING
 job_queue_name = qname.PARSE_TKD_XLSX
@@ -15,7 +15,7 @@ job_result_queue_name = qname.PROCESS_PARSE_TKD_XLSX_RESULT
 
 def on_message(ch, method, properties, body):
     print(f" [*] Received new job {type(body)}")
-    classes = XlsxParser().parse(BytesIO(body))
+    classes = Parser().parse(BytesIO(body))
     payload = {"data": list(map(lambda x: vars(x), classes))}
     ch.basic_publish(exchange='',
                      routing_key=job_result_queue_name,

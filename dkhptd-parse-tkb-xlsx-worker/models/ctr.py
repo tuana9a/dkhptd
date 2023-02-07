@@ -1,3 +1,7 @@
+from dataclasses import dataclass
+
+
+@dataclass
 class ClassToRegister:
     class_id: str
     second_class_id: str
@@ -11,12 +15,3 @@ class ClassToRegister:
     learn_week: str
     describe: str
     term_id: str
-
-    def __init__(self, **kwargs):
-        for key in kwargs:
-            self.__setattr__(key, kwargs[key])
-        pass
-
-    def __str__(self) -> str:
-        d = vars(self)
-        return " ".join(list(map(lambda x: str(d[x]), d.keys())))
