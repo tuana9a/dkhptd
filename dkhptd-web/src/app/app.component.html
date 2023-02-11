@@ -8,7 +8,7 @@
     <div *ngIf="showManageJobs()" class="p-1"><a routerLink="/v1/manage-job" routerLinkActive="active" ariaCurrentWhenActive="page">Quản Lý Hẹn Giờ (Toàn Bộ)</a></div>
     <div *ngIf="showUploadTKB()" class="p-1"><a routerLink="/upload-tkb-xlsx" routerLinkActive="active" ariaCurrentWhenActive="page">Upload TKB.xlsx</a></div>
     <div *ngIf="showMessages()" class="p-1"><a routerLink="/messages" routerLinkActive="active" ariaCurrentWhenActive="page">Thông Báo ({{toastMessagesRepo.messages.length}})</a></div>
-    <div *ngIf="showProfile()" class="p-1"><a routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page">Cá Nhân</a></div>
+    <div *ngIf="showProfile()" class="p-1"><a routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page">Cá Nhân ({{currentUsername()}})</a></div>
     <div *ngIf="showLogout()" class="p-1"><a (click)="onLogout()">Đăng Xuất</a></div>
   </div>
 </nav>

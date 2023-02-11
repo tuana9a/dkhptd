@@ -39,8 +39,10 @@
   <div class="w-full h-full relative flex justify-center overflow-auto">
     <div class="absolute top-0 left-0 w-full h-full backdrop-blur-sm bg-white/30 z-0" (click)="closeSearchBox()"></div>
     <div class="absolute max-w-[90%] max-h-full overflow-auto z-10 bg-black p-1">
-      <h2>Tìm kiếm</h2>
-      <div><span>nhấn vào lớp để thêm vào danh sách đăng ký</span></div>
+      <div class="flex items-center">
+        <h2>Tìm kiếm</h2>
+        <div class="ml-1"><span>(nhấn vào lớp để thêm vào danh sách đăng ký)</span></div>
+      </div>
       <div app-term-id-search-class-to-register (classClicked)="takeClickedClassToRegister($event)" [navigateOnQueryChange]="false"></div>
     </div>
   </div>
@@ -48,8 +50,8 @@
 <div *ngIf="showSuggestBox" class="fixed w-screen h-screen search-box top-0">
   <div class="w-full h-full relative flex justify-center overflow-auto">
     <div class="absolute top-0 left-0 w-full h-full backdrop-blur-sm bg-white/30 z-0" (click)="closeSuggestBox()"></div>
-    <div class="absolute max-w-[90%] max-h-full overflow-auto z-10 bg-black p-1">
-      <div app-new-job-suggestion-box (classClicked)="takeClickedClassToRegister($event)"></div>
+    <div class="absolute max-w-[90%] max-h-full overflow-auto z-10 bg-black">
+      <div class="p-1" app-new-job-suggestion-box (classClicked)="takeClickedClassToRegister($event)"></div>
     </div>
   </div>
 </div>

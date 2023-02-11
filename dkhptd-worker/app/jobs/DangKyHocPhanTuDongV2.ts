@@ -1,5 +1,5 @@
 import { BringToFront, GoTo, WaitForTimeout, ScreenShot, TypeIn, Click, GetValueFromParams, CurrentUrl, GetTextContent, PageEval, If, IsEqual, For, Job, Break, Try, SetVars } from "puppeteer-worker-job-builder";
-import { HustCaptchaToText } from "../job-builders";
+import { ResolveCaptcha } from "../job-builders";
 import { toPrettyErr } from "../utils";
 
 const CrawlRegisterResultHandler = () => { // browser scope not nodejs scop
@@ -38,7 +38,7 @@ export default () => new Job({
       TypeIn("#tbUserName", GetValueFromParams((p) => p.username)),
       TypeIn("#tbPassword_CLND", GetValueFromParams((p) => p.password)),
       ScreenShot("#ccCaptcha_IMG", "./tmp/temp.png", "png"),
-      TypeIn("#ccCaptcha_TB_I", HustCaptchaToText("./tmp/temp.png", "https://hcr.tuana9a.com")),
+      TypeIn("#ccCaptcha_TB_I", ResolveCaptcha("./tmp/temp.png", "https://hcr.tuana9a.com")),
       Click("button"),
       WaitForTimeout(3000),
       If(IsEqual(CurrentUrl(), "https://dk-sis.hust.edu.vn" /* van o trang dang nhap */)).Then([

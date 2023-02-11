@@ -69,7 +69,7 @@ export const resolveExisted = (agg: { [key: string]: object }, query: Query) => 
   } else if (query.operator == "!=") {
     agg[query.key] = { $ne: query.value };
   } else if (query.operator == "*=") {
-    agg[query.key] = { $regex: new RegExp(query.value) };
+    agg[query.key] = { $regex: new RegExp(query.value, "i") /*default incase*/};
   }
 };
 

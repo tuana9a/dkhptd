@@ -153,7 +153,7 @@ router.post("/:jobId/retry", ExceptionWrapper(async (req, resp) => {
     .getClient()
     .db(cfg.DATABASE_NAME)
     .collection(DKHPTDJobV1.name)
-    .updateOne({ _id: new ObjectId(existedJob._id) }, { $set: { status: JobStatus.READY } });
+    .updateOne({ _id: new ObjectId(existedJob._id) }, { $set: { status: JobStatus.READY, timeToStart: Date.now() } });
 
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));

@@ -22,11 +22,7 @@ export class ProfileComponent implements OnInit {
   }
 
   onChangePassword() {
-    this.accountsApi.changeCurrentPassword(this.newPassword).subscribe(res => {
-      if (res.success) {
-        // TODO: toast
-      }
-    });
+    this.accountsApi.changeCurrentPassword(this.newPassword).subscribe();
   }
 
   onChangeName() {

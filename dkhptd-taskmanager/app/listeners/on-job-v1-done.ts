@@ -6,7 +6,7 @@ import { DKHPTDJobV1 } from "../entities";
 
 export const setup = () => {
   // user error + captcha error + no error
-  jobV1Bus.on(jobV1Event.JOB_V1_UNKNOWN_ERROR, async (result, job: DKHPTDJobV1) => {
+  jobV1Bus.on(jobV1Event.JOB_V1_DONE, async (result, job: DKHPTDJobV1) => {
     await mongoConnectionPool.getClient()
       .db(cfg.DATABASE_NAME)
       .collection(DKHPTDJobV1.name)

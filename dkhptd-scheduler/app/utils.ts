@@ -29,21 +29,21 @@ export const toSafeArray = <T>(input): T[] => {
 export const toSafeInt = (input) => parseInt(input) || 0;
 export const toSafeString = (input) => String(input);
 export const toSHA256 = (input: string) => crypto.createHash("sha256").update(input).digest("hex");
-export const jobToMessage = (input) => ({
+export const toJobWorkerMessage = (input) => ({
   id: input._id,
   name: "DangKyHocPhanTuDong",
   username: input.username,
   password: input.password,
   classIds: input.classIds,
 });
-export const jobV1ToMessage = (input) => ({
+export const toJobV1WorkerMessage = (input) => ({
   id: input._id,
   name: "DangKyHocPhanTuDongV1",
   username: input.username,
   password: input.password,
   classIds: input.classIds,
 });
-export const jobV2ToMessage = (input) => ({
+export const toJobV2WorkerMessage = (input) => ({
   id: input._id,
   name: "DangKyHocPhanTuDongV2",
   username: input.username,

@@ -36,7 +36,7 @@
     <div app-dkhptd-job-logs [id]="id" [logs]="l.logs"></div>
   </div>
   <div *ngFor="let result of results; let i = index">
-    <div><h2>Lần thứ {{i+1}}</h2></div>
+    <div class="flex"><h2>Lần thứ {{i+1}}</h2><div class="flex items-center ml-1"><span>({{result.createdAt | date: "yyyy-MM-dd hh:mm:ss"}})</span></div></div>
     <div app-dkhptd-job-v1-result [id]="id" [result]="result"></div>
   </div>
 </div>

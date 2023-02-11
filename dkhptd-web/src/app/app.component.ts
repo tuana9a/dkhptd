@@ -12,7 +12,6 @@ import { CookieUtils } from "src/utils/cookie.utils";
 })
 export class AppComponent implements OnInit {
   title = "dkhptd-web";
-  isAdminUser = false;
   constructor(
     public toastMessagesRepo: ToastMessagesRepo,
     public cookieUtils: CookieUtils,
@@ -64,5 +63,8 @@ export class AppComponent implements OnInit {
     this.cookieUtils.set({ name: "jwt", value: "" });
     this.session.unAuthorized();
     this.router.navigate(["/login"]);
+  }
+  currentUsername() {
+    return this.session.currentAccount?.username;
   }
 }

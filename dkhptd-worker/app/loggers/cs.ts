@@ -20,7 +20,7 @@ export default {
     const msg = {
       name: error.name,
       message: error.message,
-      stack: error.stack.split(""),
+      stack: error.stack.split("\n"),
     };
     console.log(`${moment().format("YYYY-MM-DD hh:mm:ss")} [ERROR] ${JSON.stringify(msg, null, 2)}`);
   },

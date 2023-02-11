@@ -1,5 +1,5 @@
 import { BringToFront, GoTo, WaitForTimeout, SetVars, ScreenShot, TypeIn, Click, GetValueFromParams, CurrentUrl, GetTextContent, PageEval, If, IsEqual, Job, Break } from "puppeteer-worker-job-builder";
-import { HustCaptchaToText } from "../job-builders";
+import { ResolveCaptcha } from "../job-builders";
 
 const LOGIN_URL = "https://ctt-sis.hust.edu.vn/Account/Login.aspx";
 const LOGOUT_URL = "https://ctt-sis.hust.edu.vn/Account/Logout.aspx";
@@ -47,7 +47,7 @@ export default () => new Job({
     TypeIn("#ctl00_ctl00_contentPane_MainPanel_MainContent_tbUserName_I", GetValueFromParams((p) => p.username)),
     TypeIn("#ctl00_ctl00_contentPane_MainPanel_MainContent_tbPassword_I_CLND", GetValueFromParams((p) => p.password)),
     ScreenShot("#ctl00_ctl00_contentPane_MainPanel_MainContent_ASPxCaptcha1_IMG", SAVE_CAPTCHA_TO, "png"),
-    TypeIn("#ctl00_ctl00_contentPane_MainPanel_MainContent_ASPxCaptcha1_TB_I", HustCaptchaToText(SAVE_CAPTCHA_TO, "https://hcr.tuana9a.com")),
+    TypeIn("#ctl00_ctl00_contentPane_MainPanel_MainContent_ASPxCaptcha1_TB_I", ResolveCaptcha(SAVE_CAPTCHA_TO, "https://hcr.tuana9a.com")),
     Click("#ctl00_ctl00_contentPane_MainPanel_MainContent_btLogin_CD"),
     WaitForTimeout(3000),
     If(IsEqual(CurrentUrl(), LOGIN_URL /* van o trang dang nhap */)).Then([

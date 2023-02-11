@@ -4,6 +4,7 @@ import { cfg, JobStatus } from "../cfg";
 import { mongoConnectionPool } from "../connections";
 import { DKHPTDJobV1 } from "../entities";
 import logger from "../loggers/logger";
+import ms from "ms";
 
 export const setup = () => {
   jobV1Bus.on(jobV1Event.JOB_V1_SYSTEM_ERROR, async (result, job: DKHPTDJobV1) => {
@@ -19,6 +20,6 @@ export const setup = () => {
     await mongoConnectionPool.getClient()
       .db(cfg.DATABASE_NAME)
       .collection(DKHPTDJobV1.name)
-      .updateOne({ _id: job._id }, { $set: { status: JobStatus.READY } }); // set READY for scheduler retry it
+      .updateOne({ _id: job._id }, { $set: { status: JobStatus.READY, timeToStart: Date.now() + ms("1m") } }); // set READY and delay 1p for scheduler retry it
   });
 };

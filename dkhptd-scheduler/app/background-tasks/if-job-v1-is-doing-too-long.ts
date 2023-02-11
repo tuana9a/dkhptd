@@ -16,7 +16,6 @@ export const setup = () => loop.infinity(async () => {
     while (await cursor.hasNext()) {
       const entry = await cursor.next();
       const job = decryptJobV1(new DKHPTDJobV1(entry));
-      logger.info(`Found stale job v1 ${job._id}`);
       jobV1Bus.emit(jobV1Event.STALE_JOB_V1, job._id);
     }
   } catch (err) {

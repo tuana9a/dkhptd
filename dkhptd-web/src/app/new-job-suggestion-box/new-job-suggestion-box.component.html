@@ -1,10 +1,10 @@
-<h2><span>Gợi Ý Lớp Theo Nguyện Vọng</span></h2>
-<div *ngIf="preferences?.length == 0; else choose">
+<div class="flex items-center">
+  <h2><span>Gợi Ý Lớp Theo Nguyện Vọng</span></h2>
+  <div class="ml-1"><span>(nhấn vào lớp để thêm vào danh sách đăng ký)</span></div>
+</div>
+<div *ngIf="preferences?.length == 0">
   <b>Chưa chọn nguyện vọng</b>&nbsp;<span><a class="neon" [routerLink]="['/term-ids', termId, 'preferences']">Bấm vào đây</a> để chọn nguyện vọng</span>
 </div>
-<ng-template #choose>
-  <div><span>nhấn vào lớp để thêm vào danh sách đăng ký</span></div>
-</ng-template>
 <div *ngFor="let p of preferences">
   <div *ngFor="let s of p.wantedSubjectIds">
     <div app-term-id-search-class-to-register (classClicked)="onClassClickedEvent($event)" [termId]="p.termId" [q]="'subjectId==' + s" [showExample]="false" [navigateOnQueryChange]="false" [searchOnInit]="true" [showQueryKeys]="false"></div>

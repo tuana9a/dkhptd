@@ -4,9 +4,10 @@ export interface Q {
   value: string;
 }
 
-export interface MatchQueryTemplate {
+export interface QueryTemplate {
   displayName?: string;
   key: string;
+  op: string;
   choices?: string[];
 }
 

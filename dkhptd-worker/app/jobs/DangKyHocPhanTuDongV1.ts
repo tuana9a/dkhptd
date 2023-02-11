@@ -1,5 +1,5 @@
-import { BringToFront, GoTo, WaitForTimeout, ScreenShot, TypeIn, Click, GetValueFromParams, CurrentUrl, GetTextContent, PageEval, If, IsEqual, For, Job, Break, Try, SetVars } from "puppeteer-worker-job-builder";
-import { HustCaptchaToText } from "../job-builders";
+import { BringToFront, GoTo, WaitForTimeout, ScreenShot, TypeIn, Click, GetValueFromParams, CurrentUrl, GetTextContent, PageEval, If, IsEqual, For, Job, Break, Try, SetVars, Reload } from "puppeteer-worker-job-builder";
+import { ResolveCaptcha } from "../job-builders";
 import { toPrettyErr } from "../utils";
 
 const CrawlRegisterResultHandler = () => { // browser scope not nodejs scop
@@ -32,41 +32,35 @@ export default () => new Job({
   actions: [
     BringToFront(),
     Try([
-      GoTo("https://dk-sis.hust.edu.vn/"),
-      WaitForTimeout(1000),
+      // GoTo("https://dk-sis.hust.edu.vn/"),
+      GoTo("https://dk-sis.hust.edu.vn/Users/Login.aspx"),
+      // GoTo("https://ctt-sis.hust.edu.vn/"),
+      WaitForTimeout(3000),
+      Reload(),
+      Click("#ccCaptcha_RB", { clickCount: 1 }),
       Click("#tbUserName", { clickCount: 3 }),
       TypeIn("#tbUserName", GetValueFromParams((p) => p.username)),
       TypeIn("#tbPassword_CLND", GetValueFromParams((p) => p.password)),
       ScreenShot("#ccCaptcha_IMG", "./tmp/temp.png", "png"),
-      TypeIn("#ccCaptcha_TB_I", HustCaptchaToText("./tmp/temp.png", "https://hcr.tuana9a.com")),
+      TypeIn("#ccCaptcha_TB_I", ResolveCaptcha("./tmp/temp.png", "https://hcr.tuana9a.com")),
       Click("button"),
       WaitForTimeout(3000),
-      /*
-      must be https://dk-sis.hust.edu.vn/
-      not https://dk-sis.hust.edu.vn
-      current url will return with '/' at the end
-      */
-      If(IsEqual(CurrentUrl(), "https://dk-sis.hust.edu.vn/" /* van o trang dang nhap */)).Then([
-        SetVars("userError", GetTextContent("#lbStatus") /*sai tai khoan*/),
-        SetVars("captchaError", GetTextContent("#ccCaptcha_TB_EC") /*sai captcha*/),
-        Break(),
-      ]),
-      If(IsEqual(CurrentUrl(), "https://www.dk-sis.hust.edu.vn/" /* van o trang dang nhap */)).Then([
+      // must be https://dk-sis.hust.edu.vn/ not https://dk-sis.hust.edu.vn
+      // current url will return with '/' at the end
+      If(IsEqual(CurrentUrl(), "https://dk-sis.hust.edu.vn/Users/Login.aspx" /* van o trang dang nhap */)).Then([
         SetVars("userError", GetTextContent("#lbStatus") /*sai tai khoan*/),
         SetVars("captchaError", GetTextContent("#ccCaptcha_TB_EC") /*sai captcha*/),
         Break(),
       ]),
       For(GetValueFromParams((x) => x.classIds)).Each([
-        (orderedClassIds) => For(orderedClassIds).Each([
-          Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_tbDirectClassRegister_I", { clickCount: 3 }),
-          (classId) => TypeIn("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_tbDirectClassRegister_I", classId),
-          /* gui dang ky 1 lop */
-          Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_btDirectClassRegister_CD"),
-          WaitForTimeout(1000),
-          /* xem tin nhan tra ve */
-          If(IsEqual(GetTextContent("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_lbKQ"), "Thành Công")).Then([
-            Break(), /* break neu nguyen vong thanh cong */
-          ]),
+        Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_tbDirectClassRegister_I", { clickCount: 3 }),
+        (classId) => TypeIn("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_tbDirectClassRegister_I", classId),
+        /* gui dang ky 1 lop */
+        Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_btDirectClassRegister_CD"),
+        WaitForTimeout(1000),
+        /* xem tin nhan tra ve */
+        If(IsEqual(GetTextContent("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_lbKQ"), "Thành Công")).Then([
+          Break(), /* break neu nguyen vong thanh cong */
         ]),
       ]),
       /* gui tat ca dang ky */

@@ -14,7 +14,7 @@
         <table>
           <tr *ngFor="let subjectId of newWantedSubjectIds">
             <td class="border border-solid border-black">{{subjectId}}</td>
-            <td class=""><button class="px-1" (click)="onRemoveNewSubjectId(subjectId)">-</button></td>
+            <td class=""><fa-icon class="p-1 bg-black flex items-center" [styles]="{'stroke': '#1eff00', 'color': '#1eff00'}" [icon]="faMinus" (click)="onRemoveNewSubjectId(subjectId)"></fa-icon></td>
           </tr>
           <tr>
             <td class="border border-solid border-black"><input type="text" [(ngModel)]="newSubjectId" (keypress)="onKeyPressNewSubjectId($event)"></td>
@@ -22,7 +22,7 @@
           </tr>
         </table>
       </td>
-      <td><button (click)="addPreference()">Thêm</button></td>
+      <td><button (click)="addPreference()">Tạo Mới</button></td>
     </tr>
   </table>
 </div>

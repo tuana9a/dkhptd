@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 import { TermIdsJobV1sApi } from "src/apis/term-ids.dkhptd-v1-s.api";
 import { ClassToRegister } from "src/entities";
 
@@ -18,10 +19,13 @@ export class NewJobV1 implements OnInit {
   @Input() showSearchBox = false;
   @Input() showSuggestBox = false;
 
-  constructor(private api: TermIdsJobV1sApi) { }
+  constructor(private api: TermIdsJobV1sApi, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit(): void {
-    //
+    this.activatedRoute.queryParams.subscribe(query => {
+      this.showSuggestBox = Boolean(query["showSuggestBox"]);
+      this.showSearchBox = Boolean(query["showSearchBox"]);
+    });
   }
 
   onSubmit() {

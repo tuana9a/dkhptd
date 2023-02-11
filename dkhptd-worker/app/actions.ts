@@ -1,11 +1,11 @@
 import { Action } from "puppeteer-worker-job-builder";
 
-export class _HustCaptchaToText extends Action {
+export class ResolveCaptchaAction extends Action {
   imgPath: string;
   endPoint: string;
 
   constructor(imgPath: string, endpoint: string) {
-    super(_HustCaptchaToText.name);
+    super(ResolveCaptchaAction.name);
     this.imgPath = imgPath;
     this.endPoint = endpoint;
   }

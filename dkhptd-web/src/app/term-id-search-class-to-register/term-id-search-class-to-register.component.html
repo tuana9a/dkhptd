@@ -2,30 +2,24 @@
   <div>
     <table>
       <tr>
+        <td>Bộ Lọc</td>
+        <td>
+          <div class="flex">
+            <div class="my-1 mr-1 flex text-center" *ngFor="let q of listQuery; let i = index">
+              <div class="flex items-center"><span class="bg-black text-white">{{q | q : keyTranslator : opTranslator}}</span></div>
+              <div class="ml-[1px] flex items-center"><fa-icon class="bg-black flex items-center px-1" (click)="removeQ(i)" [icon]="faXmark" [styles]="{'stroke': 'red', 'color': 'red'}"></fa-icon></div>
+            </div>
+          </div>
+        </td>
         <td>
           <select [(ngModel)]="newQueryKey">
-            <option *ngFor="let t of matchQueryTemplates" [value]="t.key">{{t.displayName}}</option>
+            <option *ngFor="let t of queryTemplates" [value]="t.key">{{t.displayName}}</option>
           </select>
         </td>
         <td>
           <input class="w-full" [(ngModel)]="newQueryValue" (keypress)="onKeyPressOnNewQueryValue($event)" type="text">
         </td>
         <td><button (click)="addNewMatchQuery()">ENTER</button></td>
-      </tr>
-    </table>
-  </div>
-  <div>
-    <table>
-      <tr>
-        <td>Bộ Lọc</td>
-        <td>
-          <div class="flex">
-            <div class="my-1 mr-1 flex text-center" *ngFor="let q of listQuery; let i = index">
-              <div class="flex items-center"><span class="bg-black text-white">{{q | q : keyTranslate}}</span></div>
-              <div class="ml-[1px] flex items-center"><fa-icon class="bg-black flex items-center px-1" (click)="removeQ(i)" [icon]="faXmark" [styles]="{'stroke': 'red', 'color': 'red'}"></fa-icon></div>
-            </div>
-          </div>
-        </td>
       </tr>
     </table>
   </div>

@@ -11,7 +11,7 @@ import { toJson, toBuffer } from "../utils";
 
 export const setup = () => {
   rabbitmqConnectionPool.getChannel().assertQueue(jobV1QueueName.RUN_JOB_V1, {});
-  jobV1Bus.on(jobV1Event.NEW_JOB_V1, (job) => logger.info("new Job V1: " + toJson(job)));
+  jobV1Bus.on(jobV1Event.NEW_JOB_V1, (job) => logger.info("New job V1: " + job.id));
   jobV1Bus.on(jobV1Event.NEW_JOB_V1, (job) => {
     const iv = crypto.randomBytes(16).toString("hex");
     rabbitmqConnectionPool.getChannel().sendToQueue(jobV1QueueName.RUN_JOB_V1, toBuffer(c(cfg.AMQP_ENCRYPTION_KEY).e(toJson(job), iv)), {

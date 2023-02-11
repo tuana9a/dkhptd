@@ -33,7 +33,7 @@ export class PreferencesComponent implements OnInit {
   }
 
   fetchAll() {
-    this.api.currentPreferences().subscribe(res => {
+    this.api.currentPreferencesOfTermId(this.termId).subscribe(res => {
       if (res.success) {
         this.preferences = res.data;
       }

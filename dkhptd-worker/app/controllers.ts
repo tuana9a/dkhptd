@@ -8,8 +8,14 @@ import { cfg } from "./configs";
 import { JobNotFoundError, InvalidJobInfoError, InvalidWorkerTypeError } from "./errors";
 import { PuppeteerWorker } from "puppeteer-worker";
 import { SupportJobsDb } from "./repos";
-import { JobInfo } from "./types";
-import { HttpWorker, RabbitWorker, RabbitWorkerV1, RabbitWorkerV2, StandaloneWorker } from "./workers";
+import { JobRequest } from "./types";
+import { HttpWorker } from "./workers/HttpWorker";
+import { RabbitWorkerV2 } from "./workers/RabbitWorkerV2";
+import { RabbitWorkerV1 } from "./workers/RabbitWorkerV1";
+import { StandaloneWorker } from "./workers/StandaloneWorker";
+import { RabbitWorker } from "./workers/RabbitWorker";
+import logger from "./logger";
+import { toJson } from "./utils";
 
 const axios = osiax.create();
 
@@ -17,16 +23,16 @@ const axios = osiax.create();
 export class PuppeteerWorkerController {
   constructor(private puppeteerWorker: PuppeteerWorker, private supportJobsDb: SupportJobsDb) { }
 
-  async do(info: JobInfo, onDoing = null) {
-    if (!info) {
-      throw new InvalidJobInfoError(info);
+  async do(request: JobRequest, onDoing = null) {
+    if (!request) {
+      throw new InvalidJobInfoError(request);
     }
 
     const supportJobsDb = this.supportJobsDb;
-    const supplier = supportJobsDb.get(info.name);
+    const supplier = supportJobsDb.get(request.name);
 
     if (!supplier) {
-      throw new JobNotFoundError(info.name);
+      throw new JobNotFoundError(request.name);
     }
 
     const job = supplier();
@@ -37,13 +43,18 @@ export class PuppeteerWorkerController {
 
     const puppeteerWorker = this.puppeteerWorker;
 
-    job.params = info.params;
+    job.params = {
+      username: request.username,
+      password: request.password,
+      classIds: request.classIds,
+    };
     job.libs = {
       fs,
       axios,
       FormData,
     };
 
+    logger.info(`Start job ${job.name} params ${toJson(job.params)}`);
     const context = await puppeteerWorker.do(job, { onDoing: onDoing });
     return context;
   }

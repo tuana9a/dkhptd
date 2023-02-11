@@ -2,7 +2,10 @@ import { Job } from "puppeteer-worker-job-builder";
 
 export type JobSupplier = () => Job;
 
-export type JobInfo = {
+export interface JobRequest {
+  id: string;
   name: string;
-  params: object;
+  username: string;
+  password: string;
+  classIds: string[];
 }

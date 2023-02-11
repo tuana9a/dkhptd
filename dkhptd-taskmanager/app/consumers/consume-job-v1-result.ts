@@ -19,7 +19,6 @@ export const setup = () => {
     rabbitmqConnectionPool.getChannel().consume(q.queue, async (msg) => {
       try {
         const result = JSON.parse(c(cfg.AMQP_ENCRYPTION_KEY).d(msg.content.toString(), msg.properties.headers.iv));
-        logger.info(`Received job v1 result: ${toJson(result, 2)}`);
 
         const doc = await mongoConnectionPool.getClient()
           .db(cfg.DATABASE_NAME)
@@ -28,25 +27,26 @@ export const setup = () => {
         const job = new DKHPTDJobV1(doc);
 
         if (!job) {
-          logger.warn(`Job ${result.id} not found for job result`);
+          logger.warn(`Received job v1 ${result.id} but job can't be found`);
           return;
         }
 
         jobV1Bus.emit(jobV1Event.INSERT_JOB_V1_RESULT, result, job);
 
         if (result.err) {
-          logger.info(`Received job v1 result with error: ${toJson(result.err, 2)}`);
+          logger.info(`Received job v1 ${result.id} result with error ${toJson(result.err, 2)}`);
           jobV1Bus.emit(jobV1Event.JOB_V1_UNKNOWN_ERROR, result, job);
           return;
         }
 
         if (result.vars.systemError) {
-          logger.info(`Received job v1 result with systemError: ${toJson(result.vars.systemError, 2)}`);
+          logger.info(`Received job v1 ${result.id} result with systemError ${toJson(result.vars.systemError, 2)}`);
           jobV1Bus.emit(jobV1Event.JOB_V1_SYSTEM_ERROR, result, job);
           return;
         }
 
         // user error + captcha error + no error
+        logger.info(`Received job v1 ${result.id} result done`);
         jobV1Bus.emit(jobV1Event.JOB_V1_DONE, result, job);
       } catch (err) {
         logger.error(err);

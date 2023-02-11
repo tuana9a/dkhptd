@@ -2,8 +2,21 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ClassToRegsitersApi } from "src/apis/class-to-register.apis";
 import { ClassToRegister } from "src/entities";
-import { Q, MatchQueryTemplate, build, parse } from "src/merin";
+import { Q, QueryTemplate, build, parse } from "src/merin";
 import { faCircleXmark, faMinus, faXmark, faArrowRightLong, faArrowLeftLong } from "@fortawesome/free-solid-svg-icons";
+
+const opTranslate = new Map<string, string>();
+opTranslate.set("==", ":");
+opTranslate.set("*=", ":");
+
+const queryTemplates = [
+  { displayName: "Mã Lớp", key: "classId", op: "==" },
+  { displayName: "Mã Lớp Kèm", key: "secondClassId", op: "==" },
+  { displayName: "Mã Học Phần", key: "subjectId", op: "==" },
+  { displayName: "Thời Gian Học", key: "learnTime", op: "==" },
+  { displayName: "Tên Học Phần", key: "subjectName", op: "*=" },
+  { displayName: "Học Vào Thứ", key: "learnAtDayOfWeek", op: "==" },
+];
 
 @Component({
   selector: "[app-term-id-search-class-to-register]",
@@ -22,11 +35,10 @@ export class TermIdSearchClassToRegisterComponent implements OnInit {
   @Input() showExample = false;
   @Input() searchOnInit = true;
   @Output() classClicked = new EventEmitter<ClassToRegister>();
-  @Input() matchQueryTemplates: MatchQueryTemplate[] = [];
+  @Input() queryTemplates: QueryTemplate[] = queryTemplates;
   @Input() listQuery: Q[] = [];
   newQueryKey = "";
   newQueryValue = "";
-  keyTranslate = new Map<string, string>();
   faCircleXmark = faCircleXmark;
   faMinus = faMinus;
   faXmark = faXmark;
@@ -34,18 +46,14 @@ export class TermIdSearchClassToRegisterComponent implements OnInit {
   faArrowLeft = faArrowLeftLong;
 
   constructor(private activatedRoute: ActivatedRoute, private router: Router, private api: ClassToRegsitersApi) {
-    this.matchQueryTemplates = [
-      { displayName: "Mã Lớp", key: "classId" },
-      { displayName: "Mã Lớp Kèm", key: "secondClassId" },
-      { displayName: "Mã Học Phần", key: "subjectId" },
-      { displayName: "Thời Gian Học", key: "learnTime" }
-    ];
-    this.newQueryKey = this.matchQueryTemplates[0].key;
-    this.keyTranslate.set("classId", "Mã Lớp");
-    this.keyTranslate.set("secondClassId", "Mã Lớp Kèm");
-    this.keyTranslate.set("subjectId", "Mã Học Phần");
-    this.keyTranslate.set("termId", "Kỳ Học");
-    this.keyTranslate.set("learnTime", "Thời gian học");
+  }
+
+  keyTranslator(key: string) {
+    return queryTemplates.find(x => x.key == key)?.displayName;
+  }
+
+  opTranslator(op: string) {
+    return opTranslate.get(op);
   }
 
   ngOnInit(): void {
@@ -110,9 +118,12 @@ export class TermIdSearchClassToRegisterComponent implements OnInit {
 
   addNewMatchQuery() {
     if (!this.newQueryKey || !this.newQueryValue) return;
-    this.listQuery.push({ key: this.newQueryKey, value: this.newQueryValue, op: "==" });
-    this.q = build(this.listQuery);
-    this.onQueryChange();
+    const queryTemplate = this.queryTemplates.find(x => x.key == this.newQueryKey);
+    if (queryTemplate) {
+      this.listQuery.push({ key: this.newQueryKey, value: this.newQueryValue, op: queryTemplate.op });
+      this.q = build(this.listQuery);
+      this.onQueryChange();
+    }
   }
 
   removeQ(i: number) {
