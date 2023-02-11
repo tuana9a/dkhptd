@@ -1,5 +1,5 @@
 import express from "express";
-import { cfg } from "../../cfg";
+import { cfg } from "app/cfg";
 import jwt from "jsonwebtoken";
 import { mongoConnectionPool } from "../../connections";
 import { UsernameNotFoundError, WrongPasswordError } from "../../exceptions";

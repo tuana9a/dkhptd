@@ -4,9 +4,9 @@ import { DKHPTDV1sApi } from "src/apis/dkhptd-v1-s.api";
 import { DKHPTDJobV1 } from "src/entities";
 
 @Component({
-  selector: "app-manage-dkhptd-job-v1",
-  templateUrl: "./manage-dkhptd-job-v1.component.html",
-  styleUrls: ["./manage-dkhptd-job-v1.component.scss"]
+  selector: "app-manage-job-v1",
+  templateUrl: "./manage-job-v1.component.html",
+  styleUrls: ["./manage-job-v1.component.scss"]
 })
 export class ManageJobV1Component implements OnInit {
   keys: Set<string> = new Set();

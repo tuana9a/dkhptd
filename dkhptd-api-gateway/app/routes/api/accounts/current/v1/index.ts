@@ -1,14 +1,14 @@
 import { ObjectId } from "mongodb";
 import express from "express";
-import { cfg, JobStatus } from "../../../../../cfg";
-import { mongoConnectionPool } from "../../../../../connections";
-import { ExceptionWrapper } from "../../../../../middlewares";
-import { RateLimit } from "../../../../../middlewares";
-import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "../../../../../modifiers";
-import BaseResponse from "../../../../../payloads/BaseResponse";
-import { encryptJobV1, isEmpty, isFalsy } from "../../../../../utils";
-import { EmptyStringError, FaslyValueError, MissingRequestBodyDataError, RequireLengthFailed } from "../../../../../exceptions";
-import { DKHPTDJobV1 } from "../../../../../entities";
+import { cfg, JobStatus } from "app/cfg";
+import { mongoConnectionPool } from "app/connections";
+import { ExceptionWrapper } from "app/middlewares";
+import { RateLimit } from "app/middlewares";
+import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "app/modifiers";
+import BaseResponse from "app/payloads/BaseResponse";
+import { encryptJobV1, isEmpty, isFalsy } from "app/utils";
+import { EmptyStringError, FaslyValueError, MissingRequestBodyDataError, RequireLengthFailed } from "app/exceptions";
+import { DKHPTDJobV1 } from "app/entities";
 
 const router = express.Router();
 

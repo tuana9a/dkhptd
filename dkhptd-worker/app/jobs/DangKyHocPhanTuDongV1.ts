@@ -1,4 +1,4 @@
-import { BringToFront, GoTo, WaitForTimeout, ScreenShot, TypeIn, Click, GetValueFromParams, CurrentUrl, GetTextContent, PageEval, If, IsEqual, For, Job, Break, Try, SetVars, Reload } from "puppeteer-worker-job-builder";
+import { BringToFront, GoTo, WaitForTimeout, ScreenShot, TypeIn, Click, CurrentUrl, PageEval, If, IsEqual, For, Job, Break, Try, SetVars, Reload, Params, TextContent } from "puppeteer-worker-job-builder";
 import { ResolveCaptcha } from "../job-builders";
 import { toPrettyErr } from "../utils";
 
@@ -39,8 +39,8 @@ export default () => new Job({
       Reload(),
       Click("#ccCaptcha_RB", { clickCount: 1 }),
       Click("#tbUserName", { clickCount: 3 }),
-      TypeIn("#tbUserName", GetValueFromParams((p) => p.username)),
-      TypeIn("#tbPassword_CLND", GetValueFromParams((p) => p.password)),
+      TypeIn("#tbUserName", Params((p) => p.username)),
+      TypeIn("#tbPassword_CLND", Params("password")),
       ScreenShot("#ccCaptcha_IMG", "./tmp/temp.png", "png"),
       TypeIn("#ccCaptcha_TB_I", ResolveCaptcha("./tmp/temp.png", "https://hcr.tuana9a.com")),
       Click("button"),
@@ -48,18 +48,18 @@ export default () => new Job({
       // must be https://dk-sis.hust.edu.vn/ not https://dk-sis.hust.edu.vn
       // current url will return with '/' at the end
       If(IsEqual(CurrentUrl(), "https://dk-sis.hust.edu.vn/Users/Login.aspx" /* van o trang dang nhap */)).Then([
-        SetVars("userError", GetTextContent("#lbStatus") /*sai tai khoan*/),
-        SetVars("captchaError", GetTextContent("#ccCaptcha_TB_EC") /*sai captcha*/),
+        SetVars("userError", TextContent("#lbStatus") /*sai tai khoan*/),
+        SetVars("captchaError", TextContent("#ccCaptcha_TB_EC") /*sai captcha*/),
         Break(),
       ]),
-      For(GetValueFromParams((x) => x.classIds)).Each([
+      For(Params("classIds")).Each([
         Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_tbDirectClassRegister_I", { clickCount: 3 }),
         (classId) => TypeIn("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_tbDirectClassRegister_I", classId),
         /* gui dang ky 1 lop */
         Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_btDirectClassRegister_CD"),
         WaitForTimeout(1000),
         /* xem tin nhan tra ve */
-        If(IsEqual(GetTextContent("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_lbKQ"), "Thành Công")).Then([
+        If(IsEqual(TextContent("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_lbKQ"), "Thành Công")).Then([
           Break(), /* break neu nguyen vong thanh cong */
         ]),
       ]),

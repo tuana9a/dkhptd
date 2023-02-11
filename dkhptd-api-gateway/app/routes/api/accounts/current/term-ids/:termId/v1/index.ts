@@ -1,15 +1,15 @@
 import { ObjectId } from "mongodb";
 import express from "express";
 import { isEmpty } from "lodash";
-import { JobStatus, cfg } from "../../../../../../../cfg";
-import { mongoConnectionPool } from "../../../../../../../connections";
-import { DKHPTDJobV1 } from "../../../../../../../entities";
-import { MissingRequestBodyDataError, FaslyValueError, EmptyStringError, RequireLengthFailed, InvalidTermIdError } from "../../../../../../../exceptions";
-import { ExceptionWrapper } from "../../../../../../../middlewares";
-import { RateLimit } from "../../../../../../../middlewares";
-import BaseResponse from "../../../../../../../payloads/BaseResponse";
-import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "../../../../../../../modifiers";
-import { isFalsy, isValidTermId, encryptJobV1 } from "../../../../../../../utils";
+import { JobStatus, cfg } from "app/cfg";
+import { mongoConnectionPool } from "app/connections";
+import { DKHPTDJobV1 } from "app/entities";
+import { MissingRequestBodyDataError, FaslyValueError, EmptyStringError, RequireLengthFailed, InvalidTermIdError } from "app/exceptions";
+import { ExceptionWrapper } from "app/middlewares";
+import { RateLimit } from "app/middlewares";
+import BaseResponse from "app/payloads/BaseResponse";
+import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "app/modifiers";
+import { isFalsy, isValidTermId, encryptJobV1 } from "app/utils";
 
 const router = express.Router();
 

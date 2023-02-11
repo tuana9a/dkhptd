@@ -1,18 +1,18 @@
 import express from "express";
 import { Filter } from "mongodb";
 import multer from "multer";
-import { tkbBus } from "../../../bus";
-import { cfg } from "../../../cfg";
-import { mongoConnectionPool } from "../../../connections";
-import { ExceptionWrapper, IsAdminFilter, JwtFilter } from "../../../middlewares";
-import { modify, PickProps, NormalizeIntProp, NormalizeStringProp, SetProp } from "../../../modifiers";
-import BaseResponse from "../../../payloads/BaseResponse";
-import { toNormalizedString, toSafeInt } from "../../../utils";
-import { resolveMongoFilter } from "../../../merin";
-import { FaslyValueError, NotAnArrayError } from "../../../exceptions";
-import { isFalsy } from "../../../utils";
-import { tkbEvent } from "../../../app-event";
-import { ClassToRegister } from "../../../entities";
+import { tkbBus } from "app/bus";
+import { cfg } from "app/cfg";
+import { mongoConnectionPool } from "app/connections";
+import { ExceptionWrapper, IsAdminFilter, JwtFilter } from "app/middlewares";
+import { modify, PickProps, NormalizeIntProp, NormalizeStringProp, SetProp } from "app/modifiers";
+import BaseResponse from "app/payloads/BaseResponse";
+import { toNormalizedString, toSafeInt } from "app/utils";
+import { resolveMongoFilter } from "app/merin";
+import { FaslyValueError, NotAnArrayError } from "app/exceptions";
+import { isFalsy } from "app/utils";
+import { tkbEvent } from "app/app-event";
+import { ClassToRegister } from "app/entities";
 
 const router = express.Router();
 

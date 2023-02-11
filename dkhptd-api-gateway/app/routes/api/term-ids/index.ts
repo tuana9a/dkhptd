@@ -2,13 +2,13 @@
 
 import express from "express";
 import { ObjectId } from "mongodb";
-import { cfg } from "../../../cfg";
-import { mongoConnectionPool } from "../../../connections";
-import { TermId } from "../../../entities";
-import { FaslyValueError, NotAnArrayError } from "../../../exceptions";
-import { ExceptionWrapper, IsAdminFilter, JwtFilter } from "../../../middlewares";
-import BaseResponse from "../../../payloads/BaseResponse";
-import { isFalsy } from "../../../utils";
+import { cfg } from "app/cfg";
+import { mongoConnectionPool } from "app/connections";
+import { TermId } from "app/entities";
+import { FaslyValueError, NotAnArrayError } from "app/exceptions";
+import { ExceptionWrapper, IsAdminFilter, JwtFilter } from "app/middlewares";
+import BaseResponse from "app/payloads/BaseResponse";
+import { isFalsy } from "app/utils";
 
 const router = express.Router();
 

@@ -1,5 +1,5 @@
 import express from "express";
-import { cfg } from "../../cfg";
+import { cfg } from "app/cfg";
 import { mongoConnectionPool } from "../../connections";
 import { Account } from "../../entities";
 import { FaslyValueError, UsernameExistedError } from "../../exceptions";

@@ -6,7 +6,8 @@ import { mongoConnectionPool } from "./connections";
 import { Account } from "./entities";
 import BaseResponse from "./payloads/BaseResponse";
 import logger from "./loggers/logger";
-import ratelimit from "express-rate-limit";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const ratelimit = require("express-rate-limit");
 
 export const RateLimit = ({ windowMs, max, handler }: { windowMs: number; max: number, handler?: Handler }) => ratelimit({
   windowMs: windowMs,

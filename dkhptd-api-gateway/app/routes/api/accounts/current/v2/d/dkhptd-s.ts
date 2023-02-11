@@ -1,13 +1,13 @@
 import express from "express";
 import { Filter, ObjectId } from "mongodb";
-import { cfg } from "../../../../../../cfg";
-import { mongoConnectionPool } from "../../../../../../connections";
-import { ExceptionWrapper } from "../../../../../../middlewares";
-import { decryptJobV2 } from "../../../../../../utils";
-import { modify, PickProps } from "../../../../../../modifiers";
-import BaseResponse from "../../../../../../payloads/BaseResponse";
-import { resolveMongoFilter } from "../../../../../../merin";
-import { DKHPTDJobV2 } from "../../../../../../entities";
+import { cfg } from "app/cfg";
+import { mongoConnectionPool } from "app/connections";
+import { ExceptionWrapper } from "app/middlewares";
+import { decryptJobV2 } from "app/utils";
+import { modify, PickProps } from "app/modifiers";
+import BaseResponse from "app/payloads/BaseResponse";
+import { resolveMongoFilter } from "app/merin";
+import { DKHPTDJobV2 } from "app/entities";
 
 const router = express.Router();
 

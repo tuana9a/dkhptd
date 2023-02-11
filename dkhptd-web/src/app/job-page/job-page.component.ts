@@ -6,11 +6,11 @@ import { DKHPTDJobLogs } from "src/entities";
 import { DKHPTDJobV1 } from "src/entities";
 
 @Component({
-  selector: "app-dkhptd-job-page",
-  templateUrl: "./dkhptd-job-page.component.html",
-  styleUrls: ["./dkhptd-job-page.component.scss"]
+  selector: "app-job-page",
+  templateUrl: "./job-page.component.html",
+  styleUrls: ["./job-page.component.scss"]
 })
-export class DkhptdJobPageComponent implements OnInit {
+export class JobPageComponent implements OnInit {
   @Input() id = "";
   @Input() job?: DKHPTDJobV1;
   @Input() logs?: DKHPTDJobLogs[] = [];

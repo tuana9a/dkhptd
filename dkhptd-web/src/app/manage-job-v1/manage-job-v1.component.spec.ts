@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { DkhptdJobRowComponent } from "./dkhptd-job-row.component";
+import { ManageJobV1Component } from "./manage-job-v1.component";
 
-describe("DkhptdJobRowComponent", () => {
-  let component: DkhptdJobRowComponent;
-  let fixture: ComponentFixture<DkhptdJobRowComponent>;
+describe("ManageDKHPTDJOBV1Component", () => {
+  let component: ManageJobV1Component;
+  let fixture: ComponentFixture<ManageJobV1Component>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DkhptdJobRowComponent ]
+      declarations: [ ManageJobV1Component ]
     })
       .compileComponents();
 
-    fixture = TestBed.createComponent(DkhptdJobRowComponent);
+    fixture = TestBed.createComponent(ManageJobV1Component);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

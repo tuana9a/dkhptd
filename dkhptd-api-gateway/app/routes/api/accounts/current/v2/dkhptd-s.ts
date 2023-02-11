@@ -1,17 +1,17 @@
 import express from "express";
 import { Filter, ObjectId } from "mongodb";
-import { cfg, JobStatus } from "../../../../../cfg";
-import { mongoConnectionPool } from "../../../../../connections";
-import { ExceptionWrapper } from "../../../../../middlewares";
-import { RateLimit } from "../../../../../middlewares";
-import { decryptJobV2Logs } from "../../../../../utils";
-import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "../../../../../modifiers";
-import BaseResponse from "../../../../../payloads/BaseResponse";
-import { resolveMongoFilter } from "../../../../../merin";
-import { EmptyStringError, FaslyValueError, JobNotFoundError, NotAnArrayError, RequireLengthFailed } from "../../../../../exceptions";
+import { cfg, JobStatus } from "app/cfg";
+import { mongoConnectionPool } from "app/connections";
+import { ExceptionWrapper } from "app/middlewares";
+import { RateLimit } from "app/middlewares";
+import { decryptJobV2Logs } from "app/utils";
+import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "app/modifiers";
+import BaseResponse from "app/payloads/BaseResponse";
+import { resolveMongoFilter } from "app/merin";
+import { EmptyStringError, FaslyValueError, JobNotFoundError, NotAnArrayError, RequireLengthFailed } from "app/exceptions";
 import { isEmpty } from "lodash";
-import { isFalsy } from "../../../../../utils";
-import { DKHPTDJobV2, DKHPTDJobV2Logs } from "../../../../../entities";
+import { isFalsy } from "app/utils";
+import { DKHPTDJobV2, DKHPTDJobV2Logs } from "app/entities";
 
 const router = express.Router();
 

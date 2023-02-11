@@ -1,13 +1,13 @@
 import express from "express";
 import { ObjectId } from "mongodb";
-import { cfg } from "../../../../../../cfg";
-import { mongoConnectionPool } from "../../../../../../connections";
-import { AccountPreference } from "../../../../../../entities";
-import { MissingRequestBodyDataError } from "../../../../../../exceptions";
-import { ExceptionWrapper } from "../../../../../../middlewares";
-import BaseResponse from "../../../../../../payloads/BaseResponse";
-import { modify, PickProps, NormalizeArrayProp, SetProp } from "../../../../../../modifiers";
-import { isFalsy } from "../../../../../../utils";
+import { cfg } from "app/cfg";
+import { mongoConnectionPool } from "app/connections";
+import { AccountPreference } from "app/entities";
+import { MissingRequestBodyDataError } from "app/exceptions";
+import { ExceptionWrapper } from "app/middlewares";
+import BaseResponse from "app/payloads/BaseResponse";
+import { modify, PickProps, NormalizeArrayProp, SetProp } from "app/modifiers";
+import { isFalsy } from "app/utils";
 
 const router = express.Router();
 

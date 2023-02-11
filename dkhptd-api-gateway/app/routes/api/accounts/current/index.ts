@@ -1,15 +1,15 @@
 import express from "express";
 import { Filter, ObjectId } from "mongodb";
-import { cfg } from "../../../../cfg";
-import { mongoConnectionPool } from "../../../../connections";
-import { ExceptionWrapper } from "../../../../middlewares";
-import BaseResponse from "../../../../payloads/BaseResponse";
-import { accountToClient, toSHA256 } from "../../../../utils";
-import { JwtFilter } from "../../../../middlewares";
-import { isFalsy } from "../../../../utils";
-import { MissingRequestBodyDataError, UsernameNotFoundError } from "../../../../exceptions";
-import { Account, AccountPreference } from "../../../../entities";
-import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith, NormalizeArrayProp, SetProp } from "../../../../modifiers";
+import { cfg } from "app/cfg";
+import { mongoConnectionPool } from "app/connections";
+import { ExceptionWrapper } from "app/middlewares";
+import BaseResponse from "app/payloads/BaseResponse";
+import { accountToClient, toSHA256 } from "app/utils";
+import { JwtFilter } from "app/middlewares";
+import { isFalsy } from "app/utils";
+import { MissingRequestBodyDataError, UsernameNotFoundError } from "app/exceptions";
+import { Account, AccountPreference } from "app/entities";
+import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith, NormalizeArrayProp, SetProp } from "app/modifiers";
 
 const router = express.Router();
 

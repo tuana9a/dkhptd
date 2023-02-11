@@ -5,11 +5,11 @@ import { DKHPTDJobV1 } from "src/entities";
 import { JobStatusUtils } from "src/utils/job-status.utils";
 
 @Component({
-  selector: "[app-dkhptd-job-row]",
-  templateUrl: "./dkhptd-job-row.component.html",
-  styleUrls: ["./dkhptd-job-row.component.scss"]
+  selector: "[app-job-row]",
+  templateUrl: "./job-row.component.html",
+  styleUrls: ["./job-row.component.scss"]
 })
-export class DkhptdJobRowComponent implements OnInit {
+export class JobRowComponent implements OnInit {
   id = "";
   @Input() job?: DKHPTDJobV1;
   @Input() showPassword = false;

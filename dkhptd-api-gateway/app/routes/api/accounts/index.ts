@@ -1,12 +1,12 @@
 import express from "express";
 import { ObjectId } from "mongodb";
-import { cfg } from "../../../cfg";
-import { mongoConnectionPool } from "../../../connections";
-import { Account } from "../../../entities";
-import { ExceptionWrapper } from "../../../middlewares";
-import { IsAdminFilter } from "../../../middlewares";
-import { JwtFilter } from "../../../middlewares";
-import BaseResponse from "../../../payloads/BaseResponse";
+import { cfg } from "app/cfg";
+import { mongoConnectionPool } from "app/connections";
+import { Account } from "app/entities";
+import { ExceptionWrapper } from "app/middlewares";
+import { IsAdminFilter } from "app/middlewares";
+import { JwtFilter } from "app/middlewares";
+import BaseResponse from "app/payloads/BaseResponse";
 
 const router = express.Router();
 

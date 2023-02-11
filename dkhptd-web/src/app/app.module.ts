@@ -15,14 +15,14 @@ import { ProfileComponent } from "./profile/profile.component";
 import { HomeComponent } from "./home/home.component";
 import { SignupComponent } from "./signup/signup.component";
 import { FormsModule } from "@angular/forms";
-import { ManageJobV1Component } from "./manage-dkhptd-job-v1/manage-dkhptd-job-v1.component";
-import { JobStatusPipe } from "src/pipes/job-status.pipe";
-import { DkhptdJobComponent } from "./dkhptd-job/dkhptd-job.component";
-import { DkhptdJobLogsComponent } from "./dkhptd-job-logs/dkhptd-job-logs.component";
+import { ManageJobV1Component } from "./manage-job-v1/manage-job-v1.component";
+import { JobStatusPipe } from "src/app/job-status.pipe";
+import { JobComponent } from "./job/job.component";
+import { JobLogsComponent } from "./job-logs/job-logs.component";
 import { ActionLogComponent } from "./action-log/action-log.component";
-import { ToJsonPipe } from "src/pipes/to-json.pipe";
-import { PasswordPipe } from "src/pipes/password.pipe";
-import { DkhptdJobRowComponent } from "./dkhptd-job-row/dkhptd-job-row.component";
+import { ToJsonPipe } from "src/app/to-json.pipe";
+import { PasswordPipe } from "src/app/password.pipe";
+import { JobRowComponent } from "./job-row/job-row.component";
 import { UploadTkbXlsxComponent } from "./upload-tkb-xlsx/upload-tkb-xlsx.component";
 import { NewJobSuggestionBoxComponent } from "./new-job-suggestion-box/new-job-suggestion-box.component";
 import { ClassToRegisterRowComponent } from "./class-to-register-row/class-to-register-row.component";
@@ -30,9 +30,9 @@ import { ClassToRegisterTableComponent } from "./class-to-register-table/class-t
 import { MessagesComponent } from "./messages/messages.component";
 import { HttpErrorInterceptor } from "src/interceptors/http-error.interceptor";
 import { UnauthorizedInterceptor } from "src/interceptors/unauthorized.interceptor";
-import { DkhptdJobV1ResultComponent } from "./dkhptd-job-v1-result/dkhptd-job-v1-result.component";
-import { DkhptdJobV1ResultPageComponent } from "./dkhptd-job-v1-result-page/dkhptd-job-v1-result-page.component";
-import { DkhptdJobPageComponent } from "./dkhptd-job-page/dkhptd-job-page.component";
+import { JobV1ResultComponent } from "./job-v1-result/job-v1-result.component";
+import { JobV1ResultPageComponent } from "./job-v1-result-page/job-v1-result-page.component";
+import { JobPageComponent } from "./job-page/job-page.component";
 import { TermIdSearchClassToRegisterComponent } from "./term-id-search-class-to-register/term-id-search-class-to-register.component";
 import { SearchClassToRegisterOfTermIdPageComponent } from "./search-class-to-register-of-term-id-page/search-class-to-register-of-term-id-page.component";
 import { SearchClassToRegisterPageComponent } from "./search-class-to-register-page/search-class-to-register-page.component";
@@ -58,7 +58,7 @@ const routes: Routes = [
   { path: "profile", component: ProfileComponent },
   { path: "home", component: HomeComponent },
   { path: "v1/manage-job", component: ManageJobV1Component },
-  { path: "v1/dkhptd-s/:id", component: DkhptdJobPageComponent },
+  { path: "v1/dkhptd-s/:id", component: JobPageComponent },
   { path: "upload-tkb-xlsx", component: UploadTkbXlsxComponent },
   { path: "messages", component: MessagesComponent },
   {
@@ -90,18 +90,18 @@ const routes: Routes = [
     JobStatusPipe,
     ToJsonPipe,
     PasswordPipe,
-    DkhptdJobComponent,
-    DkhptdJobLogsComponent,
+    JobComponent,
+    JobLogsComponent,
     ActionLogComponent,
-    DkhptdJobRowComponent,
+    JobRowComponent,
     UploadTkbXlsxComponent,
     NewJobSuggestionBoxComponent,
     ClassToRegisterRowComponent,
     ClassToRegisterTableComponent,
     MessagesComponent,
-    DkhptdJobV1ResultComponent,
-    DkhptdJobV1ResultPageComponent,
-    DkhptdJobPageComponent,
+    JobV1ResultComponent,
+    JobV1ResultPageComponent,
+    JobPageComponent,
     TermIdSearchClassToRegisterComponent,
     SearchClassToRegisterOfTermIdPageComponent,
     SearchClassToRegisterPageComponent,

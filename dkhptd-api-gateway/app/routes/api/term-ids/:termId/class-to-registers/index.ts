@@ -1,13 +1,13 @@
 import express from "express";
 import { Filter, ObjectId } from "mongodb";
-import { cfg } from "../../../../../cfg";
-import { mongoConnectionPool } from "../../../../../connections";
-import { ExceptionWrapper, IsAdminFilter, JwtFilter } from "../../../../../middlewares";
-import { modify, NormalizeIntProp, PickProps } from "../../../../../modifiers";
-import BaseResponse from "../../../../../payloads/BaseResponse";
-import { toSafeInt, toNormalizedString } from "../../../../../utils";
-import { resolveMongoFilter } from "../../../../../merin";
-import { ClassToRegister } from "../../../../../entities";
+import { cfg } from "app/cfg";
+import { mongoConnectionPool } from "app/connections";
+import { ExceptionWrapper, IsAdminFilter, JwtFilter } from "app/middlewares";
+import { modify, NormalizeIntProp, PickProps } from "app/modifiers";
+import BaseResponse from "app/payloads/BaseResponse";
+import { toSafeInt, toNormalizedString } from "app/utils";
+import { resolveMongoFilter } from "app/merin";
+import { ClassToRegister } from "app/entities";
 
 const router = express.Router();
 

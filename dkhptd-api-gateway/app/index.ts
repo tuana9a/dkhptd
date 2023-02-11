@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+import "module-alias/register";
 import http from "http";
 import express from "express";
 import * as amqplib from "amqplib/callback_api";

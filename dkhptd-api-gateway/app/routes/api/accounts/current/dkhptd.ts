@@ -1,14 +1,14 @@
 import express from "express";
 import { ObjectId } from "mongodb";
-import { cfg, JobStatus } from "../../../../cfg";
-import { mongoConnectionPool } from "../../../../connections";
-import { DKHPTDJob } from "../../../../entities";
-import { EmptyStringError, FaslyValueError, MissingRequestBodyDataError, NotAnArrayError, RequireLengthFailed } from "../../../../exceptions";
-import { ExceptionWrapper } from "../../../../middlewares";
-import { RateLimit } from "../../../../middlewares";
-import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "../../../../modifiers";
-import BaseResponse from "../../../../payloads/BaseResponse";
-import { isEmpty, isFalsy } from "../../../../utils";
+import { cfg, JobStatus } from "app/cfg";
+import { mongoConnectionPool } from "app/connections";
+import { DKHPTDJob } from "app/entities";
+import { EmptyStringError, FaslyValueError, MissingRequestBodyDataError, NotAnArrayError, RequireLengthFailed } from "app/exceptions";
+import { ExceptionWrapper } from "app/middlewares";
+import { RateLimit } from "app/middlewares";
+import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "app/modifiers";
+import BaseResponse from "app/payloads/BaseResponse";
+import { isEmpty, isFalsy } from "app/utils";
 
 const router = express.Router();
 
