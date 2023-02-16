@@ -11,10 +11,7 @@ const CrawlRegisterResultHandler = () => {
   const classes = [];
   rows.forEach(row => {
     const cells = [];
-    row.querySelectorAll("td").forEach((cell: Element) => {
-      const text = String(cell.textContent).trim().replace(/\s{2,}/g, " ");
-      cells.push(text);
-    });
+    row.querySelectorAll("td").forEach((cell) => cells.push(cell.textContent.trim().replace(/\s{2,}/g, " ")));
     classes.push({
       MaLop: cells[0],
       MaLopKem: cells[1],

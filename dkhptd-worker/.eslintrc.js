@@ -9,7 +9,7 @@ module.exports = {
   ],
   "overrides": [
   ],
-  "ignorePatterns": ["jobs/**/*", "dist/**/*"],
+  "ignorePatterns": ["dist/**/*"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
@@ -22,10 +22,6 @@ module.exports = {
     "indent": [
       "error",
       2
-    ],
-    "linebreak-style": [
-      "error",
-      "unix"
     ],
     "quotes": [
       "error",

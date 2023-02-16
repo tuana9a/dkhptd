@@ -48,7 +48,7 @@ export async function launch(initConfig: Config) {
     })
     .filter((x) => x)
     .forEach((job: { filepath: string; supplier: JobSupplier }) => {
-      const name = job.filepath.slice(job.filepath.lastIndexOf("/") + 1, -(lengthOfJs));
+      const name = path.basename(job.filepath).slice(0, -(lengthOfJs));
       loadedJobs.push({ name, filepath: job.filepath });
       supportJobsDb.update(name, job.supplier);
     });

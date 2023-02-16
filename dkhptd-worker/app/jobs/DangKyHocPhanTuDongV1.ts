@@ -8,20 +8,20 @@ const CrawlRegisterResultHandler = () => { // browser scope not nodejs scop
   // lấy data html đăng kí lớp
   const registerResult = [];
   table.querySelectorAll("tr.dxgvDataRow_Moderno").forEach((row) => {
-    const values = [];
-    row.querySelectorAll("td").forEach(cell => cell.textContent.trim().replace(/\s{2,}/g, " "));
+    const cells = [];
+    row.querySelectorAll("td").forEach(cell => cells.push(cell.textContent.trim().replace(/\s{2,}/g, " ")));
     registerResult.push({
-      MaLop: values[0],
-      MaLopKem: values[1],
-      TenLop: values[2],
-      MaHocPhan: values[3],
-      LoaiLop: values[4],
-      TrangThaiLop: values[5],
-      YeuCau: values[6],
-      TrangThaiDangKy: values[7],
-      LoaiDangKy: values[8],
-      ThucHien: values[9],
-      TinChi: values[10],
+      MaLop: cells[0],
+      MaLopKem: cells[1],
+      TenLop: cells[2],
+      MaHocPhan: cells[3],
+      LoaiLop: cells[4],
+      TrangThaiLop: cells[5],
+      YeuCau: cells[6],
+      TrangThaiDangKy: cells[7],
+      LoaiDangKy: cells[8],
+      ThucHien: cells[9],
+      TinChi: cells[10],
     });
   });
   return registerResult;
@@ -37,7 +37,6 @@ export default () => new Job({
       // GoTo("https://ctt-sis.hust.edu.vn/"),
       WaitForTimeout(3000),
       Reload(),
-      Click("#ccCaptcha_RB", { clickCount: 1 }),
       Click("#tbUserName", { clickCount: 3 }),
       TypeIn("#tbUserName", Params((p) => p.username)),
       TypeIn("#tbPassword_CLND", Params("password")),
@@ -59,9 +58,7 @@ export default () => new Job({
         Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_btDirectClassRegister_CD"),
         WaitForTimeout(1000),
         /* xem tin nhan tra ve */
-        If(IsEqual(TextContent("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_lbKQ"), "Thành Công")).Then([
-          Break(), /* break neu nguyen vong thanh cong */
-        ]),
+        (classId) => SetVars(`registerMessages.classId-${classId}`, TextContent("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_lbKQ"))
       ]),
       /* gui tat ca dang ky */
       Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_btSendRegister_CD"),

@@ -1,4 +1,4 @@
-import { BringToFront, GoTo, WaitForTimeout, ScreenShot, TypeIn, Click, GetValueFromParams, CurrentUrl, GetTextContent, PageEval, If, IsEqual, For, Job, Break, Try, SetVars } from "puppeteer-worker-job-builder";
+import { BringToFront, GoTo, WaitForTimeout, ScreenShot, TypeIn, Click, CurrentUrl, PageEval, If, IsEqual, For, Job, Break, Try, SetVars, Params, TextContent, Reload } from "puppeteer-worker-job-builder";
 import { ResolveCaptcha } from "../job-builders";
 import { toPrettyErr } from "../utils";
 
@@ -8,20 +8,20 @@ const CrawlRegisterResultHandler = () => { // browser scope not nodejs scop
   // lấy data html đăng kí lớp
   const registerResult = [];
   table.querySelectorAll("tr.dxgvDataRow_Moderno").forEach((row) => {
-    const values = [];
-    row.querySelectorAll("td").forEach(cell => cell.textContent.trim().replace(/\s{2,}/g, " "));
+    const cells = [];
+    row.querySelectorAll("td").forEach(cell => cells.push(cell.textContent.trim().replace(/\s{2,}/g, " ")));
     registerResult.push({
-      MaLop: values[0],
-      MaLopKem: values[1],
-      TenLop: values[2],
-      MaHocPhan: values[3],
-      LoaiLop: values[4],
-      TrangThaiLop: values[5],
-      YeuCau: values[6],
-      TrangThaiDangKy: values[7],
-      LoaiDangKy: values[8],
-      ThucHien: values[9],
-      TinChi: values[10],
+      MaLop: cells[0],
+      MaLopKem: cells[1],
+      TenLop: cells[2],
+      MaHocPhan: cells[3],
+      LoaiLop: cells[4],
+      TrangThaiLop: cells[5],
+      YeuCau: cells[6],
+      TrangThaiDangKy: cells[7],
+      LoaiDangKy: cells[8],
+      ThucHien: cells[9],
+      TinChi: cells[10],
     });
   });
   return registerResult;
@@ -32,26 +32,23 @@ export default () => new Job({
   actions: [
     BringToFront(),
     Try([
-      GoTo("https://dk-sis.hust.edu.vn"),
+      // GoTo("https://dk-sis.hust.edu.vn"),
+      GoTo("https://dk-sis.hust.edu.vn/Users/Login.aspx"),
       WaitForTimeout(1000),
+      Reload(),
       Click("#tbUserName", { clickCount: 3 }),
-      TypeIn("#tbUserName", GetValueFromParams((p) => p.username)),
-      TypeIn("#tbPassword_CLND", GetValueFromParams((p) => p.password)),
+      TypeIn("#tbUserName", Params((p) => p.username)),
+      TypeIn("#tbPassword_CLND", Params((p) => p.password)),
       ScreenShot("#ccCaptcha_IMG", "./tmp/temp.png", "png"),
       TypeIn("#ccCaptcha_TB_I", ResolveCaptcha("./tmp/temp.png", "https://hcr.tuana9a.com")),
       Click("button"),
       WaitForTimeout(3000),
-      If(IsEqual(CurrentUrl(), "https://dk-sis.hust.edu.vn" /* van o trang dang nhap */)).Then([
-        SetVars("userError", GetTextContent("#lbStatus") /*sai tai khoan*/),
-        SetVars("captchaError", GetTextContent("#ccCaptcha_TB_EC") /*sai captcha*/),
+      If(IsEqual(CurrentUrl(), "https://dk-sis.hust.edu.vn/Users/Login.aspx" /* van o trang dang nhap */)).Then([
+        SetVars("userError", TextContent("#lbStatus") /*sai tai khoan*/),
+        SetVars("captchaError", TextContent("#ccCaptcha_TB_EC") /*sai captcha*/),
         Break(),
       ]),
-      If(IsEqual(CurrentUrl(), "https://www.dk-sis.hust.edu.vn" /* van o trang dang nhap */)).Then([
-        SetVars("userError", GetTextContent("#lbStatus") /*sai tai khoan*/),
-        SetVars("captchaError", GetTextContent("#ccCaptcha_TB_EC") /*sai captcha*/),
-        Break(),
-      ]),
-      For(GetValueFromParams((x) => x.classIds)).Each([
+      For(Params((x) => x.classIds)).Each([
         (orderedClassIds) => For(orderedClassIds).Each([
           Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_tbDirectClassRegister_I", { clickCount: 3 }),
           (classId) => TypeIn("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_tbDirectClassRegister_I", classId),
@@ -59,8 +56,9 @@ export default () => new Job({
           Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_btDirectClassRegister_CD"),
           WaitForTimeout(1000),
           /* xem tin nhan tra ve */
-          If(IsEqual(GetTextContent("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_lbKQ"), "Thành Công")).Then([
-            Break(), /* break neu nguyen vong thanh cong */
+          (classId) => SetVars(`registerMessages.classId-${classId}`, TextContent("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_lbKQ")),
+          If(IsEqual(TextContent("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_lbKQ"), "")).Then([
+            Break(), /* break neu nguyen vong khong thong bao gi tuc la thanh cong */
           ]),
         ]),
       ]),

@@ -5,7 +5,7 @@
   "main": "./app/index.js",
   "exports": "./app/index.js",
   "scripts": {
-    "start": "./bin/dkhptd-worker --config-file config.json",
+    "start": "node ./bin/dkhptd-worker --config-file config.json",
     "dev": "nodemon ./bin/dkhptd-worker --config-file config.json",
     "test": "jest test",
     "test:watch": "jest --watch test"

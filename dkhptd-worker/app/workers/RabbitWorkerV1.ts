@@ -39,7 +39,7 @@ export class RabbitWorkerV1 {
               logger.info(`Received ${msg.fields.routingKey} ${toJson(request, 2)}`);
 
               const onDoing = (doing: DoingInfo) => {
-                // logger.info(`Doing ${request.id} ${toJson(doing, 2)}`);
+                logger.info(`Doing ${request.id} ${toJson(doing, 2)}`);
                 channel.publish(ExchangeName.WORKER_DOING, "", toBuffer(toJson({ workerId: cfg.workerId, doing })));
               };
               const { logs, vars } = await puppeteerWorkerController.do(request, onDoing);

@@ -1,0 +1,48 @@
+{
+  "workerId": "",
+  "workerType": "rabbit_v1",
+  "__workerType": [
+    "rabbit",
+    "rabbit_v1",
+    "rabbit_v2"
+  ],
+  "accessToken": "",
+  "logDest": "fs",
+  "__logDest": [
+    "fs",
+    "cs"
+  ],
+  "rabbitmqConnectionString": "",
+  "puppeteerMode": "default",
+  "jobDir": "./dist/jobs/",
+  "puppeteerLaunchOption": {
+    "headless": false,
+    "slowMo": 10,
+    "defaultViewport": null,
+    "executablePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+  },
+  "__puppeteerLaunchOption": [
+    {
+      "headless": false,
+      "slowMo": 10,
+      "defaultViewport": null,
+      "executablePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+    },
+    {
+      "slowMo": 10,
+      "headless": false,
+      "defaultViewport": null,
+      "executablePath": "google-chrome-stable"
+    },
+    {
+      "slowMo": 10,
+      "defaultViewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "executablePath": "google-chrome-stable"
+    }
+  ],
+  "httpWorkerPullConfigUrl": "",
+  "amqpEncryptionKey": ""
+}
