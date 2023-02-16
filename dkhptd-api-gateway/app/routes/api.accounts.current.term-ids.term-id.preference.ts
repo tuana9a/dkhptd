@@ -4,14 +4,14 @@ import { cfg } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { AccountPreference } from "app/entities";
 import { MissingRequestBodyDataError } from "app/exceptions";
-import { ExceptionWrapper } from "app/middlewares";
+import { ExceptionWrapper, InjectTermId, JwtFilter } from "app/middlewares";
 import BaseResponse from "app/payloads/BaseResponse";
 import { modify, PickProps, NormalizeArrayProp, SetProp } from "app/modifiers";
 import { isFalsy } from "app/utils";
 
-const router = express.Router();
+export const router = express.Router();
 
-router.post("/preference", ExceptionWrapper(async (req, resp) => {
+router.post("/api/accounts/current/term-ids/:termId/preference", JwtFilter(cfg.SECRET), InjectTermId(), ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const data = req.body;
   const termId = req.__termId;
@@ -35,5 +35,3 @@ router.post("/preference", ExceptionWrapper(async (req, resp) => {
 
   resp.send(new BaseResponse().ok());
 }));
-
-export default router;

@@ -14,9 +14,9 @@ import { isFalsy } from "app/utils";
 import { tkbEvent } from "app/app-event";
 import { ClassToRegister } from "app/entities";
 
-const router = express.Router();
+export const router = express.Router();
 
-router.post("/", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async (req, resp) => {
+router.post("/api/class-to-registers", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async (req, resp) => {
   const data = req.body?.data;
 
   if (isFalsy(data)) throw new FaslyValueError("body.data");
@@ -77,13 +77,13 @@ router.post("/", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async 
   resp.send(new BaseResponse().ok(result));
 }));
 
-router.post("/file", JwtFilter(cfg.SECRET), IsAdminFilter(), multer({ limits: { fileSize: 5 * 1000 * 1000 /* 5mb */ } }).single("file"), ExceptionWrapper(async (req, resp) => {
+router.post("/api/class-to-registers/file", JwtFilter(cfg.SECRET), IsAdminFilter(), multer({ limits: { fileSize: 5 * 1000 * 1000 /* 5mb */ } }).single("file"), ExceptionWrapper(async (req, resp) => {
   const file = req.file;
   tkbBus.emit(tkbEvent.TKB_XLSX_UPLOADED, file.buffer);
   resp.send(new BaseResponse().ok());
 }));
 
-router.get("/", ExceptionWrapper(async (req, resp) => {
+router.get("/api/class-to-registers", ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [
     PickProps(["q", "page", "size"], { dropFalsy: true }),
     NormalizeIntProp("page"),
@@ -109,7 +109,7 @@ router.get("/", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.get("/class-ids", ExceptionWrapper(async (req, resp) => {
+router.get("/api/class-to-registers/class-ids", ExceptionWrapper(async (req, resp) => {
   const classIds = toNormalizedString(req.query.classIds)
     .split(",")
     .map((x) => toSafeInt(x));
@@ -125,7 +125,7 @@ router.get("/class-ids", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(classToRegisters));
 }));
 
-router.get("/class-ids/start-withs", ExceptionWrapper(async (req, resp) => {
+router.get("/api/class-to-registers/class-ids/start-withs", ExceptionWrapper(async (req, resp) => {
   const classIds = toNormalizedString(req.query.classIds)
     .split(",")
     .map((x) => toNormalizedString(x));
@@ -157,7 +157,7 @@ router.get("/class-ids/start-withs", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(classToRegisters));
 }));
 
-router.get("/class-ids/:classId", ExceptionWrapper(async (req, resp) => {
+router.get("/api/class-to-registers/class-ids/:classId", ExceptionWrapper(async (req, resp) => {
   const classId = toSafeInt(req.params.classId);
   const termId = toSafeInt(req.query.termId);
 
@@ -170,7 +170,7 @@ router.get("/class-ids/:classId", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(classToRegister));
 }));
 
-router.delete("/", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async (req, resp) => {
+router.delete("/api/class-to-registers", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const filter: Filter<ClassToRegister> = resolveMongoFilter(
     String(query.q).split(",")
@@ -182,5 +182,3 @@ router.delete("/", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(asyn
     .deleteMany(filter);
   resp.send(new BaseResponse().ok(deleteResult.deletedCount));
 }));
-
-export default router;

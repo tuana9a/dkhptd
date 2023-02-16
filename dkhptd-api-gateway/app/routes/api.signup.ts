@@ -1,18 +1,18 @@
 import express from "express";
 import { cfg } from "app/cfg";
-import { mongoConnectionPool } from "../../connections";
-import { Account } from "../../entities";
-import { FaslyValueError, UsernameExistedError } from "../../exceptions";
-import { ExceptionWrapper } from "../../middlewares";
-import { accountToClient, isFalsy } from "../../utils";
-import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith } from "../../modifiers";
-import BaseResponse from "../../payloads/BaseResponse";
-import LoginWithUsernamePasswordRequest from "../../payloads/LoginWithUsernamePasswordRequest";
-import { toSHA256 } from "../../utils";
+import { mongoConnectionPool } from "app/connections";
+import { Account } from "app/entities";
+import { FaslyValueError, UsernameExistedError } from "app/exceptions";
+import { ExceptionWrapper } from "app/middlewares";
+import { accountToClient, isFalsy } from "app/utils";
+import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith } from "app/modifiers";
+import BaseResponse from "app/payloads/BaseResponse";
+import LoginWithUsernamePasswordRequest from "app/payloads/LoginWithUsernamePasswordRequest";
+import { toSHA256 } from "app/utils";
 
-const router = express.Router();
+export const router = express.Router();
 
-router.post("", ExceptionWrapper(async (req, resp) => {
+router.post("/api/signup", ExceptionWrapper(async (req, resp) => {
   const body = new LoginWithUsernamePasswordRequest(
     modify(req.body, [
       PickProps(["username", "password"]),
@@ -47,5 +47,3 @@ router.post("", ExceptionWrapper(async (req, resp) => {
 
   resp.send(new BaseResponse().ok(accountToClient(account)));
 }));
-
-export default router;

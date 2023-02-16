@@ -6,15 +6,15 @@ import { mongoConnectionPool } from "app/connections";
 import { DKHPTDV1Result, DKHPTDResult, DKHPTDJobV1 } from "app/entities";
 import { FaslyValueError, NotAnArrayError, EmptyStringError, RequireLengthFailed, JobNotFoundError } from "app/exceptions";
 import { resolveMongoFilter } from "app/merin";
-import { ExceptionWrapper } from "app/middlewares";
+import { ExceptionWrapper, InjectTermId, JwtFilter } from "app/middlewares";
 import { RateLimit } from "app/middlewares";
 import BaseResponse from "app/payloads/BaseResponse";
 import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "app/modifiers";
 import { decryptResultV1, isFalsy } from "app/utils";
 
-const router = express.Router();
+export const router = express.Router();
 
-router.get("/:jobId/results", ExceptionWrapper(async (req, resp) => {
+router.get("/api/accounts/current/term-ids/:termId/v1/dkhptd-s/:jobId/results", JwtFilter(cfg.SECRET), InjectTermId(), ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
@@ -32,7 +32,7 @@ router.get("/:jobId/results", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.get("/:jobId/d/results", ExceptionWrapper(async (req, resp) => {
+router.get("/api/accounts/current/term-ids/:termId/v1/dkhptd-s/:jobId/d/results", JwtFilter(cfg.SECRET), InjectTermId(), ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
@@ -50,7 +50,7 @@ router.get("/:jobId/d/results", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.get("", ExceptionWrapper(async (req, resp) => {
+router.get("/api/accounts/current/term-ids/:termId/v1/dkhptd-s", JwtFilter(cfg.SECRET), InjectTermId(), ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
   const termId = req.__termId;
@@ -69,7 +69,7 @@ router.get("", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.post("", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionWrapper(async (req, resp) => {
+router.post("/api/accounts/current/term-ids/:termId/v1/dkhptd-s", JwtFilter(cfg.SECRET), InjectTermId(), RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionWrapper(async (req, resp) => {
   const data = req.body?.data;
   const termId = req.__termId;
 
@@ -132,7 +132,7 @@ router.post("", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionWrapper
   resp.send(new BaseResponse().ok(result));
 }));
 
-router.post("/:jobId/retry", ExceptionWrapper(async (req, resp) => {
+router.post("/api/accounts/current/term-ids/:termId/v1/dkhptd-s/:jobId/retry", JwtFilter(cfg.SECRET), InjectTermId(), ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const termId = req.__termId;
 
@@ -158,7 +158,7 @@ router.post("/:jobId/retry", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));
 
-router.put("/:jobId/cancel", ExceptionWrapper(async (req, resp) => {
+router.put("/api/accounts/current/term-ids/:termId/v1/dkhptd-s/:jobId/cancel", JwtFilter(cfg.SECRET), InjectTermId(), ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const termId = req.__termId;
 
@@ -176,7 +176,7 @@ router.put("/:jobId/cancel", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));
 
-router.delete("/:jobId", ExceptionWrapper(async (req, resp) => {
+router.delete("/api/accounts/current/term-ids/:termId/v1/dkhptd-s/:jobId", JwtFilter(cfg.SECRET), InjectTermId(), ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const termId = req.__termId;
 
@@ -193,5 +193,3 @@ router.delete("/:jobId", ExceptionWrapper(async (req, resp) => {
     .deleteOne(filter);
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));
-
-export default router;

@@ -4,15 +4,15 @@ import { cfg, JobStatus } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { DKHPTDJob } from "app/entities";
 import { EmptyStringError, FaslyValueError, MissingRequestBodyDataError, NotAnArrayError, RequireLengthFailed } from "app/exceptions";
-import { ExceptionWrapper } from "app/middlewares";
+import { ExceptionWrapper, JwtFilter } from "app/middlewares";
 import { RateLimit } from "app/middlewares";
 import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
 import { isEmpty, isFalsy } from "app/utils";
 
-const router = express.Router();
+export const router = express.Router();
 
-router.post("/api/accounts/current/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), ExceptionWrapper(async (req, resp) => {
+router.post("/api/accounts/current/dkhptd", JwtFilter(cfg.SECRET), RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), ExceptionWrapper(async (req, resp) => {
   const data = req.body;
 
   if (isFalsy(data)) throw new MissingRequestBodyDataError();
@@ -52,5 +52,3 @@ router.post("/api/accounts/current/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000,
   resp.send(new BaseResponse().ok(job));
 })
 );
-
-export default router;

@@ -43,6 +43,11 @@ export const IsAdminFilter = (): Handler => async (req, resp, next) => {
   resp.sendStatus(403);
 };
 
+export const InjectTermId = (): Handler => async (req, resp, next) => {
+  req.__termId = req.params.termId;
+  next();
+};
+
 export const ExceptionWrapper = (handler: (req: Request, resp: Response, next?: NextFunction) => Promise<unknown>): Handler => async (req, resp, next) => {
   try {
     await handler(req, resp, next);

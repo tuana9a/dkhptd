@@ -12,9 +12,9 @@ import { isEmpty } from "lodash";
 import { FaslyValueError, EmptyStringError, RequireLengthFailed, JobNotFoundError, NotAnArrayError } from "app/exceptions";
 import { DKHPTDJobLogs, DKHPTDJob } from "app/entities";
 
-const router = express.Router();
+export const router = express.Router();
 
-router.get("/:jobId/logs", ExceptionWrapper(async (req, resp) => {
+router.get("/api/accounts/current/dkhptd-s/:jobId/logs", ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const filter: Filter<DKHPTDJobLogs> = {
     ownerAccountId: new ObjectId(accountId),
@@ -30,7 +30,7 @@ router.get("/:jobId/logs", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.get("", ExceptionWrapper(async (req, resp) => {
+router.get("/api/accounts/current/dkhptd-s", ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
   const filter: Filter<DKHPTDJob> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
@@ -46,7 +46,7 @@ router.get("", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.post("", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionWrapper(async (req, resp) => {
+router.post("/api/accounts/current/dkhptd-s", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionWrapper(async (req, resp) => {
   const data = req.body?.data;
 
   if (isFalsy(data)) throw new FaslyValueError("body.data");
@@ -104,7 +104,7 @@ router.post("", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionWrapper
   resp.send(new BaseResponse().ok(result));
 }));
 
-router.delete("/:jobId", ExceptionWrapper(async (req, resp) => {
+router.delete("/api/accounts/current/dkhptd-s/:jobId", ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const filter: Filter<DKHPTDJob> = {
     _id: new ObjectId(req.params.jobId),
@@ -119,7 +119,7 @@ router.delete("/:jobId", ExceptionWrapper(async (req, resp) => {
 }));
 
 // use PUT instead
-router.post("/:jobId/retry", ExceptionWrapper(async (req, resp) => {
+router.post("/api/accounts/current/dkhptd-s/:jobId/retry", ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const filter: Filter<DKHPTDJob> = {
     _id: new ObjectId(req.params.jobId),
@@ -143,7 +143,7 @@ router.post("/:jobId/retry", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));
 
-router.put("/:jobId/retry", ExceptionWrapper(async (req, resp) => {
+router.put("/api/accounts/current/dkhptd-s/:jobId/retry", ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const filter: Filter<DKHPTDJob> = {
     _id: new ObjectId(req.params.jobId),
@@ -167,7 +167,7 @@ router.put("/:jobId/retry", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));
 
-router.put("/:jobId/cancel", ExceptionWrapper(async (req, resp) => {
+router.put("/api/accounts/current/dkhptd-s/:jobId/cancel", ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const filter: Filter<DKHPTDJob> = {
     _id: new ObjectId(req.params.jobId),
@@ -180,5 +180,3 @@ router.put("/:jobId/cancel", ExceptionWrapper(async (req, resp) => {
     .findOneAndUpdate(filter, { $set: { status: JobStatus.CANCELED } });
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));
-
-export default router;

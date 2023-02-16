@@ -2,7 +2,7 @@ import { Filter, ObjectId } from "mongodb";
 import express from "express";
 import { cfg, JobStatus } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
-import { ExceptionWrapper } from "app/middlewares";
+import { ExceptionWrapper, JwtFilter } from "app/middlewares";
 import { modify, PickProps, NormalizeArrayProp, NormalizeIntProp, NormalizeStringProp, SetProp } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
 import { resolveMongoFilter } from "app/merin";
@@ -11,9 +11,9 @@ import { FaslyValueError, NotAnArrayError, JobNotFoundError, EmptyStringError, R
 import { decryptJobV1Logs, decryptResultV1, isEmpty, isFalsy } from "app/utils";
 import { DKHPTDJobLogs, DKHPTDJobV1, DKHPTDJobV1Logs, DKHPTDResult, DKHPTDV1Result } from "app/entities";
 
-const router = express.Router();
+export const router = express.Router();
 
-router.get("/:jobId/logs", ExceptionWrapper(async (req, resp) => {
+router.get("/api/accounts/current/v1/dkhptd-s/:jobId/logs", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
@@ -31,7 +31,7 @@ router.get("/:jobId/logs", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.get("/:jobId/d/logs", ExceptionWrapper(async (req, resp) => {
+router.get("/api/accounts/current/v1/dkhptd-s/:jobId/d/logs", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
@@ -49,7 +49,7 @@ router.get("/:jobId/d/logs", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.get("/:jobId/results", ExceptionWrapper(async (req, resp) => {
+router.get("/api/accounts/current/v1/dkhptd-s/:jobId/results", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
@@ -67,7 +67,7 @@ router.get("/:jobId/results", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.get("/:jobId/d/results", ExceptionWrapper(async (req, resp) => {
+router.get("/api/accounts/current/v1/dkhptd-s/:jobId/d/results", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
@@ -85,7 +85,7 @@ router.get("/:jobId/d/results", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.get("", ExceptionWrapper(async (req, resp) => {
+router.get("/api/accounts/current/v1/dkhptd-s", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
@@ -102,7 +102,7 @@ router.get("", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(data));
 }));
 
-router.post("", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionWrapper(async (req, resp) => {
+router.post("/api/accounts/current/v1/dkhptd-s", JwtFilter(cfg.SECRET), RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionWrapper(async (req, resp) => {
   const data = req.body?.data;
 
   if (isFalsy(data)) throw new FaslyValueError("body.data");
@@ -163,7 +163,7 @@ router.post("", RateLimit({ windowMs: 5 * 60 * 1000, max: 1 }), ExceptionWrapper
   resp.send(new BaseResponse().ok(result));
 }));
 
-router.post("/:jobId/retry", ExceptionWrapper(async (req, resp) => {
+router.post("/api/accounts/current/v1/dkhptd-s/:jobId/retry", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const filter: Filter<DKHPTDJobV1> = {
     _id: new ObjectId(req.params.jobId),
@@ -186,7 +186,7 @@ router.post("/:jobId/retry", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));
 
-router.put("/:jobId/cancel", ExceptionWrapper(async (req, resp) => {
+router.put("/api/accounts/current/v1/dkhptd-s/:jobId/cancel", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const filter: Filter<DKHPTDJobV1> = {
     _id: new ObjectId(req.params.jobId),
@@ -200,7 +200,7 @@ router.put("/:jobId/cancel", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));
 
-router.delete("/:jobId", ExceptionWrapper(async (req, resp) => {
+router.delete("/api/accounts/current/v1/dkhptd-s/:jobId", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const filter: Filter<DKHPTDJobV1> = {
     _id: new ObjectId(req.params.jobId),
@@ -213,5 +213,3 @@ router.delete("/:jobId", ExceptionWrapper(async (req, resp) => {
     .deleteOne(filter);
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));
-
-export default router;

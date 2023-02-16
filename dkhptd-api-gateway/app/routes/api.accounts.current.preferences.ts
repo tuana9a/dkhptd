@@ -1,66 +1,20 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 import express from "express";
 import { Filter, ObjectId } from "mongodb";
 import { cfg } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper } from "app/middlewares";
 import BaseResponse from "app/payloads/BaseResponse";
-import { accountToClient, toSHA256 } from "app/utils";
 import { JwtFilter } from "app/middlewares";
 import { isFalsy } from "app/utils";
-import { MissingRequestBodyDataError, UsernameNotFoundError } from "app/exceptions";
-import { Account, AccountPreference } from "app/entities";
-import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith, NormalizeArrayProp, SetProp } from "app/modifiers";
+import { MissingRequestBodyDataError } from "app/exceptions";
+import { AccountPreference } from "app/entities";
+import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, SetProp } from "app/modifiers";
 
-const router = express.Router();
+export const router = express.Router();
 
-router.use(JwtFilter(cfg.SECRET));
-
-router.get("", ExceptionWrapper(async (req, resp) => {
-  const accountId = req.__accountId;
-
-  const filter: Filter<Account> = { _id: new ObjectId(accountId) };
-  const account = await mongoConnectionPool
-    .getClient()
-    .db(cfg.DATABASE_NAME)
-    .collection(Account.name)
-    .findOne(filter);
-
-  if (isFalsy(account)) throw new UsernameNotFoundError(accountId);
-
-  resp.send(new BaseResponse().ok(accountToClient(new Account(account))));
-}));
-
-router.put("/password", ExceptionWrapper(async (req, resp) => {
-  const accountId = req.__accountId;
-
-  const body = modify(req.body, [
-    PickProps(["password"]),
-    NormalizeStringProp("password"),
-    ReplaceCurrentPropValueWith("password", (oldValue) => toSHA256(oldValue)),
-  ]);
-
-  const newHashedPassword = body.password;
-
-  const filter: Filter<Account> = { _id: new ObjectId(accountId) };
-
-  const account = await mongoConnectionPool
-    .getClient()
-    .db(cfg.DATABASE_NAME)
-    .collection(Account.name)
-    .findOne(filter);
-
-  if (isFalsy(account)) throw new UsernameNotFoundError(accountId);
-
-  await mongoConnectionPool
-    .getClient()
-    .db(cfg.DATABASE_NAME)
-    .collection(Account.name)
-    .updateOne(filter, { $set: { password: newHashedPassword } });
-
-  resp.send(new BaseResponse().ok(accountToClient(new Account(account))));
-}));
-
-router.get("/preferences", ExceptionWrapper(async (req, resp) => {
+router.get("/api/accounts/current/preferences", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const filter: Filter<AccountPreference> = {
     ownerAccountId: new ObjectId(accountId),
@@ -74,7 +28,7 @@ router.get("/preferences", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(preferences));
 }));
 
-router.put("/preferences/:preferenceId", ExceptionWrapper(async (req, resp) => {
+router.put("/api/accounts/current/preferences/:preferenceId", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const preferenceId = new ObjectId(req.params.preferenceId);
 
@@ -105,7 +59,7 @@ router.put("/preferences/:preferenceId", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok());
 }));
 
-router.post("/preference", ExceptionWrapper(async (req, resp) => {
+router.post("/api/accounts/current/preference", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const data = req.body;
 
@@ -126,5 +80,3 @@ router.post("/preference", ExceptionWrapper(async (req, resp) => {
     .insertOne(newPreference);
   resp.send(new BaseResponse().ok());
 }));
-
-export default router;

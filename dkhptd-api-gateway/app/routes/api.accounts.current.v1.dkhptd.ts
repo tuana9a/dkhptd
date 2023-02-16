@@ -2,35 +2,35 @@ import { ObjectId } from "mongodb";
 import express from "express";
 import { cfg, JobStatus } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
-import { ExceptionWrapper } from "app/middlewares";
+import { ExceptionWrapper, JwtFilter } from "app/middlewares";
 import { RateLimit } from "app/middlewares";
-import { encryptJobV2 } from "app/utils";
 import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
-import { isEmpty, isFalsy } from "app/utils";
+import { encryptJobV1, isEmpty, isFalsy } from "app/utils";
 import { EmptyStringError, FaslyValueError, MissingRequestBodyDataError, RequireLengthFailed } from "app/exceptions";
-import { DKHPTDJobV2 } from "app/entities";
+import { DKHPTDJobV1 } from "app/entities";
 
-const router = express.Router();
+export const router = express.Router();
 
-router.post("/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), ExceptionWrapper(async (req, resp) => {
+router.post("/api/accounts/current/v1/dkhptd", JwtFilter(cfg.SECRET), RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), ExceptionWrapper(async (req, resp) => {
   const data = req.body;
 
   if (isFalsy(data)) throw new MissingRequestBodyDataError();
 
   const ownerAccountId = new ObjectId(req.__accountId);
   const safeData = modify(data, [
-    PickProps(["username", "password", "classIds", "timeToStart"]),
+    PickProps(["username", "password", "classIds", "timeToStart", "termId"]),
     NormalizeStringProp("username"),
     NormalizeStringProp("password"),
-    NormalizeArrayProp("classIds"),
+    NormalizeArrayProp("classIds", "string"),
     NormalizeIntProp("timeToStart"),
+    NormalizeIntProp("termId"),
     SetProp("createdAt", Date.now()),
     SetProp("status", JobStatus.READY),
     SetProp("ownerAccountId", ownerAccountId),
   ]);
 
-  const job = new DKHPTDJobV2(safeData);
+  const job = new DKHPTDJobV1(safeData);
 
   if (isFalsy(job.username)) throw new FaslyValueError("job.username", job.username);
   if (isEmpty(job.username)) throw new EmptyStringError("job.username", job.username);
@@ -43,14 +43,13 @@ router.post("/dkhptd", RateLimit({ windowMs: 5 * 60 * 1000, max: 5 }), Exception
   if (job.classIds.length == 0) throw new RequireLengthFailed("job.classIds");
 
   if (isFalsy(job.timeToStart)) throw new FaslyValueError("job.timeToStart");
+  if (isFalsy(job.termId)) throw new FaslyValueError("job.termId");
 
-  const eJob = new DKHPTDJobV2(encryptJobV2(job));
+  const eJob = new DKHPTDJobV1(encryptJobV1(job));
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV2.name)
+    .collection(DKHPTDJobV1.name)
     .insertOne(eJob);
   resp.send(new BaseResponse().ok(job));
 }));
-
-export default router;

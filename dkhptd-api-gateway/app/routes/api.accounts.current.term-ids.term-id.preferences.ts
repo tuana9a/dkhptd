@@ -4,14 +4,14 @@ import { cfg } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { AccountPreference } from "app/entities";
 import { MissingRequestBodyDataError } from "app/exceptions";
-import { ExceptionWrapper } from "app/middlewares";
+import { ExceptionWrapper, InjectTermId, JwtFilter } from "app/middlewares";
 import BaseResponse from "app/payloads/BaseResponse";
 import { modify, PickProps, NormalizeArrayProp } from "app/modifiers";
 import { isFalsy } from "app/utils";
 
-const router = express.Router();
+export const router = express.Router();
 
-router.get("", ExceptionWrapper(async (req, resp) => {
+router.get("/api/accounts/current/term-ids/:termId/preferences", JwtFilter(cfg.SECRET), InjectTermId(), ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const termId = req.__termId;
 
@@ -29,7 +29,7 @@ router.get("", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(preferences));
 }));
 
-router.put("/:preferenceId", ExceptionWrapper(async (req, resp) => {
+router.put("/api/accounts/current/term-ids/:termId/preferences/:preferenceId", JwtFilter(cfg.SECRET), InjectTermId(), ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
   const preferenceId = new ObjectId(req.params.preferenceId);
   const termId = req.__termId;
@@ -61,5 +61,3 @@ router.put("/:preferenceId", ExceptionWrapper(async (req, resp) => {
     });
   resp.send(new BaseResponse().ok());
 }));
-
-export default router;

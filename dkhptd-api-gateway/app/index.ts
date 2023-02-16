@@ -11,7 +11,6 @@ import logger from "./loggers/logger";
 import { toKeyValueString } from "./utils";
 import { mongoConnectionPool, rabbitmqConnectionPool } from "./connections";
 import { tkbQueueName } from "./queue-name";
-import { getPrettyLoadedRoutes } from "./utils";
 
 async function main() {
   logger.info(`Config: \n${toKeyValueString(cfg)}`);
@@ -38,9 +37,7 @@ async function main() {
       rabbitmqConnectionPool.addChannel(channel);
       channel.assertQueue(tkbQueueName.PARSE_TKB_XLSX);
       channel.assertQueue(tkbQueueName.PROCESS_PARSE_TKB_XLSX_RESULT);
-      const routeInfo = {};
-      app.use(require("./auto-route").setup("./dist/routes", "", routeInfo));
-      logger.info(`Loaded routes:\n${getPrettyLoadedRoutes(routeInfo).map(x => `${x.path} -> ${x.m}`).join("\n")}`);
+      app.use(require("./auto-route").setup("./dist/routes"));
       require("./auto-consumer").setup("./dist/consumers");
       require("./auto-listener").setup("./dist/listeners");
     });

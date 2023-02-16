@@ -1,18 +1,18 @@
 import express from "express";
 import { cfg } from "app/cfg";
 import jwt from "jsonwebtoken";
-import { mongoConnectionPool } from "../../connections";
-import { UsernameNotFoundError, WrongPasswordError } from "../../exceptions";
-import { ExceptionWrapper } from "../../middlewares";
-import { modify, PickProps, NormalizeStringProp } from "../../modifiers";
-import BaseResponse from "../../payloads/BaseResponse";
-import LoginWithUsernamePasswordRequest from "../../payloads/LoginWithUsernamePasswordRequest";
-import { toSHA256 } from "../../utils";
-import { Account } from "../../entities";
+import { mongoConnectionPool } from "app/connections";
+import { UsernameNotFoundError, WrongPasswordError } from "app/exceptions";
+import { ExceptionWrapper } from "app/middlewares";
+import { modify, PickProps, NormalizeStringProp } from "app/modifiers";
+import BaseResponse from "app/payloads/BaseResponse";
+import LoginWithUsernamePasswordRequest from "app/payloads/LoginWithUsernamePasswordRequest";
+import { toSHA256 } from "app/utils";
+import { Account } from "app/entities";
 
-const router = express.Router();
+export const router = express.Router();
 
-router.post("", ExceptionWrapper(async (req, resp) => {
+router.post("/api/login", ExceptionWrapper(async (req, resp) => {
   const body = new LoginWithUsernamePasswordRequest(
     modify(req.body, [
       PickProps(["username", "password"]),
@@ -42,5 +42,3 @@ router.post("", ExceptionWrapper(async (req, resp) => {
   });
   resp.send(new BaseResponse().ok({ token, username: account.username, role: account.role }));
 }));
-
-export default router;
