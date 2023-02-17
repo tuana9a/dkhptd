@@ -21,6 +21,11 @@ td {
   color: black;
 }
 
+th {
+  background-color: white;
+  color: black;
+}
+
 input {
   border: none;
 }
@@ -31,10 +36,6 @@ button,
 select {
   font-family: 'Times New Roman', Times, serif;
   font-size: 1rem;
-}
-
-.ObjectId {
-  // TODO
 }
 
 .neon {

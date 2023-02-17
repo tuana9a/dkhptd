@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { TermIdsJobV1sApi } from "src/apis/term-ids.dkhptd-v1-s.api";
 import { ClassToRegister } from "src/entities";
 
@@ -18,6 +19,8 @@ export class NewJobV1 implements OnInit {
   message?: string;
   @Input() showSearchBox = false;
   @Input() showSuggestBox = false;
+  @Input() isShowPassword = false;
+  faEye = faEye;
 
   constructor(private api: TermIdsJobV1sApi, private activatedRoute: ActivatedRoute) { }
 
@@ -76,5 +79,9 @@ export class NewJobV1 implements OnInit {
     if (c.classId) {
       this.classIds.add(String(c.classId));
     }
+  }
+
+  toggleShowPasswd() {
+    this.isShowPassword = !this.isShowPassword;
   }
 }

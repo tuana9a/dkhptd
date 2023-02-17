@@ -6,7 +6,46 @@
     <span *ngIf="result.vars.userError; else captchaError">{{result.vars.userError}}</span>
     <ng-template #captchaError>{{result.vars.captchaError}}</ng-template>
   </div>
-  <div>
-    <div *ngFor="let c of result.vars.registerResult"></div>
+  <div *ngIf="result.vars.registerMessages">
+    <table>
+      <tr>
+        <th>Mã Lớp</th>
+        <th>Tin Nhắn</th>
+      </tr>
+      <tr *ngFor="let classId of job?.classIds">
+        <td>{{classId}}</td>
+        <td>{{result.vars.registerMessages["classId-" + classId]}}<td>
+      </tr>
+    </table>
+  </div>
+  <div *ngIf="result.vars.registerResult">
+    <table>
+      <tr>
+        <th>Mã Lớp</th>
+        <th>Mã Lớp Kèm</th>
+        <th>Tên Lớp</th>
+        <th>Mã Học Phần</th>
+        <th>Loại Lớp</th>
+        <th>Trạng Thái Lớp</th>
+        <th>Yêu Cầu</th>
+        <th>Trạng Thái Đăng Ký</th>
+        <th>Loại Đăng Ký</th>
+        <th>Thực Hiện</th>
+        <th>Tín Chỉ</th>
+      </tr>
+      <tr *ngFor="let c of result.vars.registerResult">
+        <td>{{c.MaLop}}</td>
+        <td>{{c.MaLopKem}}</td>
+        <td>{{c.TenLop}}</td>
+        <td>{{c.MaHocPhan}}</td>
+        <td>{{c.LoaiLop}}</td>
+        <td>{{c.TrangThaiLop}}</td>
+        <td>{{c.YeuCau}}</td>
+        <td>{{c.TrangThaiDangKy}}</td>
+        <td>{{c.LoaiDangKy}}</td>
+        <td>{{c.ThucHien}}</td>
+        <td>{{c.TinChi}}</td>
+      </tr>
+    </table>
   </div>
 </div>

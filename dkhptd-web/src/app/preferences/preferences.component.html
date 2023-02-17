@@ -14,7 +14,7 @@
         <table>
           <tr *ngFor="let subjectId of newWantedSubjectIds">
             <td class="border border-solid border-black">{{subjectId}}</td>
-            <td class=""><fa-icon class="p-1 bg-black flex items-center" [styles]="{'stroke': '#1eff00', 'color': '#1eff00'}" [icon]="faMinus" (click)="onRemoveNewSubjectId(subjectId)"></fa-icon></td>
+            <td class=""><fa-icon class="p-1 bg-black flex items-center" [styles]="{'stroke': 'red', 'color': 'red'}" [icon]="faMinus" (click)="onRemoveNewSubjectId(subjectId)"></fa-icon></td>
           </tr>
           <tr>
             <td class="border border-solid border-black"><input type="text" [(ngModel)]="newSubjectId" (keypress)="onKeyPressNewSubjectId($event)"></td>

@@ -21,7 +21,7 @@ export default {
     const msg = {
       name: error.name,
       message: error.message,
-      stack: error.stack.split(""),
+      stack: error.stack.split("\n"),
     };
     // eslint-disable-next-line no-console
     console.log(`${moment().format("YYYY-MM-DD hh:mm:ss")} [ERROR] ${JSON.stringify(msg, null, 2)}`);

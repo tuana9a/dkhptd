@@ -7,7 +7,13 @@
       </tr>
       <tr>
         <td>password</td>
-        <td><input class="w-full" type="password" [(ngModel)]="password"></td>
+        <td>
+          <div class="flex items-center">
+            <input class="w-full" type="password" [(ngModel)]="password">
+            <fa-icon (click)="toggleShowPasswd()" class="flex items-center ml-1" [icon]="faEye"></fa-icon>
+          </div>
+        </td>
+        <td *ngIf="isShowPassword"><span>{{password}}</span></td>
       </tr>
       <tr>
       <td>
