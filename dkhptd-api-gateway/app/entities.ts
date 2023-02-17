@@ -322,10 +322,13 @@ export class Timestamp {
 }
 
 export class TermId {
-  _id: ObjectId;
-  name: string;
-  constructor(o: { _id?: ObjectId, name?: string }) {
-    this._id = o._id;
-    this.name = o.name;
+  termIds: string[] = [];
+  constructor(o?) {
+    this.termIds = o?.termIds || [];
+  }
+
+  addAll(termIds: string[]) {
+    this.termIds.push(...termIds);
+    this.termIds = Array.from(new Set(this.termIds)).sort(((a, b) => a.localeCompare(b)));
   }
 }

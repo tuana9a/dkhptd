@@ -13,7 +13,7 @@ export class NewJobV1PageComponent implements OnInit {
   ngOnInit(): void {
     this.api.all().subscribe(res => {
       if (res.success) {
-        this.termIds = res.data?.map(x => x.name);
+        this.termIds = res.data;
       }
     });
   }

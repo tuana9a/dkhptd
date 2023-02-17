@@ -17,37 +17,29 @@ import { ClassToRegister } from "app/entities";
 export const router = express.Router();
 
 router.get("/api/term-ids", ExceptionWrapper(async (req, resp) => {
-  const termIds = await mongoConnectionPool.getClient()
+  const doc = await mongoConnectionPool.getClient()
     .db(cfg.DATABASE_NAME)
     .collection(CollectionName.TERM_ID)
-    .find()
-    .toArray();
-  resp.send(new BaseResponse().ok(termIds.map(x => new TermId(x))));
+    .findOne();
+  resp.send(new BaseResponse().ok(new TermId(doc).termIds));
 }));
 
 router.post("/api/term-ids", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async (req, resp) => {
   const data = req.body.data;
   if (isFalsy(data)) throw new FaslyValueError("body.data");
   if (!Array.isArray(data)) throw new NotAnArrayError("body.data");
-  const termIds = data.map(x => x.name).map(x => new TermId({ name: x }));
-  await mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(CollectionName.TERM_ID).insertMany(termIds);
+  const termIds = Array.from(new Set(data.map(x => toNormalizedString(x)))).sort(((a, b) => a.localeCompare(b)));
+  const doc = await mongoConnectionPool.getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(CollectionName.TERM_ID)
+    .findOne();
+  const termId = new TermId(doc);
+  termId.addAll(termIds);
+  await mongoConnectionPool.getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(CollectionName.TERM_ID)
+    .updateOne({}, { $set: { ...new TermId({ termIds: termIds }) } }, { upsert: true });
   resp.send(new BaseResponse().ok(termIds));
-}));
-
-router.delete("/api/term-ids/duplicates", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async (req, resp) => {
-  const docs = await mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(CollectionName.TERM_ID).find().toArray();
-  const termIds = docs.map(x => new TermId(x));
-  const toBeDeletedIds: ObjectId[] = [];
-  const set = new Set<string>();
-  for (const termId of termIds) {
-    if (set.has(termId.name)) {
-      toBeDeletedIds.push(termId._id);
-    } else {
-      set.add(termId.name);
-    }
-  }
-  await mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(CollectionName.TERM_ID).deleteMany({ _id: { $in: toBeDeletedIds } });
-  resp.send(new BaseResponse().ok(toBeDeletedIds));
 }));
 
 router.get("/api/term-ids/:termId/class-to-registers", InjectTermId(), ExceptionWrapper(async (req, resp) => {

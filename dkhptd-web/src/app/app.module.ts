@@ -51,6 +51,7 @@ import { ChooseTermIdPageComponent } from "./choose-term-id-page/choose-term-id-
 import { NavbarOfTermIdComponent } from "./navbar-of-term-id/navbar-of-term-id.component";
 import { QPipe } from "./q.pipe";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { ManageTermIdComponent } from "./manage-term-id/manage-term-id.component";
 
 const routes: Routes = [
   { path: "login", component: LoginComponent },
@@ -60,6 +61,7 @@ const routes: Routes = [
   { path: "v1/manage-job", component: ManageJobV1Component },
   { path: "v1/dkhptd-s/:id", component: JobPageComponent },
   { path: "upload-tkb-xlsx", component: UploadTkbXlsxComponent },
+  { path: "manage-term-id", component: ManageTermIdComponent },
   { path: "messages", component: MessagesComponent },
   {
     path: "term-ids", component: ChooseTermIdPageComponent, children: [
@@ -118,6 +120,7 @@ const routes: Routes = [
     ChooseTermIdPageComponent,
     NavbarOfTermIdComponent,
     QPipe,
+    ManageTermIdComponent,
   ],
   imports: [
     BrowserModule,

@@ -21,9 +21,7 @@ export class ToastMessageInterceptor implements HttpInterceptor {
       map((event: HttpEvent<BaseResponse<any>>) => {
         if (event instanceof HttpResponse) {
           const body = event.body;
-          if (body?.success) {
-            this.toastMessageRepo.push("Thành Công");
-          } else {
+          if (!body?.success) {
             this.toastMessageRepo.push(`Thất bại: ${body?.message}`);
           }
           event = event.clone({ body: body });

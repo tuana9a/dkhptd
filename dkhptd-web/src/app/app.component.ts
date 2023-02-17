@@ -38,6 +38,9 @@ export class AppComponent implements OnInit {
   showUploadTKB() {
     return this.session.isAdmin();
   }
+  showManageTermId() {
+    return this.session.isAdmin();
+  }
   showPrefereces() {
     return this.session.isAuthorized;
   }

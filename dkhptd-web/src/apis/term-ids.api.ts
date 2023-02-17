@@ -10,6 +10,10 @@ export class TermIdsApi {
   }
 
   all() {
-    return this.httpClient.get<BaseResponse<{ name: string }[]>>("/api/term-ids");
+    return this.httpClient.get<BaseResponse<string[]>>("/api/term-ids");
+  }
+
+  upsert(termIds: string[]) {
+    return this.httpClient.post<BaseResponse<string[]>>("/api/term-ids", { data: termIds });
   }
 }

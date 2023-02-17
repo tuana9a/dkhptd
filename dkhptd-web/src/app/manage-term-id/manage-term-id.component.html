@@ -1,0 +1,21 @@
+<table>
+  <tr>
+    <td>Kỳ Học</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>
+      <table>
+        <tr *ngFor="let termId of termIds">
+          <td class="border border-solid border-black">{{termId}}</td>
+          <td class=""><fa-icon class="p-1 bg-black flex items-center" [styles]="{'stroke': 'red', 'color': 'red'}" [icon]="faMinus" (click)="onRemoveTermId(termId)"></fa-icon></td>
+        </tr>
+        <tr>
+          <td class="border border-solid border-black"><input type="text" [(ngModel)]="termId" (keypress)="onKeyPressTermId($event)"></td>
+          <td class=""><fa-icon class="p-1 bg-black flex items-center" [styles]="{'stroke': '#1eff00', 'color': '#1eff00'}" [icon]="faPlus" (click)="onAddTermId()"></fa-icon></td>
+        </tr>
+      </table>
+    </td>
+    <td><button (click)="onUpsert()">Cập Nhật</button></td>
+  </tr>
+</table>

@@ -15,13 +15,20 @@ export class JobRowComponent implements OnInit {
   @Input() showPassword = false;
   @Input() showTermId = false;
   @Input() showId = true;
+  @Input() intervalUpdate = false;
   faEye = faEye;
 
   constructor(private api: DKHPTDV1sApi, private jobStatusUtils: JobStatusUtils) {
   }
 
   ngOnInit(): void {
-    //
+    if (this.intervalUpdate && this.job && this.job._id) {
+      setInterval(() => {
+        this.api.getCurrentDecryptJob(this.job?._id as string).subscribe(res => {
+          this.job = res.data;
+        });
+      }, 2000);
+    }
   }
 
   toggleShowPassword() {

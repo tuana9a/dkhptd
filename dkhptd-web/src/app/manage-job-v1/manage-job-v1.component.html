@@ -13,6 +13,6 @@
       <td></td>
       <td></td>
     </tr>
-    <tr *ngFor="let job of jobs" app-job-row [showTermId]="true" [job]="job" [showPassword]="showPassword"></tr>
+    <tr *ngFor="let job of jobs" app-job-row [intervalUpdate]="true" [showTermId]="true" [job]="job" [showPassword]="showPassword"></tr>
   </table>
 </div>
