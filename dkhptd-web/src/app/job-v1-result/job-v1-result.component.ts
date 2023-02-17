@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { DKHPTDJob, DKHPTDResult } from "src/entities";
+import { DKHPTDJob, DKHPTDJobResult } from "src/entities";
 
 @Component({
   selector: "[app-job-v1-result]",
@@ -7,7 +7,7 @@ import { DKHPTDJob, DKHPTDResult } from "src/entities";
   styleUrls: ["./job-v1-result.component.scss"]
 })
 export class JobV1ResultComponent implements OnInit {
-  @Input() result?: DKHPTDResult;
+  @Input() result?: DKHPTDJobResult;
   @Input() job?: DKHPTDJob;
 
   ngOnInit(): void {

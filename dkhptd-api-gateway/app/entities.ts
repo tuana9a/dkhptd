@@ -90,35 +90,6 @@ export class ClassToRegister {
   }
 }
 
-/** @deprecated */
-export class DKHPTDJobLogs {
-  _id: ObjectId;
-  jobId: ObjectId;
-  workerId: string;
-  ownerAccountId: ObjectId;
-  logs: [];
-  vars: unknown;
-  createdAt: number;
-
-  constructor(o: {
-    _id?: ObjectId;
-    jobId?: ObjectId;
-    ownerAccountId?: ObjectId;
-    workerId?: string;
-    logs?: [];
-    createdAt?: number;
-    vars?: unknown;
-  }) {
-    this._id = o._id;
-    this.jobId = o.jobId;
-    this.workerId = o.workerId;
-    this.ownerAccountId = o.ownerAccountId;
-    this.logs = o.logs;
-    this.vars = o.vars;
-    this.createdAt = o.createdAt;
-  }
-}
-
 export class DKHPTDJob {
   _id: ObjectId;
   ownerAccountId: ObjectId;
@@ -153,38 +124,6 @@ export class DKHPTDJob {
     this.createdAt = o.createdAt;
     this.doingAt = o.doingAt;
     this.termId = o.termId;
-  }
-}
-
-/** @deprecated */
-export class DKHPTDJobV1Logs {
-  _id: ObjectId;
-  jobId: ObjectId;
-  workerId: string;
-  ownerAccountId: ObjectId;
-  logs: string; // encrypted
-  vars: string; // encrypted
-  iv: string;
-  createdAt: number;
-
-  constructor(o: {
-    _id?: ObjectId;
-    jobId?: ObjectId;
-    ownerAccountId?: ObjectId;
-    workerId?: string;
-    logs?: string;
-    vars?: string;
-    createdAt?: number;
-    iv?: string;
-  }) {
-    this._id = o._id;
-    this.jobId = o.jobId;
-    this.workerId = o.workerId;
-    this.ownerAccountId = o.ownerAccountId;
-    this.logs = o.logs;
-    this.vars = o.vars;
-    this.createdAt = o.createdAt;
-    this.iv = o.iv;
   }
 }
 
@@ -228,38 +167,6 @@ export class DKHPTDJobV1 {
     this.iv = o.iv;
     this.no = o.no || 0;
     this.termId = o.termId;
-  }
-}
-
-/** @deprecated */
-export class DKHPTDJobV2Logs {
-  _id: ObjectId;
-  jobId: ObjectId;
-  workerId: string;
-  ownerAccountId: ObjectId;
-  logs: string; // encrypted
-  vars: string; // encrypted
-  iv: string;
-  createdAt: number;
-
-  constructor(o: {
-    _id?: ObjectId;
-    jobId?: ObjectId;
-    ownerAccountId?: ObjectId;
-    workerId?: string;
-    logs?: string;
-    vars?: string;
-    createdAt?: number;
-    iv?: string;
-  }) {
-    this._id = o._id;
-    this.jobId = o.jobId;
-    this.workerId = o.workerId;
-    this.ownerAccountId = o.ownerAccountId;
-    this.logs = o.logs;
-    this.vars = o.vars;
-    this.createdAt = o.createdAt;
-    this.iv = o.iv;
   }
 }
 

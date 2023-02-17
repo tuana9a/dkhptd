@@ -8,46 +8,10 @@ import BaseResponse from "app/payloads/BaseResponse";
 import { resolveMongoFilter } from "app/merin";
 import { RateLimit } from "app/middlewares";
 import { FaslyValueError, NotAnArrayError, JobNotFoundError, EmptyStringError, RequireLengthFailed } from "app/exceptions";
-import { decryptJobV1Logs, decryptResultV1, isEmpty, isFalsy } from "app/utils";
-import { DKHPTDJobLogs, DKHPTDJobV1, DKHPTDJobV1Logs, DKHPTDJobResult, DKHPTDJobV1Result } from "app/entities";
+import { decryptResultV1, isEmpty, isFalsy } from "app/utils";
+import { DKHPTDJobV1, DKHPTDJobResult, DKHPTDJobV1Result } from "app/entities";
 
 export const router = express.Router();
-
-router.get("/api/accounts/current/v1/dkhptd-s/:jobId/logs", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
-  const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
-  const accountId = req.__accountId;
-
-  const filter: Filter<DKHPTDJobV1Logs> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
-  filter.ownerAccountId = new ObjectId(accountId);
-  filter.jobId = new ObjectId(req.params.jobId);
-
-  const logs = await mongoConnectionPool
-    .getClient()
-    .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV1Logs.name)
-    .find(filter)
-    .toArray();
-  const data = logs.map((x) => new DKHPTDJobV1Logs(x));
-  resp.send(new BaseResponse().ok(data));
-}));
-
-router.get("/api/accounts/current/v1/dkhptd-s/:jobId/d/logs", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
-  const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
-  const accountId = req.__accountId;
-
-  const filter: Filter<DKHPTDJobV1Logs> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
-  filter.ownerAccountId = new ObjectId(accountId);
-  filter.jobId = new ObjectId(req.params.jobId);
-
-  const logs = await mongoConnectionPool
-    .getClient()
-    .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV1Logs.name)
-    .find(filter)
-    .toArray();
-  const data = logs.map((x) => new DKHPTDJobLogs(decryptJobV1Logs(new DKHPTDJobV1Logs(x))));
-  resp.send(new BaseResponse().ok(data));
-}));
 
 router.get("/api/accounts/current/v1/dkhptd-s/:jobId/results", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);

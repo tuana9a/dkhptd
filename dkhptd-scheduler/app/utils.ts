@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { ObjectId } from "mongodb";
 import { cfg } from "./cfg";
 import { c } from "./cypher";
-import { DKHPTDJobV1Logs, DKHPTDJobV1, DKHPTDJobV2Logs, DKHPTDJobV2, DKHPTDV1Result, DKHPTDResult, DKHPTDV2Result } from "./entities";
+import { DKHPTDJobV1, DKHPTDJobV2, DKHPTDJobV1Result, DKHPTDJobResult, DKHPTDJobV2Result } from "./entities";
 
 export const toBuffer = (input) => Buffer.from(input);
 export const toJson = (input, space?: string | number) => JSON.stringify(input, null, space);
@@ -158,20 +158,6 @@ export const loop = {
   },
 };
 
-export const decryptJobV1Logs = (input: DKHPTDJobV1Logs) => {
-  const logs: [] = input.logs ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(input.logs, input.iv)) : [];
-  const vars = input.vars ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(input.vars, input.iv)) : {};
-  return {
-    _id: input._id,
-    jobId: input.jobId,
-    ownerAccountId: input.ownerAccountId,
-    workerId: input.workerId,
-    logs: logs,
-    vars: vars,
-    createdAt: input.createdAt,
-  };
-};
-
 export const decryptJobV1 = (input: DKHPTDJobV1) => {
   const dPassword = c(cfg.JOB_ENCRYPTION_KEY).d(input.password, input.iv);
   const dUsername = c(cfg.JOB_ENCRYPTION_KEY).d(input.username, input.iv);
@@ -204,20 +190,6 @@ export const encryptJobV1 = (input: DKHPTDJobV1) => {
     doingAt: input.doingAt,
     status: input.status,
     iv: iv,
-  };
-};
-
-export const decryptJobV2Logs = (input: DKHPTDJobV2Logs) => {
-  const logs: [] = input.logs ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(input.logs, input.iv)) : [];
-  const vars = input.vars ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(input.vars, input.iv)) : {};
-  return {
-    _id: input._id,
-    jobId: input.jobId,
-    ownerAccountId: input.ownerAccountId,
-    workerId: input.workerId,
-    logs: logs,
-    vars: vars,
-    createdAt: input.createdAt,
   };
 };
 
@@ -255,10 +227,10 @@ export const encryptJobV2 = (input: DKHPTDJobV2) => {
   });
 };
 
-export const decryptResultV1 = (input: DKHPTDV1Result) => {
+export const decryptResultV1 = (input: DKHPTDJobV1Result) => {
   const logs: [] = input.logs ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(input.logs, input.iv)) : [];
   const vars = input.vars ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(input.vars, input.iv)) : {};
-  return new DKHPTDResult({
+  return new DKHPTDJobResult({
     _id: input._id,
     jobId: input.jobId,
     ownerAccountId: input.ownerAccountId,
@@ -269,10 +241,10 @@ export const decryptResultV1 = (input: DKHPTDV1Result) => {
   });
 };
 
-export const decryptResultV2 = (input: DKHPTDV2Result) => {
+export const decryptResultV2 = (input: DKHPTDJobV2Result) => {
   const logs: [] = input.logs ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(input.logs, input.iv)) : [];
   const vars = input.vars ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(input.vars, input.iv)) : {};
-  return new DKHPTDResult({
+  return new DKHPTDJobResult({
     _id: input._id,
     jobId: input.jobId,
     ownerAccountId: input.ownerAccountId,

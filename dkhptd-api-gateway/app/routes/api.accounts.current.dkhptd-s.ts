@@ -10,25 +10,9 @@ import { resolveMongoFilter } from "app/merin";
 import { isFalsy } from "app/utils";
 import { isEmpty } from "lodash";
 import { FaslyValueError, EmptyStringError, RequireLengthFailed, JobNotFoundError, NotAnArrayError } from "app/exceptions";
-import { DKHPTDJobLogs, DKHPTDJob } from "app/entities";
+import { DKHPTDJob } from "app/entities";
 
 export const router = express.Router();
-
-router.get("/api/accounts/current/dkhptd-s/:jobId/logs", ExceptionWrapper(async (req, resp) => {
-  const accountId = req.__accountId;
-  const filter: Filter<DKHPTDJobLogs> = {
-    ownerAccountId: new ObjectId(accountId),
-    jobId: new ObjectId(req.params.jobId),
-  };
-  const logs = await mongoConnectionPool
-    .getClient()
-    .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobLogs.name)
-    .find(filter)
-    .toArray();
-  const data = logs.map((x) => new DKHPTDJobLogs(x));
-  resp.send(new BaseResponse().ok(data));
-}));
 
 router.get("/api/accounts/current/dkhptd-s", ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);

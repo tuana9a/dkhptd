@@ -4,53 +4,15 @@ import { cfg, CollectionName, JobStatus } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper, JwtFilter } from "app/middlewares";
 import { RateLimit } from "app/middlewares";
-import { decryptJobV2Logs } from "app/utils";
 import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
 import { resolveMongoFilter } from "app/merin";
 import { EmptyStringError, FaslyValueError, JobNotFoundError, NotAnArrayError, RequireLengthFailed } from "app/exceptions";
 import { isEmpty } from "lodash";
 import { isFalsy } from "app/utils";
-import { DKHPTDJobV2, DKHPTDJobV2Logs } from "app/entities";
+import { DKHPTDJobV2 } from "app/entities";
 
 export const router = express.Router();
-
-router.get("/api/accounts/current/v2/dkhptd-s/:jobId/logs", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
-  const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
-  const accountId = req.__accountId;
-
-  const filter: Filter<DKHPTDJobV2Logs> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
-
-  filter.ownerAccountId = new ObjectId(accountId);
-  filter.jobId = new ObjectId(req.params.jobId);
-  const logs = await mongoConnectionPool
-    .getClient()
-    .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV2Logs.name)
-    .find(filter)
-    .toArray();
-  const data = logs.map((x) => new DKHPTDJobV2Logs(x));
-  resp.send(new BaseResponse().ok(data));
-}));
-
-router.get("/api/accounts/current/v2/dkhptd-s/:jobId/d/logs", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
-  const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
-  const accountId = req.__accountId;
-
-  const filter: Filter<DKHPTDJobV2Logs> = query.q
-    ? resolveMongoFilter(query.q.split(","))
-    : {};
-  filter.ownerAccountId = new ObjectId(accountId);
-  filter.jobId = new ObjectId(req.params.jobId);
-  const logs = await mongoConnectionPool
-    .getClient()
-    .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV2Logs.name)
-    .find(filter)
-    .toArray();
-  const data = logs.map((x) => decryptJobV2Logs(new DKHPTDJobV2Logs(x)));
-  resp.send(new BaseResponse().ok(data));
-}));
 
 router.get("/api/accounts/current/v2/dkhptd-s", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);

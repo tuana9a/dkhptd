@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { DKHPTDV1sApi } from "src/apis/dkhptd-v1-s.api";
-import { DKHPTDResult } from "src/entities";
-import { DKHPTDJobLogs } from "src/entities";
+import { DKHPTDJobResult } from "src/entities";
 import { DKHPTDJobV1 } from "src/entities";
 
 @Component({
@@ -13,8 +12,7 @@ import { DKHPTDJobV1 } from "src/entities";
 export class JobPageComponent implements OnInit {
   @Input() id = "";
   @Input() job?: DKHPTDJobV1;
-  @Input() logs?: DKHPTDJobLogs[] = [];
-  @Input() results?: DKHPTDResult[] = [];
+  @Input() results?: DKHPTDJobResult[] = [];
   @Input() showPassword = false;
 
   constructor(private route: ActivatedRoute, private dkhptdV1sApi: DKHPTDV1sApi) { }

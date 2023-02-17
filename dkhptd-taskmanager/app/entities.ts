@@ -1,21 +1,5 @@
 import { ObjectId } from "mongodb";
 
-export class AccountHasStudent {
-  _id: ObjectId;
-  accountId: ObjectId;
-  studentId: string;
-
-  constructor(o: {
-    _id?: ObjectId;
-    accountId?: ObjectId;
-    studentId?: string;
-  }) {
-    this._id = o._id;
-    this.accountId = o.accountId;
-    this.studentId = o.studentId;
-  }
-}
-
 export class AccountPreference {
   _id: ObjectId;
   termId: string;
@@ -51,15 +35,6 @@ export class Account {
     this.username = o.username;
     this.name = o.name;
     this.password = o.password;
-  }
-}
-
-/** @deprecated */
-export class BaseEntity {
-  _id: ObjectId;
-
-  constructor(_id: ObjectId) {
-    this._id = _id;
   }
 }
 
@@ -112,35 +87,6 @@ export class ClassToRegister {
   }
 }
 
-/** @deprecated */
-export class DKHPTDJobLogs {
-  _id: ObjectId;
-  jobId: ObjectId;
-  workerId: string;
-  ownerAccountId: ObjectId;
-  logs: [];
-  vars: unknown;
-  createdAt: number;
-
-  constructor(o: {
-    _id?: ObjectId;
-    jobId?: ObjectId;
-    ownerAccountId?: ObjectId;
-    workerId?: string;
-    logs?: [];
-    createdAt?: number;
-    vars?: unknown;
-  }) {
-    this._id = o._id;
-    this.jobId = o.jobId;
-    this.workerId = o.workerId;
-    this.ownerAccountId = o.ownerAccountId;
-    this.logs = o.logs;
-    this.vars = o.vars;
-    this.createdAt = o.createdAt;
-  }
-}
-
 export class DKHPTDJob {
   _id: ObjectId;
   ownerAccountId: ObjectId;
@@ -172,38 +118,6 @@ export class DKHPTDJob {
     this.status = o.status;
     this.createdAt = o.createdAt;
     this.doingAt = o.doingAt;
-  }
-}
-
-/** @deprecated */
-export class DKHPTDJobV1Logs {
-  _id: ObjectId;
-  jobId: ObjectId;
-  workerId: string;
-  ownerAccountId: ObjectId;
-  logs: string; // encrypted
-  vars: string; // encrypted
-  iv: string;
-  createdAt: number;
-
-  constructor(o: {
-    _id?: ObjectId;
-    jobId?: ObjectId;
-    ownerAccountId?: ObjectId;
-    workerId?: string;
-    logs?: string;
-    vars?: string;
-    createdAt?: number;
-    iv?: string;
-  }) {
-    this._id = o._id;
-    this.jobId = o.jobId;
-    this.workerId = o.workerId;
-    this.ownerAccountId = o.ownerAccountId;
-    this.logs = o.logs;
-    this.vars = o.vars;
-    this.createdAt = o.createdAt;
-    this.iv = o.iv;
   }
 }
 
@@ -247,38 +161,6 @@ export class DKHPTDJobV1 {
   }
 }
 
-/** @deprecated */
-export class DKHPTDJobV2Logs {
-  _id: ObjectId;
-  jobId: ObjectId;
-  workerId: string;
-  ownerAccountId: ObjectId;
-  logs: string; // encrypted
-  vars: string; // encrypted
-  iv: string;
-  createdAt: number;
-
-  constructor(o: {
-    _id?: ObjectId;
-    jobId?: ObjectId;
-    ownerAccountId?: ObjectId;
-    workerId?: string;
-    logs?: string;
-    vars?: string;
-    createdAt?: number;
-    iv?: string;
-  }) {
-    this._id = o._id;
-    this.jobId = o.jobId;
-    this.workerId = o.workerId;
-    this.ownerAccountId = o.ownerAccountId;
-    this.logs = o.logs;
-    this.vars = o.vars;
-    this.createdAt = o.createdAt;
-    this.iv = o.iv;
-  }
-}
-
 export class DKHPTDJobV2 {
   _id: ObjectId;
   ownerAccountId: ObjectId;
@@ -316,7 +198,7 @@ export class DKHPTDJobV2 {
   }
 }
 
-export class DKHPTDResult {
+export class DKHPTDJobResult {
   _id: ObjectId;
   jobId: ObjectId;
   workerId: string;
@@ -344,7 +226,7 @@ export class DKHPTDResult {
   }
 }
 
-export class DKHPTDV1Result {
+export class DKHPTDJobV1Result {
   _id: ObjectId;
   jobId: ObjectId;
   workerId: string;
@@ -375,7 +257,7 @@ export class DKHPTDV1Result {
   }
 }
 
-export class DKHPTDV2Result {
+export class DKHPTDJobV2Result {
   _id: ObjectId;
   jobId: ObjectId;
   workerId: string;
@@ -403,36 +285,6 @@ export class DKHPTDV2Result {
     this.vars = o.vars;
     this.createdAt = o.createdAt;
     this.iv = o.iv;
-  }
-}
-
-export class StudentRegisterClassPreference {
-  studentId: string;
-  termId: string;
-  wantedSubjectIds: string[];
-
-  constructor(o: {
-    studentId?: string;
-    termId?: string;
-    wantedSubjectIds?: string[];
-  }) {
-    this.studentId = o.studentId;
-    this.termId = o.termId;
-    this.wantedSubjectIds = o.wantedSubjectIds;
-  }
-}
-
-export class Student {
-  studentId: string;
-  email: string;
-
-  constructor(o: {
-    studentId?: string;
-    email?: string;
-  }) {
-
-    this.studentId = o.studentId;
-    this.email = o.email;
   }
 }
 

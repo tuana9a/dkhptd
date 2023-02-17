@@ -2,22 +2,6 @@ export const Role = {
   ADMIN: "ADMIN",
 };
 
-export class AccountHasStudent {
-  _id: string;
-  accountId: string;
-  studentId: string;
-
-  constructor(o: {
-    _id: string;
-    accountId: string;
-    studentId: string;
-  }) {
-    this._id = o._id;
-    this.accountId = o.accountId;
-    this.studentId = o.studentId;
-  }
-}
-
 export class AccountPreference {
   _id?: string;
   termId: string;
@@ -56,15 +40,6 @@ export class Account {
     this.name = o.name;
     this.password = o.password;
     this.role = o.role;
-  }
-}
-
-/** @deprecated */
-export class BaseEntity {
-  _id: string;
-
-  constructor(_id: string) {
-    this._id = _id;
   }
 }
 
@@ -117,35 +92,6 @@ export class ClassToRegister {
   }
 }
 
-/** @deprecated */
-export class DKHPTDJobLogs {
-  _id: string;
-  jobId: string;
-  workerId: string;
-  ownerAccountId: string;
-  logs: [];
-  vars: any;
-  createdAt: number;
-
-  constructor(o: {
-    _id: string;
-    jobId: string;
-    ownerAccountId: string;
-    workerId: string;
-    logs: [];
-    createdAt: number;
-    vars: any;
-  }) {
-    this._id = o._id;
-    this.jobId = o.jobId;
-    this.workerId = o.workerId;
-    this.ownerAccountId = o.ownerAccountId;
-    this.logs = o.logs;
-    this.vars = o.vars;
-    this.createdAt = o.createdAt;
-  }
-}
-
 export class DKHPTDJob {
   _id: string;
   ownerAccountId: string;
@@ -177,38 +123,6 @@ export class DKHPTDJob {
     this.status = o.status;
     this.createdAt = o.createdAt;
     this.doingAt = o.doingAt;
-  }
-}
-
-/** @deprecated */
-export class DKHPTDJobV1Logs {
-  _id: string;
-  jobId: string;
-  workerId: string;
-  ownerAccountId: string;
-  logs;
-  vars;
-  iv: string;
-  createdAt: number;
-
-  constructor(o: {
-    _id: string;
-    jobId: string;
-    ownerAccountId: string;
-    workerId: string;
-    logs: any;
-    vars: any;
-    createdAt: number;
-    iv: string;
-  }) {
-    this._id = o._id;
-    this.jobId = o.jobId;
-    this.workerId = o.workerId;
-    this.ownerAccountId = o.ownerAccountId;
-    this.logs = o.logs;
-    this.vars = o.vars;
-    this.createdAt = o.createdAt;
-    this.iv = o.iv;
   }
 }
 
@@ -255,38 +169,6 @@ export class DKHPTDJobV1 {
   }
 }
 
-/** @deprecated */
-export class DKHPTDJobV2Logs {
-  _id: string;
-  jobId: string;
-  workerId: string;
-  ownerAccountId: string;
-  logs;
-  vars;
-  iv: string;
-  createdAt: number;
-
-  constructor(o: {
-    _id: string;
-    jobId: string;
-    ownerAccountId: string;
-    workerId: string;
-    logs: any;
-    vars: any;
-    createdAt: number;
-    iv: string;
-  }) {
-    this._id = o._id;
-    this.jobId = o.jobId;
-    this.workerId = o.workerId;
-    this.ownerAccountId = o.ownerAccountId;
-    this.logs = o.logs;
-    this.vars = o.vars;
-    this.createdAt = o.createdAt;
-    this.iv = o.iv;
-  }
-}
-
 export class DKHPTDJobV2 {
   _id: string;
   ownerAccountId: string;
@@ -324,7 +206,7 @@ export class DKHPTDJobV2 {
   }
 }
 
-export class DKHPTDResult {
+export class DKHPTDJobResult {
   _id: string;
   jobId: string;
   workerId: string;
@@ -352,7 +234,7 @@ export class DKHPTDResult {
   }
 }
 
-export class DKHPTDV1Result {
+export class DKHPTDJobV1Result {
   _id: string;
   jobId: string;
   workerId: string;
@@ -383,7 +265,7 @@ export class DKHPTDV1Result {
   }
 }
 
-export class DKHPTDV2Result {
+export class DKHPTDJobV2Result {
   _id: string;
   jobId: string;
   workerId: string;
@@ -411,36 +293,6 @@ export class DKHPTDV2Result {
     this.vars = o.vars;
     this.createdAt = o.createdAt;
     this.iv = o.iv;
-  }
-}
-
-export class StudentRegisterClassPreference {
-  studentId: string;
-  termId: string;
-  wantedSubjectIds: string[];
-
-  constructor(o: {
-    studentId: string;
-    termId: string;
-    wantedSubjectIds: string[];
-  }) {
-    this.studentId = o.studentId;
-    this.termId = o.termId;
-    this.wantedSubjectIds = o.wantedSubjectIds;
-  }
-}
-
-export class Student {
-  studentId: string;
-  email: string;
-
-  constructor(o: {
-    studentId: string;
-    email: string;
-  }) {
-
-    this.studentId = o.studentId;
-    this.email = o.email;
   }
 }
 

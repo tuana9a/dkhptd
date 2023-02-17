@@ -4,13 +4,13 @@ import { jobV1Bus } from "../bus";
 import { cfg, CollectionName } from "../cfg";
 import { mongoConnectionPool } from "../connections";
 import { c } from "../cypher";
-import { DKHPTDJobV1, DKHPTDV1Result } from "../entities";
+import { DKHPTDJobV1, DKHPTDJobV1Result } from "../entities";
 import { toJson } from "../utils";
 
 export const setup = () => {
   jobV1Bus.on(jobV1Event.INSERT_JOB_V1_RESULT, async (result, job: DKHPTDJobV1) => {
     const newIv = crypto.randomBytes(16).toString("hex");
-    const dkhptdResult = new DKHPTDV1Result({
+    const dkhptdResult = new DKHPTDJobV1Result({
       jobId: job._id,
       workerId: result.workerId,
       ownerAccountId: job.ownerAccountId,

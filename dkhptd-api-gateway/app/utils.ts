@@ -4,7 +4,7 @@ import crypto from "crypto";
 import { ObjectId } from "mongodb";
 import { cfg } from "./cfg";
 import { c } from "./cypher";
-import { Account, DKHPTDJobV1, DKHPTDJobV1Logs, DKHPTDJobV2, DKHPTDJobV2Logs, DKHPTDJobResult, DKHPTDJobV1Result, DKHPTDJobV2Result } from "./entities";
+import { Account, DKHPTDJobV1, DKHPTDJobV2, DKHPTDJobResult, DKHPTDJobV1Result, DKHPTDJobV2Result } from "./entities";
 import { modify, DropProps } from "./modifiers";
 
 export const diff = (old, next, opts = { ignoreKeys: new Set() }) => {
@@ -74,20 +74,6 @@ export const accountToClient = (input: Account) => {
   return modify(input, [DropProps(["password"])]);
 };
 
-export const decryptJobV1Logs = (input: DKHPTDJobV1Logs) => {
-  const logs: [] = input.logs ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(input.logs, input.iv)) : [];
-  const vars = input.vars ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(input.vars, input.iv)) : {};
-  return {
-    _id: input._id,
-    jobId: input.jobId,
-    ownerAccountId: input.ownerAccountId,
-    workerId: input.workerId,
-    logs: logs,
-    vars: vars,
-    createdAt: input.createdAt,
-  };
-};
-
 export const decryptJobV1 = (input: DKHPTDJobV1) => {
   const dPassword = c(cfg.JOB_ENCRYPTION_KEY).d(input.password, input.iv);
   const dUsername = c(cfg.JOB_ENCRYPTION_KEY).d(input.username, input.iv);
@@ -122,20 +108,6 @@ export const encryptJobV1 = (input: DKHPTDJobV1) => {
     status: input.status,
     iv: iv,
     termId: input.termId,
-  };
-};
-
-export const decryptJobV2Logs = (input: DKHPTDJobV2Logs) => {
-  const logs: [] = input.logs ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(input.logs, input.iv)) : [];
-  const vars = input.vars ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(input.vars, input.iv)) : {};
-  return {
-    _id: input._id,
-    jobId: input.jobId,
-    ownerAccountId: input.ownerAccountId,
-    workerId: input.workerId,
-    logs: logs,
-    vars: vars,
-    createdAt: input.createdAt,
   };
 };
 

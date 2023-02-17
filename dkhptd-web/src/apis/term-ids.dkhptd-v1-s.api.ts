@@ -1,7 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { DKHPTDResult } from "src/entities";
-import { DKHPTDJobLogs } from "src/entities";
+import { DKHPTDJobResult } from "src/entities";
 import { DKHPTDJobV1 } from "src/entities";
 import { BaseResponse } from "src/payloads";
 
@@ -24,12 +23,8 @@ export class TermIdsJobV1sApi {
     return this.httpClient.get<BaseResponse<DKHPTDJobV1>>(`/api/accounts/current/term-ids/${termId}/v1/d/dkhptd-s/${jobId}`);
   }
 
-  getCurrentJobDecryptLogs(termId: string, jobId: string) {
-    return this.httpClient.get<BaseResponse<DKHPTDJobLogs[]>>(`/api/accounts/current/term-ids/${termId}/v1/dkhptd-s/${jobId}/d/logs`);
-  }
-
   getCurrentJobDecryptResults(termId: string, jobId: string) {
-    return this.httpClient.get<BaseResponse<DKHPTDResult[]>>(`/api/accounts/current/term-ids/${termId}/v1/dkhptd-s/${jobId}/d/results`);
+    return this.httpClient.get<BaseResponse<DKHPTDJobResult[]>>(`/api/accounts/current/term-ids/${termId}/v1/dkhptd-s/${jobId}/d/results`);
   }
 
   submitCurrentNewJobV1(termId: string, username: string, password: string, classIds: string[], timeToStart: number) {
