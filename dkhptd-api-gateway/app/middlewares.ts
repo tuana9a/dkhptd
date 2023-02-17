@@ -1,7 +1,7 @@
 import { Request, Response, Handler, NextFunction } from "express";
 import { ObjectId } from "mongodb";
 import jwt from "jsonwebtoken";
-import { cfg, Role } from "./cfg";
+import { cfg, CollectionName, Role } from "./cfg";
 import { mongoConnectionPool } from "./connections";
 import { Account } from "./entities";
 import BaseResponse from "./payloads/BaseResponse";
@@ -35,7 +35,10 @@ export const JwtFilter = (secret: string): Handler => (req, res, next) => {
 
 export const IsAdminFilter = (): Handler => async (req, resp, next) => {
   const accountId = req.__accountId;
-  const doc = await mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(Account.name).findOne({ _id: new ObjectId(accountId) });
+  const doc = await mongoConnectionPool.getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(CollectionName.ACCOUNT)
+    .findOne({ _id: new ObjectId(accountId) });
   const account = new Account(doc);
   if (String(account.role).toUpperCase() == Role.ADMIN) {
     return next();

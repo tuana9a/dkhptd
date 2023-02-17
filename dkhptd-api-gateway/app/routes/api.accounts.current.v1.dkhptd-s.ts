@@ -1,6 +1,6 @@
 import { Filter, ObjectId } from "mongodb";
 import express from "express";
-import { cfg, JobStatus } from "app/cfg";
+import { cfg, CollectionName, JobStatus } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper, JwtFilter } from "app/middlewares";
 import { modify, PickProps, NormalizeArrayProp, NormalizeIntProp, NormalizeStringProp, SetProp } from "app/modifiers";
@@ -9,7 +9,7 @@ import { resolveMongoFilter } from "app/merin";
 import { RateLimit } from "app/middlewares";
 import { FaslyValueError, NotAnArrayError, JobNotFoundError, EmptyStringError, RequireLengthFailed } from "app/exceptions";
 import { decryptJobV1Logs, decryptResultV1, isEmpty, isFalsy } from "app/utils";
-import { DKHPTDJobLogs, DKHPTDJobV1, DKHPTDJobV1Logs, DKHPTDResult, DKHPTDV1Result } from "app/entities";
+import { DKHPTDJobLogs, DKHPTDJobV1, DKHPTDJobV1Logs, DKHPTDJobResult, DKHPTDJobV1Result } from "app/entities";
 
 export const router = express.Router();
 
@@ -53,17 +53,17 @@ router.get("/api/accounts/current/v1/dkhptd-s/:jobId/results", JwtFilter(cfg.SEC
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
-  const filter: Filter<DKHPTDV1Result> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
+  const filter: Filter<DKHPTDJobV1Result> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
   filter.ownerAccountId = new ObjectId(accountId);
   filter.jobId = new ObjectId(req.params.jobId);
 
   const logs = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDV1Result.name)
+    .collection(CollectionName.DKHPTDV1Result)
     .find(filter)
     .toArray();
-  const data = logs.map((x) => new DKHPTDV1Result(x));
+  const data = logs.map((x) => new DKHPTDJobV1Result(x));
   resp.send(new BaseResponse().ok(data));
 }));
 
@@ -71,17 +71,17 @@ router.get("/api/accounts/current/v1/dkhptd-s/:jobId/d/results", JwtFilter(cfg.S
   const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
-  const filter: Filter<DKHPTDV1Result> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
+  const filter: Filter<DKHPTDJobV1Result> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
   filter.ownerAccountId = new ObjectId(accountId);
   filter.jobId = new ObjectId(req.params.jobId);
 
   const logs = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDV1Result.name)
+    .collection(CollectionName.DKHPTDV1Result)
     .find(filter)
     .toArray();
-  const data = logs.map((x) => new DKHPTDResult(decryptResultV1(new DKHPTDV1Result(x))));
+  const data = logs.map((x) => new DKHPTDJobResult(decryptResultV1(new DKHPTDJobV1Result(x))));
   resp.send(new BaseResponse().ok(data));
 }));
 
@@ -95,7 +95,7 @@ router.get("/api/accounts/current/v1/dkhptd-s", JwtFilter(cfg.SECRET), Exception
   const jobs = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV1.name)
+    .collection(CollectionName.DKHPTDV1)
     .find(filter)
     .toArray();
   const data = jobs.map((x) => new DKHPTDJobV1(x));
@@ -157,7 +157,7 @@ router.post("/api/accounts/current/v1/dkhptd-s", JwtFilter(cfg.SECRET), RateLimi
     await mongoConnectionPool
       .getClient()
       .db(cfg.DATABASE_NAME)
-      .collection(DKHPTDJobV1.name)
+      .collection(CollectionName.DKHPTDV1)
       .insertMany(eJobsToInsert);
   }
   resp.send(new BaseResponse().ok(result));
@@ -172,7 +172,7 @@ router.post("/api/accounts/current/v1/dkhptd-s/:jobId/retry", JwtFilter(cfg.SECR
   const existedJob = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV1.name)
+    .collection(CollectionName.DKHPTDV1)
     .findOne(filter);
 
   if (!existedJob) throw new JobNotFoundError(req.params.jobId);
@@ -180,7 +180,7 @@ router.post("/api/accounts/current/v1/dkhptd-s/:jobId/retry", JwtFilter(cfg.SECR
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV1.name)
+    .collection(CollectionName.DKHPTDV1)
     .updateOne({ _id: new ObjectId(existedJob._id) }, { $set: { status: JobStatus.READY } });
 
   resp.send(new BaseResponse().ok(req.params.jobId));
@@ -195,7 +195,7 @@ router.put("/api/accounts/current/v1/dkhptd-s/:jobId/cancel", JwtFilter(cfg.SECR
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV1.name)
+    .collection(CollectionName.DKHPTDV1)
     .findOneAndUpdate(filter, { $set: { status: JobStatus.CANCELED } });
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));
@@ -209,7 +209,7 @@ router.delete("/api/accounts/current/v1/dkhptd-s/:jobId", JwtFilter(cfg.SECRET),
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV1.name)
+    .collection(CollectionName.DKHPTDV1)
     .deleteOne(filter);
   resp.send(new BaseResponse().ok(req.params.jobId));
 }));

@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { jobV1Event } from "../app-event";
 import { jobV1Bus } from "../bus";
-import { cfg } from "../cfg";
+import { cfg, CollectionName } from "../cfg";
 import { mongoConnectionPool, rabbitmqConnectionPool } from "../connections";
 import { c } from "../cypher";
 import { DKHPTDJobV1 } from "../entities";
@@ -22,7 +22,7 @@ export const setup = () => {
 
         const doc = await mongoConnectionPool.getClient()
           .db(cfg.DATABASE_NAME)
-          .collection(DKHPTDJobV1.name)
+          .collection(CollectionName.DKHPTDV1)
           .findOne({ _id: new ObjectId(result.id) });
         const job = new DKHPTDJobV1(doc);
 

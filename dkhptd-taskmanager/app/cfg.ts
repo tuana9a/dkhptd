@@ -23,3 +23,15 @@ export const JobStatus = {
   UNKOWN_ERROR: 23,
   MAX_RETRY_REACH: 24,
 };
+
+export const CollectionName = {
+  ACCOUNT: "account",
+  CTR: "classToRegister",
+  PREFERENCE: "preference",
+  DKHPTD: "dkhptd",
+  DKHPTDResult: "dkhptdResult",
+  DKHPTDV1: "dkhptdV1",
+  DKHPTDV1Result: "dkhptdV1Result",
+  DKHPTDV2: "dkhptdV2",
+  DKHPTDV2Result: "dkhptdV2Result",
+};

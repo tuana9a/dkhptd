@@ -1,6 +1,6 @@
 import { tkbEvent } from "../app-event";
 import { tkbBus } from "../bus";
-import { cfg } from "../cfg";
+import { cfg, CollectionName } from "../cfg";
 import { mongoConnectionPool } from "../connections";
 import { ClassToRegister } from "../entities";
 import logger from "../loggers/logger";
@@ -31,7 +31,9 @@ export const setup = () => {
         ]))
         .map((x) => new ClassToRegister(x));
       await mongoConnectionPool.getClient()
-        .db(cfg.DATABASE_NAME).collection(ClassToRegister.name).insertMany(classes);
+        .db(cfg.DATABASE_NAME)
+        .collection(CollectionName.CTR)
+        .insertMany(classes);
     } catch (err) {
       logger.error(err);
     }

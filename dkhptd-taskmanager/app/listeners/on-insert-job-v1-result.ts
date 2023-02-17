@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { jobV1Event } from "../app-event";
 import { jobV1Bus } from "../bus";
-import { cfg } from "../cfg";
+import { cfg, CollectionName } from "../cfg";
 import { mongoConnectionPool } from "../connections";
 import { c } from "../cypher";
 import { DKHPTDJobV1, DKHPTDV1Result } from "../entities";
@@ -21,7 +21,7 @@ export const setup = () => {
     });
     await mongoConnectionPool.getClient()
       .db(cfg.DATABASE_NAME)
-      .collection(DKHPTDV1Result.name)
+      .collection(CollectionName.DKHPTDV1Result)
       .insertOne(dkhptdResult);
   });
 };

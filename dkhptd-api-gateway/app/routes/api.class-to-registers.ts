@@ -2,7 +2,7 @@ import express from "express";
 import { Filter } from "mongodb";
 import multer from "multer";
 import { tkbBus } from "app/bus";
-import { cfg } from "app/cfg";
+import { cfg, CollectionName } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper, IsAdminFilter, JwtFilter } from "app/middlewares";
 import { modify, PickProps, NormalizeIntProp, NormalizeStringProp, SetProp } from "app/modifiers";
@@ -72,7 +72,7 @@ router.post("/api/class-to-registers", JwtFilter(cfg.SECRET), IsAdminFilter(), E
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(ClassToRegister.name)
+    .collection(CollectionName.CTR)
     .insertMany(classToRegistersToInsert);
   resp.send(new BaseResponse().ok(result));
 }));
@@ -100,7 +100,7 @@ router.get("/api/class-to-registers", ExceptionWrapper(async (req, resp) => {
   const classToRegisters = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(ClassToRegister.name)
+    .collection(CollectionName.CTR)
     .find(filter)
     .skip(page * size)
     .limit(size)
@@ -119,7 +119,7 @@ router.get("/api/class-to-registers/class-ids", ExceptionWrapper(async (req, res
   const classToRegisters = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(ClassToRegister.name)
+    .collection(CollectionName.CTR)
     .find(filter)
     .toArray();
   resp.send(new BaseResponse().ok(classToRegisters));
@@ -151,7 +151,7 @@ router.get("/api/class-to-registers/class-ids/start-withs", ExceptionWrapper(asy
   const classToRegisters = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(ClassToRegister.name)
+    .collection(CollectionName.CTR)
     .find(filter)
     .toArray();
   resp.send(new BaseResponse().ok(classToRegisters));
@@ -165,7 +165,7 @@ router.get("/api/class-to-registers/class-ids/:classId", ExceptionWrapper(async 
   const classToRegister = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(ClassToRegister.name)
+    .collection(CollectionName.CTR)
     .findOne(filter);
   resp.send(new BaseResponse().ok(classToRegister));
 }));
@@ -178,7 +178,7 @@ router.delete("/api/class-to-registers", JwtFilter(cfg.SECRET), IsAdminFilter(),
   const deleteResult = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(ClassToRegister.name)
+    .collection(CollectionName.CTR)
     .deleteMany(filter);
   resp.send(new BaseResponse().ok(deleteResult.deletedCount));
 }));

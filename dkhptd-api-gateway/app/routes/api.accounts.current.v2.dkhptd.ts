@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import express from "express";
-import { cfg, JobStatus } from "app/cfg";
+import { cfg, CollectionName, JobStatus } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper, JwtFilter } from "app/middlewares";
 import { RateLimit } from "app/middlewares";
@@ -48,7 +48,7 @@ router.post("/api/accounts/current/v2/dkhptd", JwtFilter(cfg.SECRET), RateLimit(
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV2.name)
+    .collection(CollectionName.DKHPTDV2)
     .insertOne(eJob);
   resp.send(new BaseResponse().ok(job));
 }));

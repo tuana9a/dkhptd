@@ -1,6 +1,6 @@
 import express from "express";
 import { Filter, ObjectId } from "mongodb";
-import { cfg, JobStatus } from "app/cfg";
+import { cfg, CollectionName, JobStatus } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper, JwtFilter } from "app/middlewares";
 import { RateLimit } from "app/middlewares";
@@ -63,7 +63,7 @@ router.get("/api/accounts/current/v2/dkhptd-s", JwtFilter(cfg.SECRET), Exception
   const jobs = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV2.name)
+    .collection(CollectionName.DKHPTDV2)
     .find(filter)
     .toArray();
   const data = jobs.map((x) => new DKHPTDJobV2(x));
@@ -123,7 +123,7 @@ router.post("/api/accounts/current/v2/dkhptd-s", JwtFilter(cfg.SECRET), RateLimi
     await mongoConnectionPool
       .getClient()
       .db(cfg.DATABASE_NAME)
-      .collection(DKHPTDJobV2.name)
+      .collection(CollectionName.DKHPTDV2)
       .insertMany(eJobsToInsert);
   }
   resp.send(new BaseResponse().ok(result));
@@ -138,7 +138,7 @@ router.post("/api/accounts/current/v2/dkhptd-s/:jobId/retry", JwtFilter(cfg.SECR
   const existedJob = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV2.name)
+    .collection(CollectionName.DKHPTDV2)
     .findOne(filter);
 
   if (!existedJob) throw new JobNotFoundError(req.params.jobId);
@@ -146,7 +146,7 @@ router.post("/api/accounts/current/v2/dkhptd-s/:jobId/retry", JwtFilter(cfg.SECR
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV2.name)
+    .collection(CollectionName.DKHPTDV2)
     .updateOne({ _id: new ObjectId(existedJob._id) }, { $set: { status: JobStatus.READY } });
 
   resp.send(new BaseResponse().ok(req.params.jobId));

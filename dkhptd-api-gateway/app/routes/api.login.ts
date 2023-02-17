@@ -1,5 +1,5 @@
 import express from "express";
-import { cfg } from "app/cfg";
+import { cfg, CollectionName } from "app/cfg";
 import jwt from "jsonwebtoken";
 import { mongoConnectionPool } from "app/connections";
 import { UsernameNotFoundError, WrongPasswordError } from "app/exceptions";
@@ -26,7 +26,7 @@ router.post("/api/login", ExceptionWrapper(async (req, resp) => {
   const doc = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(Account.name)
+    .collection(CollectionName.ACCOUNT)
     .findOne({ username: body.username });
 
   if (!doc) throw new UsernameNotFoundError();

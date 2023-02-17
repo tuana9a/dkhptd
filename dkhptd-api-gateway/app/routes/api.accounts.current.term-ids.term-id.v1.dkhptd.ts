@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import express from "express";
 import { isEmpty } from "lodash";
-import { JobStatus, cfg } from "app/cfg";
+import { JobStatus, cfg, CollectionName } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { DKHPTDJobV1 } from "app/entities";
 import { MissingRequestBodyDataError, FaslyValueError, EmptyStringError, RequireLengthFailed, InvalidTermIdError } from "app/exceptions";
@@ -54,7 +54,7 @@ router.post("/api/accounts/current/term-ids/:termId/v1/dkhptd", JwtFilter(cfg.SE
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV1.name)
+    .collection(CollectionName.DKHPTDV1)
     .insertOne(eJob);
   resp.send(new BaseResponse().ok(job));
 }));

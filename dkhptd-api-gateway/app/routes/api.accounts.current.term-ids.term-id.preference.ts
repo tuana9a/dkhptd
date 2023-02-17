@@ -1,6 +1,6 @@
 import express from "express";
 import { ObjectId } from "mongodb";
-import { cfg } from "app/cfg";
+import { cfg, CollectionName } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { AccountPreference } from "app/entities";
 import { MissingRequestBodyDataError } from "app/exceptions";
@@ -30,7 +30,7 @@ router.post("/api/accounts/current/term-ids/:termId/preference", JwtFilter(cfg.S
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(AccountPreference.name)
+    .collection(CollectionName.PREFERENCE)
     .insertOne(newPreference);
 
   resp.send(new BaseResponse().ok());

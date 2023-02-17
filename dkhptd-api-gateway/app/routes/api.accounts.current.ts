@@ -1,6 +1,6 @@
 import express from "express";
 import { Filter, ObjectId } from "mongodb";
-import { cfg } from "app/cfg";
+import { cfg, CollectionName } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper } from "app/middlewares";
 import BaseResponse from "app/payloads/BaseResponse";
@@ -20,7 +20,7 @@ router.get("/api/accounts/current", JwtFilter(cfg.SECRET), ExceptionWrapper(asyn
   const account = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(Account.name)
+    .collection(CollectionName.ACCOUNT)
     .findOne(filter);
 
   if (isFalsy(account)) throw new UsernameNotFoundError(accountId);
@@ -44,7 +44,7 @@ router.put("/api/accounts/current/password", JwtFilter(cfg.SECRET), ExceptionWra
   const account = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(Account.name)
+    .collection(CollectionName.ACCOUNT)
     .findOne(filter);
 
   if (isFalsy(account)) throw new UsernameNotFoundError(accountId);
@@ -52,7 +52,7 @@ router.put("/api/accounts/current/password", JwtFilter(cfg.SECRET), ExceptionWra
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(Account.name)
+    .collection(CollectionName.ACCOUNT)
     .updateOne(filter, { $set: { password: newHashedPassword } });
 
   resp.send(new BaseResponse().ok(accountToClient(new Account(account))));

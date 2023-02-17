@@ -2,7 +2,7 @@
 
 import express from "express";
 import { Filter, ObjectId } from "mongodb";
-import { cfg } from "app/cfg";
+import { cfg, CollectionName } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper } from "app/middlewares";
 import BaseResponse from "app/payloads/BaseResponse";
@@ -22,7 +22,7 @@ router.get("/api/accounts/current/preferences", JwtFilter(cfg.SECRET), Exception
   const preferences = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(AccountPreference.name)
+    .collection(CollectionName.PREFERENCE)
     .find(filter)
     .toArray();
   resp.send(new BaseResponse().ok(preferences));
@@ -49,7 +49,7 @@ router.put("/api/accounts/current/preferences/:preferenceId", JwtFilter(cfg.SECR
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(AccountPreference.name)
+    .collection(CollectionName.PREFERENCE)
     .updateOne(filter, {
       $set: {
         termId: body.termId,
@@ -76,7 +76,7 @@ router.post("/api/accounts/current/preference", JwtFilter(cfg.SECRET), Exception
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(AccountPreference.name)
+    .collection(CollectionName.PREFERENCE)
     .insertOne(newPreference);
   resp.send(new BaseResponse().ok());
 }));

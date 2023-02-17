@@ -1,21 +1,5 @@
 import { ObjectId } from "mongodb";
 
-export class AccountHasStudent {
-  _id: ObjectId;
-  accountId: ObjectId;
-  studentId: string;
-
-  constructor(o: {
-    _id?: ObjectId;
-    accountId?: ObjectId;
-    studentId?: string;
-  }) {
-    this._id = o._id;
-    this.accountId = o.accountId;
-    this.studentId = o.studentId;
-  }
-}
-
 export class AccountPreference {
   _id: ObjectId;
   termId: string;
@@ -316,7 +300,7 @@ export class DKHPTDJobV2 {
   }
 }
 
-export class DKHPTDResult {
+export class DKHPTDJobResult {
   _id: ObjectId;
   jobId: ObjectId;
   workerId: string;
@@ -344,7 +328,7 @@ export class DKHPTDResult {
   }
 }
 
-export class DKHPTDV1Result {
+export class DKHPTDJobV1Result {
   _id: ObjectId;
   jobId: ObjectId;
   workerId: string;
@@ -375,7 +359,7 @@ export class DKHPTDV1Result {
   }
 }
 
-export class DKHPTDV2Result {
+export class DKHPTDJobV2Result {
   _id: ObjectId;
   jobId: ObjectId;
   workerId: string;
@@ -403,22 +387,6 @@ export class DKHPTDV2Result {
     this.vars = o.vars;
     this.createdAt = o.createdAt;
     this.iv = o.iv;
-  }
-}
-
-export class StudentRegisterClassPreference {
-  studentId: string;
-  termId: string;
-  wantedSubjectIds: string[];
-
-  constructor(o: {
-    studentId?: string;
-    termId?: string;
-    wantedSubjectIds?: string[];
-  }) {
-    this.studentId = o.studentId;
-    this.termId = o.termId;
-    this.wantedSubjectIds = o.wantedSubjectIds;
   }
 }
 

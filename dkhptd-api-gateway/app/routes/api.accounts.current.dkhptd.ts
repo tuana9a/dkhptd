@@ -1,6 +1,6 @@
 import express from "express";
 import { ObjectId } from "mongodb";
-import { cfg, JobStatus } from "app/cfg";
+import { cfg, CollectionName, JobStatus } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { DKHPTDJob } from "app/entities";
 import { EmptyStringError, FaslyValueError, MissingRequestBodyDataError, NotAnArrayError, RequireLengthFailed } from "app/exceptions";
@@ -47,7 +47,7 @@ router.post("/api/accounts/current/dkhptd", JwtFilter(cfg.SECRET), RateLimit({ w
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJob.name)
+    .collection(CollectionName.DKHPTD)
     .insertOne(job);
   resp.send(new BaseResponse().ok(job));
 })

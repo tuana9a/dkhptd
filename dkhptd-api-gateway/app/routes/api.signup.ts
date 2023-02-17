@@ -1,5 +1,5 @@
 import express from "express";
-import { cfg } from "app/cfg";
+import { cfg, CollectionName } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { Account } from "app/entities";
 import { FaslyValueError, UsernameExistedError } from "app/exceptions";
@@ -30,7 +30,7 @@ router.post("/api/signup", ExceptionWrapper(async (req, resp) => {
   const isUsernameExists = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(Account.name)
+    .collection(CollectionName.ACCOUNT)
     .findOne({ username: body.username });
 
   if (isUsernameExists) {
@@ -42,7 +42,7 @@ router.post("/api/signup", ExceptionWrapper(async (req, resp) => {
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(Account.name)
+    .collection(CollectionName.ACCOUNT)
     .insertOne(account);
 
   resp.send(new BaseResponse().ok(accountToClient(account)));

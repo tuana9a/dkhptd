@@ -1,6 +1,6 @@
 import express from "express";
 import { Filter, ObjectId } from "mongodb";
-import { cfg } from "app/cfg";
+import { cfg, CollectionName } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { AccountPreference } from "app/entities";
 import { MissingRequestBodyDataError } from "app/exceptions";
@@ -23,7 +23,7 @@ router.get("/api/accounts/current/term-ids/:termId/preferences", JwtFilter(cfg.S
   const preferences = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(AccountPreference.name)
+    .collection(CollectionName.PREFERENCE)
     .find(filter)
     .toArray();
   resp.send(new BaseResponse().ok(preferences));
@@ -52,7 +52,7 @@ router.put("/api/accounts/current/term-ids/:termId/preferences/:preferenceId", J
   await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(AccountPreference.name)
+    .collection(CollectionName.PREFERENCE)
     .updateOne(filter, {
       $set: {
         termId: termId,

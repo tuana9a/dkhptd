@@ -1,6 +1,6 @@
 import express from "express";
 import { Filter, ObjectId } from "mongodb";
-import { cfg } from "app/cfg";
+import { cfg, CollectionName } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper, JwtFilter } from "app/middlewares";
 import { decryptJobV2 } from "app/utils";
@@ -20,7 +20,7 @@ router.get("/api/accounts/current/v2/d/dkhptd-s", JwtFilter(cfg.SECRET), Excepti
   const jobs = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(DKHPTDJobV2.name)
+    .collection(CollectionName.DKHPTDV2)
     .find(filter)
     .toArray();
   const data = jobs.map((x) => decryptJobV2(new DKHPTDJobV2(x)));

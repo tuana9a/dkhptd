@@ -2,7 +2,7 @@
 
 import express from "express";
 import { ObjectId, Filter } from "mongodb";
-import { cfg } from "app/cfg";
+import { cfg, CollectionName } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { TermId } from "app/entities";
 import { FaslyValueError, NotAnArrayError } from "app/exceptions";
@@ -19,7 +19,7 @@ export const router = express.Router();
 router.get("/api/term-ids", ExceptionWrapper(async (req, resp) => {
   const termIds = await mongoConnectionPool.getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(TermId.name)
+    .collection(CollectionName.TERM_ID)
     .find()
     .toArray();
   resp.send(new BaseResponse().ok(termIds.map(x => new TermId(x))));
@@ -30,12 +30,12 @@ router.post("/api/term-ids", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWr
   if (isFalsy(data)) throw new FaslyValueError("body.data");
   if (!Array.isArray(data)) throw new NotAnArrayError("body.data");
   const termIds = data.map(x => x.name).map(x => new TermId({ name: x }));
-  await mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(TermId.name).insertMany(termIds);
+  await mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(CollectionName.TERM_ID).insertMany(termIds);
   resp.send(new BaseResponse().ok(termIds));
 }));
 
 router.delete("/api/term-ids/duplicates", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async (req, resp) => {
-  const docs = await mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(TermId.name).find().toArray();
+  const docs = await mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(CollectionName.TERM_ID).find().toArray();
   const termIds = docs.map(x => new TermId(x));
   const toBeDeletedIds: ObjectId[] = [];
   const set = new Set<string>();
@@ -46,7 +46,7 @@ router.delete("/api/term-ids/duplicates", JwtFilter(cfg.SECRET), IsAdminFilter()
       set.add(termId.name);
     }
   }
-  await mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(TermId.name).deleteMany({ _id: { $in: toBeDeletedIds } });
+  await mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(CollectionName.TERM_ID).deleteMany({ _id: { $in: toBeDeletedIds } });
   resp.send(new BaseResponse().ok(toBeDeletedIds));
 }));
 
@@ -70,7 +70,7 @@ router.get("/api/term-ids/:termId/class-to-registers", InjectTermId(), Exception
   const classToRegisters = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(ClassToRegister.name)
+    .collection(CollectionName.CTR)
     .find(filter)
     .skip(page * size)
     .limit(size)
@@ -86,7 +86,7 @@ router.get("/api/term-ids/:termId/class-to-registers/:id", InjectTermId(), Excep
   const classToRegister = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(ClassToRegister.name)
+    .collection(CollectionName.CTR)
     .findOne(filter);
   resp.send(new BaseResponse().ok(classToRegister));
 }));
@@ -103,7 +103,7 @@ router.delete("/api/term-ids/:termId/class-to-registers/class-ids/:classId/dupli
   const cursor = mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(ClassToRegister.name)
+    .collection(CollectionName.CTR)
     .find(filter);
   const deleteIds = new Set<ObjectId>();
   const newestClassToRegisters = new Map<string, ClassToRegister>();
@@ -132,7 +132,7 @@ router.delete("/api/term-ids/:termId/class-to-registers/class-ids/:classId/dupli
   const deleteResult = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
-    .collection(ClassToRegister.name)
+    .collection(CollectionName.CTR)
     .deleteMany(deleteFilter);
 
   resp.send(new BaseResponse().ok(deleteResult.deletedCount));

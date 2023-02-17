@@ -4,7 +4,7 @@ import crypto from "crypto";
 import { ObjectId } from "mongodb";
 import { cfg } from "./cfg";
 import { c } from "./cypher";
-import { Account, DKHPTDJobV1, DKHPTDJobV1Logs, DKHPTDJobV2, DKHPTDJobV2Logs, DKHPTDResult, DKHPTDV1Result, DKHPTDV2Result } from "./entities";
+import { Account, DKHPTDJobV1, DKHPTDJobV1Logs, DKHPTDJobV2, DKHPTDJobV2Logs, DKHPTDJobResult, DKHPTDJobV1Result, DKHPTDJobV2Result } from "./entities";
 import { modify, DropProps } from "./modifiers";
 
 export const diff = (old, next, opts = { ignoreKeys: new Set() }) => {
@@ -173,10 +173,10 @@ export const encryptJobV2 = (input: DKHPTDJobV2) => {
   });
 };
 
-export const decryptResultV1 = (input: DKHPTDV1Result) => {
+export const decryptResultV1 = (input: DKHPTDJobV1Result) => {
   const logs: [] = input.logs ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(input.logs, input.iv)) : [];
   const vars = input.vars ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(input.vars, input.iv)) : {};
-  return new DKHPTDResult({
+  return new DKHPTDJobResult({
     _id: input._id,
     jobId: input.jobId,
     ownerAccountId: input.ownerAccountId,
@@ -187,10 +187,10 @@ export const decryptResultV1 = (input: DKHPTDV1Result) => {
   });
 };
 
-export const decryptResultV2 = (input: DKHPTDV2Result) => {
+export const decryptResultV2 = (input: DKHPTDJobV2Result) => {
   const logs: [] = input.logs ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(input.logs, input.iv)) : [];
   const vars = input.vars ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).d(input.vars, input.iv)) : {};
-  return new DKHPTDResult({
+  return new DKHPTDJobResult({
     _id: input._id,
     jobId: input.jobId,
     ownerAccountId: input.ownerAccountId,

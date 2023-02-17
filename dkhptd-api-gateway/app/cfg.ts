@@ -25,3 +25,16 @@ export const JobStatus = {
 export const Role = {
   ADMIN: "ADMIN",
 };
+
+export const CollectionName = {
+  ACCOUNT: "account",
+  CTR: "classToRegister",
+  PREFERENCE: "preference",
+  DKHPTD: "dkhptd",
+  DKHPTDResult: "dkhptdResult",
+  DKHPTDV1: "dkhptdV1",
+  DKHPTDV1Result: "dkhptdV1Result",
+  DKHPTDV2: "dkhptdV2",
+  DKHPTDV2Result: "dkhptdV2Result",
+  TERM_ID: "termId",
+};

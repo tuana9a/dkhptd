@@ -19,3 +19,15 @@ export const JobStatus = {
   DONE: 21,
   FAILED: 22,
 };
+
+export const CollectionName = {
+  ACCOUNT: "account",
+  CTR: "classToRegister",
+  PREFERENCE: "preference",
+  DKHPTD: "dkhptd",
+  DKHPTDResult: "dkhptdResult",
+  DKHPTDV1: "dkhptdV1",
+  DKHPTDV1Result: "dkhptdV1Result",
+  DKHPTDV2: "dkhptdV2",
+  DKHPTDV2Result: "dkhptdV2Result",
+};
