@@ -11,8 +11,8 @@
     <a [routerLink]="['/term-ids', job?.termId, 'search-class-to-register']" [queryParams]="{q: 'classId==' + classId}">{{classId}}</a>
   </span>
 </td>
-<td>{{job?.timeToStart | date:'dd-MM-YYYY hh:mm:ss'}}</td>
-<td>{{job?.createdAt | date:'dd-MM-YYYY hh:mm:ss'}}</td>
+<td>{{job?.timeToStart | date:'dd-MM-YYYY HH:mm:ss'}}</td>
+<td>{{job?.createdAt | date:'dd-MM-YYYY HH:mm:ss'}}</td>
 <td *ngIf="showTermId">{{job?.termId}}</td>
 <td>{{job?.status | JobStatus}}</td>
 <td><a [routerLink]="['/v1/dkhptd-s/', job?._id]" routerLinkActive="active" ariaCurrentWhenActive="page">Chi Tiết</a></td>
