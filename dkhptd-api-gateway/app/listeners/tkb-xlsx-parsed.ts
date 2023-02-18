@@ -1,8 +1,6 @@
-import { tkbEvent } from "../app-event";
-import { tkbBus } from "../bus";
-import { cfg, CollectionName } from "../cfg";
-import { mongoConnectionPool } from "../connections";
-import { ClassToRegister } from "../entities";
+import { classToRegisterEvent, settingsEvent, subjectEvent, tkbEvent } from "../app-event";
+import { classToRegisterBus, settingsBus, subjectBus, tkbBus } from "../bus";
+import { ClassToRegister, Subject } from "../entities";
 import logger from "../loggers/logger";
 import { modify, NormalizeIntProp, NormalizeStringProp, SetProp } from "../modifiers";
 import ParsedClassToRegister from "../payloads/ParsedClassToRegister";
@@ -30,10 +28,11 @@ export const setup = () => {
           SetProp("createdAt", Date.now()),
         ]))
         .map((x) => new ClassToRegister(x));
-      await mongoConnectionPool.getClient()
-        .db(cfg.DATABASE_NAME)
-        .collection(CollectionName.CTR)
-        .insertMany(classes);
+      const termIds = Array.from(classes.reduce((t, c) => t.add(c.termId), new Set<string>()));
+      const subjects = Array.from(classes.reduce((t, c) => t.set(c.subjectId, new Subject({ subjectId: c.subjectId, subjectName: c.subjectName })), new Map<string, Subject>()).values());
+      settingsBus.emit(settingsEvent.ADD_TERM_IDS, termIds);
+      classToRegisterBus.emit(classToRegisterEvent.UPSERT_MANY_CTR, classes);
+      subjectBus.emit(subjectEvent.UPSERT_MANY_SUBJECTS, subjects);
     } catch (err) {
       logger.error(err);
     }

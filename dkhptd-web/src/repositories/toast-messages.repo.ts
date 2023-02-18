@@ -1,23 +1,32 @@
 import { Injectable } from "@angular/core";
+import { BaseResponse } from "src/payloads";
 
 @Injectable({
   providedIn: "root"
 })
-export class ToastMessagesRepo {
-  visibleMessages: { i: number; m: (string | undefined) }[] = [];
+export class ToastService {
+  i = 0;
+  visibleMessages: (string | undefined)[] = [];
   messages: (string | undefined)[] = [];
 
   constructor() {
     //
   }
 
-  add(message: string | undefined) {
+  __append(message: string | undefined) {
     this.messages.unshift(message);
   }
 
   push(message: string | undefined) {
-    this.add(message);
-    this.visibleMessages.push({ i: this.messages.length, m: message });
+    this.i += 1;
+    this.__append(message);
+    this.visibleMessages.push(`${this.i} ${message}`);
     setTimeout(() => this.visibleMessages.shift(), 2000);
+  }
+
+  handleResponse(res: BaseResponse<any>) {
+    if (res.success) {
+      this.push("Thành Công");
+    }
   }
 }

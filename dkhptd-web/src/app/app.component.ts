@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { AccountsApi } from "src/apis/accounts.api";
 import { Session } from "src/repositories/is-authorized.repo";
-import { ToastMessagesRepo } from "src/repositories/toast-messages.repo";
+import { ToastService } from "src/repositories/toast-messages.repo";
 import { CookieUtils } from "src/utils/cookie.utils";
 
 @Component({
@@ -13,7 +13,7 @@ import { CookieUtils } from "src/utils/cookie.utils";
 export class AppComponent implements OnInit {
   title = "dkhptd-web";
   constructor(
-    public toastMessagesRepo: ToastMessagesRepo,
+    public toastMessagesRepo: ToastService,
     public cookieUtils: CookieUtils,
     public session: Session,
     public accountsApi: AccountsApi,

@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { TermIdsApi } from "src/apis/term-ids.api";
+import { ToastService } from "src/repositories/toast-messages.repo";
 
 @Component({
   selector: "[app-manage-term-id]",
@@ -14,7 +15,7 @@ export class ManageTermIdComponent implements OnInit {
   @Input() showUpdateButton = true;
   @Input() showIdColumn = true;
   termId = "";
-  constructor(private termIdsApi: TermIdsApi) { }
+  constructor(private termIdsApi: TermIdsApi, private toast: ToastService) { }
 
   ngOnInit(): void {
     this.termIdsApi.all().subscribe(res => {
@@ -33,7 +34,7 @@ export class ManageTermIdComponent implements OnInit {
   }
 
   onUpsert() {
-    if (this.termIds) this.termIdsApi.upsert(this.termIds).subscribe();
+    if (this.termIds) this.termIdsApi.replace(this.termIds).subscribe(res => this.toast.handleResponse(res));
   }
 
   onKeyPressTermId(e: KeyboardEvent) {

@@ -9,11 +9,11 @@ import {
 
 import { map } from "rxjs/operators";
 import { BaseResponse } from "src/payloads";
-import { ToastMessagesRepo } from "src/repositories/toast-messages.repo";
+import { ToastService } from "src/repositories/toast-messages.repo";
 
 @Injectable()
 export class ToastMessageInterceptor implements HttpInterceptor {
-  constructor(private toastMessageRepo: ToastMessagesRepo) {
+  constructor(private toastMessageRepo: ToastService) {
 
   }
   intercept(request: HttpRequest<unknown>, next: HttpHandler) {

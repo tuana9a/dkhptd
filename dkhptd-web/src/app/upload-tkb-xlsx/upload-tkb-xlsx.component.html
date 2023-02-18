@@ -1,7 +1,22 @@
 <div>
+  <input #input hidden class="w-full" type="file" (change)="onFileSelected($event)">
   <table>
     <tr>
-      <td><input class="w-full" type="file" (change)="onFileSelected($event)"></td>
+      <td>
+        <div class="min-h-[100px] min-w-[200px] w-full flex items-center justify-center" (drop)="onDrop($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
+          <div *ngIf="files?.length; else dropHere">
+            <div *ngFor="let f of files">
+              <span>{{f.name}}</span>
+            </div>
+          </div>
+          <ng-template #dropHere>
+            <div>
+              <div><span>Nhấp</span>&nbsp;<a href="javascript:void(0)" (click)="onSelectFile()">vào đây</a>&nbsp;<span>để chọn file</span></div>
+              <div><span>Hoặc kéo thả vào đây</span></div>
+            </div>
+          </ng-template> 
+        </div>
+      </td>
       <td><button (click)="upload()">UPLOAD</button></td>
     </tr>
   </table>

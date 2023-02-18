@@ -36,5 +36,6 @@ export const CollectionName = {
   DKHPTDV1Result: "dkhptdV1Result",
   DKHPTDV2: "dkhptdV2",
   DKHPTDV2Result: "dkhptdV2Result",
-  TERM_ID: "termId",
+  SETTINGS: "settings",
+  SUBJECT: "subject",
 };

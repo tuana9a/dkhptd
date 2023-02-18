@@ -13,7 +13,11 @@ export class TermIdsApi {
     return this.httpClient.get<BaseResponse<string[]>>("/api/term-ids");
   }
 
-  upsert(termIds: string[]) {
+  add(termIds: string[]) {
     return this.httpClient.post<BaseResponse<string[]>>("/api/term-ids", { data: termIds });
+  }
+
+  replace(termIds: string[]) {
+    return this.httpClient.put<BaseResponse<string[]>>("/api/term-ids", { data: termIds });
   }
 }

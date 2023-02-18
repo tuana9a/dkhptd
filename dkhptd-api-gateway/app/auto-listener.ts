@@ -7,13 +7,14 @@ export const setup = (dir: string) => {
   const loaded = [];
 
   for (const filepath of filepaths) {
-    const relativeFilepath = `${dir}/${filepath}`;
+    const relativeFilepath = path.join(dir, filepath);
     const stat = fs.statSync(relativeFilepath);
 
     if (stat.isDirectory()) {
       const childLoaded = setup(relativeFilepath);
       loaded.push(...childLoaded);
     } else {
+      console.log(relativeFilepath);
       require(path.resolve(relativeFilepath)).setup();
       loaded.push(relativeFilepath);
     }

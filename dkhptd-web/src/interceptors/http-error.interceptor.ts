@@ -8,11 +8,11 @@ import {
 
 import { throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
-import { ToastMessagesRepo } from "src/repositories/toast-messages.repo";
+import { ToastService } from "src/repositories/toast-messages.repo";
 
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {
-  constructor(private toastMessagesRepo: ToastMessagesRepo) { }
+  constructor(private toastMessagesRepo: ToastService) { }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler) {
     return next.handle(request).pipe(

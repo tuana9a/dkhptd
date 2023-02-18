@@ -4,10 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0",
-    "build": "ng build",
-    "build:prod": "ng build --output-hashing none",
-    "watch": "ng build --watch --configuration development",
-    "watch:prod": "ng build --watch --output-hashing none",
+    "build": "ng build --output-hashing none",
+    "build:prod": "ng build",
+    "watch": "ng build --watch --output-hashing none",
     "test": "ng test"
   },
   "private": true,

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { DKHPTDV1sApi } from "src/apis/dkhptd-v1-s.api";
 import { DKHPTDJobV1 } from "src/entities";
@@ -9,7 +9,7 @@ import { JobStatusUtils } from "src/utils/job-status.utils";
   templateUrl: "./job-row.component.html",
   styleUrls: ["./job-row.component.scss"]
 })
-export class JobRowComponent implements OnInit {
+export class JobRowComponent implements OnInit, OnDestroy {
   id = "";
   @Input() job?: DKHPTDJobV1;
   @Input() showPassword = false;
@@ -17,18 +17,23 @@ export class JobRowComponent implements OnInit {
   @Input() showId = true;
   @Input() intervalUpdate = false;
   faEye = faEye;
+  stopInterval: any;
 
   constructor(private api: DKHPTDV1sApi, private jobStatusUtils: JobStatusUtils) {
   }
 
   ngOnInit(): void {
     if (this.intervalUpdate && this.job && this.job._id) {
-      setInterval(() => {
+      this.stopInterval = setInterval(() => {
         this.api.getCurrentDecryptJob(this.job?._id as string).subscribe(res => {
           this.job = res.data;
         });
       }, 2000);
     }
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.stopInterval);
   }
 
   toggleShowPassword() {

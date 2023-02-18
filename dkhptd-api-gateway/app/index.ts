@@ -6,11 +6,12 @@ import * as amqplib from "amqplib/callback_api";
 import { MongoClient } from "mongodb";
 import cors from "cors";
 
-import { cfg } from "./cfg";
+import { cfg, CollectionName } from "./cfg";
 import logger from "./loggers/logger";
-import { toKeyValueString } from "./utils";
+import { ensureIndex, toKeyValueString } from "./utils";
 import { mongoConnectionPool, rabbitmqConnectionPool } from "./connections";
 import { tkbQueueName } from "./queue-name";
+import { cachedSettings } from "./services";
 
 async function main() {
   logger.info(`Config: \n${toKeyValueString(cfg)}`);
@@ -23,6 +24,20 @@ async function main() {
 
   const client = await new MongoClient(cfg.MONGODB_CONNECTION_STRING).connect();
   mongoConnectionPool.addClient(client);
+  cachedSettings.loadFromDb();
+  ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.ACCOUNT, { username: 1, password: 1 });
+  ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.CTR, { classId: 1 });
+  ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.CTR, { classId: 1, learnDayNumber: 1, termId: 1 });
+  ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.DKHPTDV1, { ownerAccountId: 1 });
+  ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.DKHPTDV1, { ownerAccountId: 1, termId: 1 });
+  ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.DKHPTDV1, { timeToStart: 1 });
+  ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.DKHPTDV1Result, { jobId: 1 });
+  ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.DKHPTDV1Result, { ownerAccountId: 1 });
+  ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.DKHPTDV1Result, { ownerAccountId: 1, jobId: 1 });
+  ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.PREFERENCE, { ownerAccountId: 1 });
+  ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.PREFERENCE, { ownerAccountId: 1, termId: 1 });
+  ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.SUBJECT, { subjectId: 1 });
+  ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.SUBJECT, { subjectId: 1, subjectName: 1 });
 
   amqplib.connect(cfg.RABBITMQ_CONNECTION_STRING, (error0, connection) => {
     if (error0) {

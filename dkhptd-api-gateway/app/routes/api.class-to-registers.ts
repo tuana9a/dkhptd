@@ -97,7 +97,7 @@ router.get("/api/class-to-registers", ExceptionWrapper(async (req, resp) => {
     ? resolveMongoFilter(query.q.split(","))
     : {};
 
-  const classToRegisters = await mongoConnectionPool
+  const docs = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
     .collection(CollectionName.CTR)
@@ -105,7 +105,7 @@ router.get("/api/class-to-registers", ExceptionWrapper(async (req, resp) => {
     .skip(page * size)
     .limit(size)
     .toArray();
-  const data = classToRegisters.map((x) => new ClassToRegister(x));
+  const data = docs.map((x) => new ClassToRegister(x));
   resp.send(new BaseResponse().ok(data));
 }));
 
@@ -113,7 +113,7 @@ router.get("/api/class-to-registers/class-ids", ExceptionWrapper(async (req, res
   const classIds = toNormalizedString(req.query.classIds)
     .split(",")
     .map((x) => toSafeInt(x));
-  const termId = toSafeInt(req.query.termId);
+  const termId = toNormalizedString(req.query.termId);
 
   const filter: Filter<ClassToRegister> = { classId: { $in: classIds }, termId: termId };
   const classToRegisters = await mongoConnectionPool
@@ -129,7 +129,7 @@ router.get("/api/class-to-registers/class-ids/start-withs", ExceptionWrapper(asy
   const classIds = toNormalizedString(req.query.classIds)
     .split(",")
     .map((x) => toNormalizedString(x));
-  const termId = toSafeInt(req.query.termId);
+  const termId = toNormalizedString(req.query.termId);
 
   const filter: Filter<ClassToRegister> = {
     classId: {
@@ -159,7 +159,7 @@ router.get("/api/class-to-registers/class-ids/start-withs", ExceptionWrapper(asy
 
 router.get("/api/class-to-registers/class-ids/:classId", ExceptionWrapper(async (req, resp) => {
   const classId = toSafeInt(req.params.classId);
-  const termId = toSafeInt(req.query.termId);
+  const termId = toNormalizedString(req.query.termId);
 
   const filter: Filter<ClassToRegister> = { classId: classId, termId: termId };
   const classToRegister = await mongoConnectionPool

@@ -2,7 +2,6 @@
 import fs from "fs";
 import path from "path";
 import express from "express";
-import logger from "./loggers/logger";
 
 export const setup = (dir: string) => {
   const filepaths = fs.readdirSync(dir).filter(x => !x.endsWith(".ts"));
@@ -10,12 +9,11 @@ export const setup = (dir: string) => {
   const loadedPaths = [];
 
   for (const filepath of filepaths) {
-    const relativeFilepath = `${dir}/${filepath}`;
+    const relativeFilepath = path.join(dir, filepath);
+    console.log(relativeFilepath);
     loadedPaths.push(relativeFilepath);
     router.use(require(path.resolve(relativeFilepath)).router);
   }
-
-  logger.info(`Loaded routes:\n${loadedPaths.join("\n")}`);
 
   return router;
 };

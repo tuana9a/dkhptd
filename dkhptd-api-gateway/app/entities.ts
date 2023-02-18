@@ -42,7 +42,6 @@ export class Account {
 }
 
 export class ClassToRegister {
-  _id: ObjectId;
   classId: number;
   secondClassId: number;
   learnDayNumber: number;
@@ -54,7 +53,7 @@ export class ClassToRegister {
   learnRoom: string;
   learnWeek: string;
   describe: string;
-  termId: string | number;
+  termId: string;
   createdAt: number;
 
   constructor(o: {
@@ -70,10 +69,9 @@ export class ClassToRegister {
     learnRoom?: string;
     learnWeek?: string;
     describe?: string;
-    termId?: string | number;
+    termId?: string;
     createdAt?: number;
   }) {
-    this._id = o._id;
     this.classId = o.classId;
     this.secondClassId = o.secondClassId;
     this.classType = o.classType;
@@ -321,14 +319,34 @@ export class Timestamp {
   }
 }
 
-export class TermId {
+export class Settings {
   termIds: string[] = [];
-  constructor(o?) {
+  constructor(o?: {
+    _id?: ObjectId;
+    termIds?: string[];
+  }) {
     this.termIds = o?.termIds || [];
   }
 
-  addAll(termIds: string[]) {
+  addTermIds(termIds: string[]) {
     this.termIds.push(...termIds);
     this.termIds = Array.from(new Set(this.termIds)).sort(((a, b) => a.localeCompare(b)));
+  }
+
+  replaceTermIds(termIds: string[]) {
+    this.termIds = Array.from(new Set(termIds)).sort(((a, b) => a.localeCompare(b)));
+  }
+}
+
+export class Subject {
+  subjectId: string;
+  subjectName?: string;
+  constructor(o: {
+    _id?: ObjectId;
+    subjectId: string;
+    subjectName?: string;
+  }) {
+    this.subjectId = o.subjectId;
+    this.subjectName = o.subjectName;
   }
 }

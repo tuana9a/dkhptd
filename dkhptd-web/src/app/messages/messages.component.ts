@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { ToastMessagesRepo } from "src/repositories/toast-messages.repo";
+import { ToastService } from "src/repositories/toast-messages.repo";
 
 @Component({
   selector: "app-messages",
@@ -8,7 +8,7 @@ import { ToastMessagesRepo } from "src/repositories/toast-messages.repo";
 })
 export class MessagesComponent implements OnInit {
 
-  constructor(public toastMessagesRepo: ToastMessagesRepo) { }
+  constructor(public toastMessagesRepo: ToastService) { }
 
   ngOnInit(): void {
     //
