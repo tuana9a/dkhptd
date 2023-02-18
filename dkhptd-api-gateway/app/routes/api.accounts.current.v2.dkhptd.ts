@@ -4,7 +4,7 @@ import { cfg, CollectionName, JobStatus } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper, JwtFilter } from "app/middlewares";
 import { RateLimit } from "app/middlewares";
-import { encryptJobV2 } from "app/utils";
+import { encryptJobV2 } from "app/dto";
 import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
 import { isEmpty, isFalsy } from "app/utils";

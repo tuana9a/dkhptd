@@ -4,11 +4,12 @@ import { mongoConnectionPool } from "app/connections";
 import { Account } from "app/entities";
 import { FaslyValueError, UsernameExistedError } from "app/exceptions";
 import { ExceptionWrapper } from "app/middlewares";
-import { accountToClient, isFalsy } from "app/utils";
+import { isFalsy } from "app/utils";
 import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
 import LoginWithUsernamePasswordRequest from "app/payloads/LoginWithUsernamePasswordRequest";
 import { toSHA256 } from "app/utils";
+import { dropPassword } from "app/dto";
 
 export const router = express.Router();
 
@@ -45,5 +46,5 @@ router.post("/api/signup", ExceptionWrapper(async (req, resp) => {
     .collection(CollectionName.ACCOUNT)
     .insertOne(account);
 
-  resp.send(new BaseResponse().ok(accountToClient(account)));
+  resp.send(new BaseResponse().ok(dropPassword(account)));
 }));

@@ -9,7 +9,8 @@ import { ExceptionWrapper, InjectTermId, JwtFilter } from "app/middlewares";
 import { RateLimit } from "app/middlewares";
 import BaseResponse from "app/payloads/BaseResponse";
 import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "app/modifiers";
-import { isFalsy, isValidTermId, encryptJobV1 } from "app/utils";
+import { isFalsy, isValidTermId } from "app/utils";
+import { encryptJobV1 } from "app/dto";
 
 export const router = express.Router();
 

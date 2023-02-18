@@ -7,7 +7,7 @@ import { PickProps, modify } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
 import { resolveMongoFilter } from "app/merin";
 import { DKHPTDJobV1 } from "app/entities";
-import { decryptJobV1 } from "app/utils";
+import { decryptJobV1 } from "app/dto";
 
 export const router = express.Router();
 

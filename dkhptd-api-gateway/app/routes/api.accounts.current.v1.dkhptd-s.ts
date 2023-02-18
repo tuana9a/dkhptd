@@ -8,7 +8,8 @@ import BaseResponse from "app/payloads/BaseResponse";
 import { resolveMongoFilter } from "app/merin";
 import { RateLimit } from "app/middlewares";
 import { FaslyValueError, NotAnArrayError, JobNotFoundError, EmptyStringError, RequireLengthFailed } from "app/exceptions";
-import { decryptResultV1, isEmpty, isFalsy } from "app/utils";
+import { isEmpty, isFalsy } from "app/utils";
+import { decryptJobV1Result } from "app/dto";
 import { DKHPTDJobV1, DKHPTDJobResult, DKHPTDJobV1Result } from "app/entities";
 
 export const router = express.Router();
@@ -45,7 +46,7 @@ router.get("/api/accounts/current/v1/dkhptd-s/:jobId/d/results", JwtFilter(cfg.S
     .collection(CollectionName.DKHPTDV1Result)
     .find(filter)
     .toArray();
-  const data = logs.map((x) => new DKHPTDJobResult(decryptResultV1(new DKHPTDJobV1Result(x))));
+  const data = logs.map((x) => new DKHPTDJobResult(decryptJobV1Result(new DKHPTDJobV1Result(x))));
   resp.send(new BaseResponse().ok(data));
 }));
 

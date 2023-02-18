@@ -6,7 +6,8 @@ import { ExceptionWrapper, JwtFilter } from "app/middlewares";
 import { RateLimit } from "app/middlewares";
 import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
-import { encryptJobV1, isEmpty, isFalsy } from "app/utils";
+import { isEmpty, isFalsy } from "app/utils";
+import { encryptJobV1 } from "app/dto";
 import { EmptyStringError, FaslyValueError, MissingRequestBodyDataError, RequireLengthFailed } from "app/exceptions";
 import { DKHPTDJobV1 } from "app/entities";
 

@@ -10,7 +10,8 @@ import { ExceptionWrapper, InjectTermId, JwtFilter } from "app/middlewares";
 import { RateLimit } from "app/middlewares";
 import BaseResponse from "app/payloads/BaseResponse";
 import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "app/modifiers";
-import { decryptResultV1, isFalsy } from "app/utils";
+import { isFalsy } from "app/utils";
+import { decryptJobV1Result } from "app/dto";
 
 export const router = express.Router();
 
@@ -46,7 +47,7 @@ router.get("/api/accounts/current/term-ids/:termId/v1/dkhptd-s/:jobId/d/results"
     .collection(CollectionName.DKHPTDV1Result)
     .find(filter)
     .toArray();
-  const data = logs.map((x) => new DKHPTDJobResult(decryptResultV1(new DKHPTDJobV1Result(x))));
+  const data = logs.map((x) => new DKHPTDJobResult(decryptJobV1Result(new DKHPTDJobV1Result(x))));
   resp.send(new BaseResponse().ok(data));
 }));
 

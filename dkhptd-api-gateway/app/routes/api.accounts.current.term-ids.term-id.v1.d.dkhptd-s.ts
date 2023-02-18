@@ -7,7 +7,7 @@ import { resolveMongoFilter } from "app/merin";
 import { ExceptionWrapper, InjectTermId, JwtFilter } from "app/middlewares";
 import BaseResponse from "app/payloads/BaseResponse";
 import { modify, PickProps } from "app/modifiers";
-import { decryptJobV1 } from "app/utils";
+import { decryptJobV1 } from "app/dto";
 
 export const router = express.Router();
 

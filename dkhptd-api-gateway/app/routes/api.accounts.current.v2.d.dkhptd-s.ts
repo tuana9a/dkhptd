@@ -3,7 +3,7 @@ import { Filter, ObjectId } from "mongodb";
 import { cfg, CollectionName } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper, JwtFilter } from "app/middlewares";
-import { decryptJobV2 } from "app/utils";
+import { decryptJobV2 } from "app/dto";
 import { modify, PickProps } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
 import { resolveMongoFilter } from "app/merin";
