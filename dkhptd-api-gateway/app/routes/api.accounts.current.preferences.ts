@@ -10,7 +10,7 @@ import { JwtFilter } from "app/middlewares";
 import { isFalsy } from "app/utils";
 import { MissingRequestBodyDataError } from "app/exceptions";
 import { AccountPreference } from "app/entities";
-import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, SetProp } from "app/modifiers";
+import { modify, m } from "app/modifiers";
 
 export const router = express.Router();
 
@@ -37,9 +37,9 @@ router.put("/api/accounts/current/preferences/:preferenceId", JwtFilter(cfg.SECR
   if (isFalsy(data)) throw new MissingRequestBodyDataError();
 
   const body = modify(data, [
-    PickProps(["termId", "wantedSubjectIds"]),
-    NormalizeStringProp("termId"),
-    NormalizeArrayProp("wantedSubjectIds", "string"),
+    m.pick(["termId", "wantedSubjectIds"]),
+    m.normalizeString("termId"),
+    m.normalizeArray("wantedSubjectIds", "string"),
   ]);
 
   const filter: Filter<AccountPreference> = {
@@ -66,10 +66,10 @@ router.post("/api/accounts/current/preference", JwtFilter(cfg.SECRET), Exception
   if (isFalsy(data)) throw new MissingRequestBodyDataError();
 
   const body = modify(data, [
-    PickProps(["termId", "wantedSubjectIds"]),
-    NormalizeStringProp("termId"),
-    NormalizeArrayProp("wantedSubjectIds", "string"),
-    SetProp("ownerAccountId", new ObjectId(accountId)),
+    m.pick(["termId", "wantedSubjectIds"]),
+    m.normalizeString("termId"),
+    m.normalizeArray("wantedSubjectIds", "string"),
+    m.set("ownerAccountId", new ObjectId(accountId)),
   ]);
 
   const newPreference = new AccountPreference(body);

@@ -6,7 +6,7 @@ export const modify = (input, chains: ((...args) => unknown)[]) => {
   return output;
 };
 
-export const DropProps = (propNames: string[] = []) => (input) => {
+export const drop = (propNames: string[] = []) => (input) => {
   const output = {};
 
   const remainKeys = Object.keys(input).filter((key) => !propNames.includes(key));
@@ -18,7 +18,7 @@ export const DropProps = (propNames: string[] = []) => (input) => {
   return output;
 };
 
-export const NormalizeArrayProp = (propName: string, propType?: string) => (input) => {
+export const normalizeArray = (propName: string, propType?: string) => (input) => {
   const currentValue = input[propName];
 
   if (currentValue === null || currentValue === undefined || !Array.isArray(currentValue)) {
@@ -40,7 +40,7 @@ export const NormalizeArrayProp = (propName: string, propType?: string) => (inpu
   return input;
 };
 
-export const NormalizeIntProp = (propName: string) => (input) => {
+export const normalizeInt = (propName: string) => (input) => {
   const currentValue = input[propName];
 
   if (currentValue === null || currentValue === undefined) {
@@ -51,19 +51,19 @@ export const NormalizeIntProp = (propName: string) => (input) => {
   return input;
 };
 
-export const NormalizeStringProp = (propName: string) => (input) => {
+export const normalizeString = (propName: string) => (input) => {
   const currentValue = input[propName];
 
   if (currentValue === null || currentValue === undefined) {
     return input;
   }
 
-  input[propName] = String(input[propName]);
+  input[propName] = String(input[propName]).trim().replace(/\s{2,}/g, " ");
 
   return input;
 };
 
-export const PickProps = (propNames: string[] = [], options = { dropFalsy: false }) => (input) => {
+export const pick = (propNames: string[] = [], options = { dropFalsy: false }) => (input) => {
   const output = {};
 
   for (const propName of propNames) {
@@ -79,13 +79,23 @@ export const PickProps = (propNames: string[] = [], options = { dropFalsy: false
   return output;
 };
 
-export const ReplaceCurrentPropValueWith = (propName: string, toNewValue = (oldValue): unknown => oldValue) => (input) => {
+export const replace = (propName: string, toNewValue = (oldValue): unknown => oldValue) => (input) => {
   const oldValue = input[propName];
   input[propName] = toNewValue(oldValue);
   return input;
 };
 
-export const SetProp = (key: string, value: unknown) => (input) => {
+export const set = (key: string, value: unknown) => (input) => {
   input[key] = value;
   return input;
+};
+
+export const m = {
+  drop: drop,
+  normalizeArray: normalizeArray,
+  normalizeInt: normalizeInt,
+  normalizeString: normalizeString,
+  pick: pick,
+  replace: replace,
+  set: set,
 };

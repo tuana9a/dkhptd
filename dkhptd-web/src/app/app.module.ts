@@ -58,7 +58,7 @@ const routes: Routes = [
   { path: "signup", component: SignupComponent },
   { path: "profile", component: ProfileComponent },
   { path: "home", component: HomeComponent },
-  { path: "v1/manage-job", component: ManageJobV1Component },
+  { path: "manage-job-v1", component: ManageJobV1Component },
   { path: "v1/dkhptd-s/:id", component: JobPageComponent },
   { path: "upload-tkb-xlsx", component: UploadTkbXlsxComponent },
   { path: "manage-term-id", component: ManageTermIdComponent },
@@ -67,8 +67,8 @@ const routes: Routes = [
     path: "term-ids", component: ChooseTermIdPageComponent, children: [
       {
         path: ":termId", component: NavbarOfTermIdComponent, children: [
-          { path: "v1/jobs/new", component: NewJobV1ForTermIdComponent },
-          { path: "v1/manage-jobs", component: JobV1TableOfTermIdPageComponent },
+          { path: "new-job-v1", component: NewJobV1ForTermIdComponent },
+          { path: "manage-job-v1", component: JobV1TableOfTermIdPageComponent },
           { path: "search-class-to-register", component: SearchClassToRegisterOfTermIdPageComponent },
           { path: "preferences", component: PreferencesOfTermIdPageComponent }
         ]

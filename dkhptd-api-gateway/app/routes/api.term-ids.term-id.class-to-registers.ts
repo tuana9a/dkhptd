@@ -4,7 +4,7 @@ import { cfg, CollectionName } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper, InjectTermId } from "app/middlewares";
 import BaseResponse from "app/payloads/BaseResponse";
-import { modify, NormalizeIntProp, PickProps } from "app/modifiers";
+import { modify, m } from "app/modifiers";
 import { toNormalizedString } from "app/utils";
 import { resolveMongoFilter } from "app/merin";
 import { ClassToRegister } from "app/entities";
@@ -13,9 +13,9 @@ export const router = express.Router();
 
 router.get("/api/term-ids/:termId/class-to-registers", InjectTermId(), ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [
-    PickProps(["q", "page", "size"], { dropFalsy: true }),
-    NormalizeIntProp("page"),
-    NormalizeIntProp("size"),
+    m.pick(["q", "page", "size"], { dropFalsy: true }),
+    m.normalizeInt("page"),
+    m.normalizeInt("size"),
   ]);
   const termId = req.__termId;
 

@@ -2,7 +2,7 @@ import { classToRegisterEvent, settingsEvent, subjectEvent, tkbEvent } from "../
 import { classToRegisterBus, settingsBus, subjectBus, tkbBus } from "../bus";
 import { ClassToRegister, Subject } from "../entities";
 import logger from "../loggers/logger";
-import { modify, NormalizeIntProp, NormalizeStringProp, SetProp } from "../modifiers";
+import { modify, m } from "../modifiers";
 import ParsedClassToRegister from "../payloads/ParsedClassToRegister";
 
 export const setup = () => {
@@ -13,19 +13,19 @@ export const setup = () => {
         .map((x) => new ParsedClassToRegister(x))
         .map((x) => x.toCTR())
         .map((x) => modify(x, [
-          NormalizeIntProp("classId"),
-          NormalizeIntProp("secondClassId"),
-          NormalizeStringProp("subjectId"),
-          NormalizeStringProp("subjectName"),
-          NormalizeStringProp("classType"),
-          NormalizeIntProp("learnDayNumber"),
-          NormalizeIntProp("learnAtDayOfWeek"),
-          NormalizeStringProp("learnTime"),
-          NormalizeStringProp("learnRoom"),
-          NormalizeStringProp("learnWeek"),
-          NormalizeStringProp("describe"),
-          NormalizeStringProp("termId"),
-          SetProp("createdAt", Date.now()),
+          m.normalizeInt("classId"),
+          m.normalizeInt("secondClassId"),
+          m.normalizeString("subjectId"),
+          m.normalizeString("subjectName"),
+          m.normalizeString("classType"),
+          m.normalizeInt("learnDayNumber"),
+          m.normalizeInt("learnAtDayOfWeek"),
+          m.normalizeString("learnTime"),
+          m.normalizeString("learnRoom"),
+          m.normalizeString("learnWeek"),
+          m.normalizeString("describe"),
+          m.normalizeString("termId"),
+          m.set("createdAt", Date.now()),
         ]))
         .map((x) => new ClassToRegister(x));
       const termIds = Array.from(classes.reduce((t, c) => t.add(c.termId), new Set<string>()));

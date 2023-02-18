@@ -1,7 +1,22 @@
 /* eslint-disable eqeqeq */
 /* eslint-disable no-param-reassign */
 
-import { ObjectId } from "mongodb";
+import { Filter, ObjectId } from "mongodb";
+import _ from "lodash";
+
+export const auto = (value) => {
+  let output = value;
+  try {
+    if (value.match(/^\d+$/)) {
+      output = parseInt(value);
+    } else if (ObjectId.isValid(value)) {
+      output = new ObjectId(value);
+    }
+  } catch (ignored) {
+    //
+  }
+  return output;
+};
 
 export class Query {
   key: string;
@@ -11,74 +26,39 @@ export class Query {
   constructor(key: string, operator: string, value: string) {
     this.key = key;
     this.operator = operator;
-    try {
-      if (value.match(/^\d+$/)) {
-        this.value = parseInt(value);
-      } else if (ObjectId.isValid(value)) {
-        this.value = new ObjectId(value);
-      } else {
-        this.value = value;
-      }
-    } catch (err) {
-      this.value = value;
-    }
-  }
-
-  isValid() {
-    return this.key && this.operator;
+    this.value = auto(value);
   }
 }
 
-const regex = /(\w+\s*)(==|>=|<=|!=|\*=|>|<)(.*)/;
+export const isValidQuery = (q: Query) => q.key && q.operator;
+
+export const regex = /(\w+\s*)(==|>=|<=|!=|\*=|>|<)(.*)/;
 
 export const resolveQuery = (str: string) => {
   const matcher = str.match(regex);
-  if (matcher) { return new Query(matcher[1], matcher[2], matcher[3]); }
+  if (matcher) {
+    return new Query(matcher[1], matcher[2], matcher[3]);
+  }
   return new Query(null, null, null);
 };
 
-export const resolveFirst = (agg: { [key: string]: object }, query: Query) => {
-  if (query.operator == "!=") {
-    agg[query.key] = { $ne: query.value };
-  } else if (query.operator == ">") {
-    agg[query.key] = { $gt: query.value };
-  } else if (query.operator == "<") {
-    agg[query.key] = { $lt: query.value };
-  } else if (query.operator == ">=") {
-    agg[query.key] = { $gte: query.value };
-  } else if (query.operator == "<=") {
-    agg[query.key] = { $lte: query.value };
-  } else if (query.operator == "==") {
-    agg[query.key] = query.value;
-  } else if (query.operator == "*=") {
-    agg[query.key] = { $regex: new RegExp(query.value) };
-  }
-};
-
-export const resolveExisted = (agg: { [key: string]: object }, query: Query) => {
+export const aggregate = <T>(filter: Filter<T>, query: Query) => {
   if (query.operator == "==") {
-    agg[query.key] = query.value;
-  } else if (query.operator == ">") {
-    agg[query.key] = { $gt: query.value };
-  } else if (query.operator == "<") {
-    agg[query.key] = { $lt: query.value };
-  } else if (query.operator == ">=") {
-    agg[query.key] = { $gte: query.value };
-  } else if (query.operator == "<=") {
-    agg[query.key] = { $lte: query.value };
+    _.set(filter, `${query.key}`, query.value);
   } else if (query.operator == "!=") {
-    agg[query.key] = { $ne: query.value };
+    _.set(filter, `${query.key}.$ne`, query.value);
+  } else if (query.operator == ">") {
+    _.set(filter, `${query.key}.$gt`, query.value);
+  } else if (query.operator == "<") {
+    _.set(filter, `${query.key}.$lt`, query.value);
+  } else if (query.operator == ">=") {
+    _.set(filter, `${query.key}.$gte`, query.value);
+  } else if (query.operator == "<=") {
+    _.set(filter, `${query.key}.$lte`, query.value);
   } else if (query.operator == "*=") {
-    agg[query.key] = { $regex: new RegExp(query.value, "i") /*default incase*/};
-  }
-};
-
-export const resolveMongoFilter = (queries: string[] = []) => queries.map((x) => resolveQuery(x)).filter((x) => x.isValid()).reduce((filter, x) => {
-  const existed = filter[x.key];
-  if (existed) {
-    resolveFirst(filter, x);
-  } else {
-    resolveExisted(filter, x);
+    _.set(filter, `${query.key}.$regex`, new RegExp(query.value));
   }
   return filter;
-}, {});
+};
+
+export const resolveMongoFilter = <T>(queries: string[] = []): Filter<T> => queries.map((x) => resolveQuery(x)).filter((x) => isValidQuery(x)).reduce(aggregate, {});

@@ -5,7 +5,7 @@ import { tkbBus } from "app/bus";
 import { cfg, CollectionName } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper, IsAdminFilter, JwtFilter } from "app/middlewares";
-import { modify, PickProps, NormalizeIntProp, NormalizeStringProp, SetProp } from "app/modifiers";
+import { modify, m } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
 import { toNormalizedString, toSafeInt } from "app/utils";
 import { resolveMongoFilter } from "app/merin";
@@ -27,7 +27,7 @@ router.post("/api/class-to-registers", JwtFilter(cfg.SECRET), IsAdminFilter(), E
   for (const entry of data) {
     try {
       const classToRegisterConstruct = modify(entry, [
-        PickProps([
+        m.pick([
           "classId",
           "secondClassId",
           "subjectId",
@@ -41,19 +41,19 @@ router.post("/api/class-to-registers", JwtFilter(cfg.SECRET), IsAdminFilter(), E
           "describe",
           "termId",
         ]),
-        NormalizeIntProp("classId"),
-        NormalizeIntProp("secondClassId"),
-        NormalizeStringProp("subjectId"),
-        NormalizeStringProp("subjectName"),
-        NormalizeStringProp("classType"),
-        NormalizeIntProp("learnDayNumber"),
-        NormalizeIntProp("learnAtDayOfWeek"),
-        NormalizeStringProp("learnTime"),
-        NormalizeStringProp("learnRoom"),
-        NormalizeStringProp("learnWeek"),
-        NormalizeStringProp("describe"),
-        NormalizeStringProp("termId"),
-        SetProp("createdAt", Date.now()),
+        m.normalizeInt("classId"),
+        m.normalizeInt("secondClassId"),
+        m.normalizeString("subjectId"),
+        m.normalizeString("subjectName"),
+        m.normalizeString("classType"),
+        m.normalizeInt("learnDayNumber"),
+        m.normalizeInt("learnAtDayOfWeek"),
+        m.normalizeString("learnTime"),
+        m.normalizeString("learnRoom"),
+        m.normalizeString("learnWeek"),
+        m.normalizeString("describe"),
+        m.normalizeString("termId"),
+        m.set("createdAt", Date.now()),
       ]);
 
       const classToRegister = new ClassToRegister(classToRegisterConstruct);
@@ -85,9 +85,9 @@ router.post("/api/class-to-registers/file", JwtFilter(cfg.SECRET), IsAdminFilter
 
 router.get("/api/class-to-registers", ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [
-    PickProps(["q", "page", "size"], { dropFalsy: true }),
-    NormalizeIntProp("page"),
-    NormalizeIntProp("size"),
+    m.pick(["q", "page", "size"], { dropFalsy: true }),
+    m.normalizeInt("page"),
+    m.normalizeInt("size"),
   ]);
 
   const page = query.page || 0;
@@ -171,7 +171,7 @@ router.get("/api/class-to-registers/class-ids/:classId", ExceptionWrapper(async 
 }));
 
 router.delete("/api/class-to-registers", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async (req, resp) => {
-  const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
+  const query = modify(req.query, [m.pick(["q"], { dropFalsy: true })]);
   const filter: Filter<ClassToRegister> = resolveMongoFilter(
     String(query.q).split(",")
   );

@@ -6,13 +6,13 @@ import { DKHPTDJobV1 } from "app/entities";
 import { resolveMongoFilter } from "app/merin";
 import { ExceptionWrapper, InjectTermId, JwtFilter } from "app/middlewares";
 import BaseResponse from "app/payloads/BaseResponse";
-import { modify, PickProps } from "app/modifiers";
+import { modify, m } from "app/modifiers";
 import { decryptJobV1 } from "app/dto";
 
 export const router = express.Router();
 
 router.get("/api/accounts/current/term-ids/:termId/v1/d/dkhptd-s", JwtFilter(cfg.SECRET), InjectTermId(), ExceptionWrapper(async (req, resp) => {
-  const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
+  const query = modify(req.query, [m.pick(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
   const termId = req.__termId;
 

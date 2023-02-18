@@ -19,7 +19,7 @@ export const diff = (old, next, opts = { ignoreKeys: new Set() }) => {
 };
 
 export const isFalsy = (input) => !input;
-export const isEmpty = (input: string) => input && input.match(/^\s*$/);
+export const isEmpty = (input: string) => !input || input.match(/^\s*$/);
 export const isValidTermId = (input: string) => input.match(/^\d+\w*$/);
 
 export const toBuffer = (input) => Buffer.from(input);

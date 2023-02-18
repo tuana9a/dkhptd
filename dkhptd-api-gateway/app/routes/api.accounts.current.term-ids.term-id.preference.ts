@@ -6,7 +6,7 @@ import { AccountPreference } from "app/entities";
 import { MissingRequestBodyDataError } from "app/exceptions";
 import { ExceptionWrapper, InjectTermId, JwtFilter } from "app/middlewares";
 import BaseResponse from "app/payloads/BaseResponse";
-import { modify, PickProps, NormalizeArrayProp, SetProp } from "app/modifiers";
+import { modify, m } from "app/modifiers";
 import { isFalsy } from "app/utils";
 
 export const router = express.Router();
@@ -19,9 +19,9 @@ router.post("/api/accounts/current/term-ids/:termId/preference", JwtFilter(cfg.S
   if (isFalsy(data)) throw new MissingRequestBodyDataError();
 
   const body = modify(data, [
-    PickProps(["wantedSubjectIds"]),
-    NormalizeArrayProp("wantedSubjectIds", "string"),
-    SetProp("ownerAccountId", new ObjectId(accountId)),
+    m.pick(["wantedSubjectIds"]),
+    m.normalizeArray("wantedSubjectIds", "string"),
+    m.set("ownerAccountId", new ObjectId(accountId)),
   ]);
 
   const newPreference = new AccountPreference(body);

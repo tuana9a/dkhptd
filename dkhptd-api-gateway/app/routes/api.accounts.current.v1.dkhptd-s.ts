@@ -3,7 +3,7 @@ import express from "express";
 import { cfg, CollectionName, JobStatus } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper, JwtFilter } from "app/middlewares";
-import { modify, PickProps, NormalizeArrayProp, NormalizeIntProp, NormalizeStringProp, SetProp } from "app/modifiers";
+import { modify, m, } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
 import { resolveMongoFilter } from "app/merin";
 import { RateLimit } from "app/middlewares";
@@ -15,7 +15,7 @@ import { DKHPTDJobV1, DKHPTDJobResult, DKHPTDJobV1Result } from "app/entities";
 export const router = express.Router();
 
 router.get("/api/accounts/current/v1/dkhptd-s/:jobId/results", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
-  const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
+  const query = modify(req.query, [m.pick(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
   const filter: Filter<DKHPTDJobV1Result> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
@@ -33,7 +33,7 @@ router.get("/api/accounts/current/v1/dkhptd-s/:jobId/results", JwtFilter(cfg.SEC
 }));
 
 router.get("/api/accounts/current/v1/dkhptd-s/:jobId/d/results", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
-  const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
+  const query = modify(req.query, [m.pick(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
   const filter: Filter<DKHPTDJobV1Result> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
@@ -51,7 +51,7 @@ router.get("/api/accounts/current/v1/dkhptd-s/:jobId/d/results", JwtFilter(cfg.S
 }));
 
 router.get("/api/accounts/current/v1/dkhptd-s", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
-  const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
+  const query = modify(req.query, [m.pick(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
   const filter: Filter<DKHPTDJobV1> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
@@ -80,15 +80,15 @@ router.post("/api/accounts/current/v1/dkhptd-s", JwtFilter(cfg.SECRET), RateLimi
   for (const entry of data) {
     try {
       const safeEntry = modify(entry, [
-        PickProps(["username", "password", "classIds", "timeToStart", "termId"]),
-        NormalizeStringProp("username"),
-        NormalizeStringProp("password"),
-        NormalizeArrayProp("classIds", "string"),
-        NormalizeIntProp("timeToStart"),
-        NormalizeIntProp("termId"),
-        SetProp("createdAt", Date.now()),
-        SetProp("status", JobStatus.READY),
-        SetProp("ownerAccountId", ownerAccountId),
+        m.pick(["username", "password", "classIds", "timeToStart", "termId"]),
+        m.normalizeString("username"),
+        m.normalizeString("password"),
+        m.normalizeArray("classIds", "string"),
+        m.normalizeInt("timeToStart"),
+        m.normalizeInt("termId"),
+        m.set("createdAt", Date.now()),
+        m.set("status", JobStatus.READY),
+        m.set("ownerAccountId", ownerAccountId),
       ]);
 
       const job = new DKHPTDJobV1(safeEntry);

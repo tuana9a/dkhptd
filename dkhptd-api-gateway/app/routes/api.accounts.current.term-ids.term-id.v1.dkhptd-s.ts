@@ -9,14 +9,14 @@ import { resolveMongoFilter } from "app/merin";
 import { ExceptionWrapper, InjectTermId, JwtFilter } from "app/middlewares";
 import { RateLimit } from "app/middlewares";
 import BaseResponse from "app/payloads/BaseResponse";
-import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "app/modifiers";
+import { modify, m } from "app/modifiers";
 import { isFalsy } from "app/utils";
 import { decryptJobV1Result } from "app/dto";
 
 export const router = express.Router();
 
 router.get("/api/accounts/current/term-ids/:termId/v1/dkhptd-s/:jobId/results", JwtFilter(cfg.SECRET), InjectTermId(), ExceptionWrapper(async (req, resp) => {
-  const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
+  const query = modify(req.query, [m.pick(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
   const filter: Filter<DKHPTDJobV1Result> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
@@ -34,7 +34,7 @@ router.get("/api/accounts/current/term-ids/:termId/v1/dkhptd-s/:jobId/results", 
 }));
 
 router.get("/api/accounts/current/term-ids/:termId/v1/dkhptd-s/:jobId/d/results", JwtFilter(cfg.SECRET), InjectTermId(), ExceptionWrapper(async (req, resp) => {
-  const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
+  const query = modify(req.query, [m.pick(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
   const filter: Filter<DKHPTDJobV1Result> = query.q ? resolveMongoFilter(query.q.split(",")) : {};
@@ -52,7 +52,7 @@ router.get("/api/accounts/current/term-ids/:termId/v1/dkhptd-s/:jobId/d/results"
 }));
 
 router.get("/api/accounts/current/term-ids/:termId/v1/dkhptd-s", JwtFilter(cfg.SECRET), InjectTermId(), ExceptionWrapper(async (req, resp) => {
-  const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
+  const query = modify(req.query, [m.pick(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
   const termId = req.__termId;
 
@@ -84,15 +84,15 @@ router.post("/api/accounts/current/term-ids/:termId/v1/dkhptd-s", JwtFilter(cfg.
   for (const entry of data) {
     try {
       const safeEntry = modify(entry, [
-        PickProps(["username", "password", "classIds", "timeToStart"]),
-        NormalizeStringProp("username"),
-        NormalizeStringProp("password"),
-        SetProp("termId", termId),
-        NormalizeArrayProp("classIds", "string"),
-        NormalizeIntProp("timeToStart"),
-        SetProp("createdAt", Date.now()),
-        SetProp("status", JobStatus.READY),
-        SetProp("ownerAccountId", ownerAccountId),
+        m.pick(["username", "password", "classIds", "timeToStart"]),
+        m.normalizeString("username"),
+        m.normalizeString("password"),
+        m.set("termId", termId),
+        m.normalizeArray("classIds", "string"),
+        m.normalizeInt("timeToStart"),
+        m.set("createdAt", Date.now()),
+        m.set("status", JobStatus.READY),
+        m.set("ownerAccountId", ownerAccountId),
       ]);
 
       const job = new DKHPTDJobV1(safeEntry);

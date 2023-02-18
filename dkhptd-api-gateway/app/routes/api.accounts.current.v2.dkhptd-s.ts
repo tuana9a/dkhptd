@@ -4,7 +4,7 @@ import { cfg, CollectionName, JobStatus } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper, JwtFilter } from "app/middlewares";
 import { RateLimit } from "app/middlewares";
-import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "app/modifiers";
+import { modify, m } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
 import { resolveMongoFilter } from "app/merin";
 import { EmptyStringError, FaslyValueError, JobNotFoundError, NotAnArrayError, RequireLengthFailed } from "app/exceptions";
@@ -15,7 +15,7 @@ import { DKHPTDJobV2 } from "app/entities";
 export const router = express.Router();
 
 router.get("/api/accounts/current/v2/dkhptd-s", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
-  const query = modify(req.query, [PickProps(["q"], { dropFalsy: true })]);
+  const query = modify(req.query, [m.pick(["q"], { dropFalsy: true })]);
   const accountId = req.__accountId;
 
   const filter: Filter<DKHPTDJobV2> = query.q
@@ -45,14 +45,14 @@ router.post("/api/accounts/current/v2/dkhptd-s", JwtFilter(cfg.SECRET), RateLimi
   for (const entry of data) {
     try {
       const safeEntry = modify(entry, [
-        PickProps(["username", "password", "classIds", "timeToStart"]),
-        NormalizeStringProp("username"),
-        NormalizeStringProp("password"),
-        NormalizeArrayProp("classIds"),
-        NormalizeIntProp("timeToStart"),
-        SetProp("createdAt", Date.now()),
-        SetProp("status", JobStatus.READY),
-        SetProp("ownerAccountId", ownerAccountId),
+        m.pick(["username", "password", "classIds", "timeToStart"]),
+        m.normalizeString("username"),
+        m.normalizeString("password"),
+        m.normalizeArray("classIds"),
+        m.normalizeInt("timeToStart"),
+        m.set("createdAt", Date.now()),
+        m.set("status", JobStatus.READY),
+        m.set("ownerAccountId", ownerAccountId),
       ]);
 
       const job = new DKHPTDJobV2(safeEntry);

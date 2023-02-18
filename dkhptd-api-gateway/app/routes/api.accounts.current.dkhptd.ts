@@ -6,7 +6,7 @@ import { DKHPTDJob } from "app/entities";
 import { EmptyStringError, FaslyValueError, MissingRequestBodyDataError, NotAnArrayError, RequireLengthFailed } from "app/exceptions";
 import { ExceptionWrapper, JwtFilter } from "app/middlewares";
 import { RateLimit } from "app/middlewares";
-import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "app/modifiers";
+import { modify, m } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
 import { isEmpty, isFalsy } from "app/utils";
 
@@ -19,14 +19,14 @@ router.post("/api/accounts/current/dkhptd", JwtFilter(cfg.SECRET), RateLimit({ w
 
   const ownerAccountId = new ObjectId(req.__accountId);
   const safeData = modify(data, [
-    PickProps(["username", "password", "classIds", "timeToStart"]),
-    NormalizeStringProp("username"),
-    NormalizeStringProp("password"),
-    NormalizeArrayProp("classIds", "string"),
-    NormalizeIntProp("timeToStart"),
-    SetProp("createdAt", Date.now()),
-    SetProp("status", JobStatus.READY),
-    SetProp("ownerAccountId", ownerAccountId),
+    m.pick(["username", "password", "classIds", "timeToStart"]),
+    m.normalizeString("username"),
+    m.normalizeString("password"),
+    m.normalizeArray("classIds", "string"),
+    m.normalizeInt("timeToStart"),
+    m.set("createdAt", Date.now()),
+    m.set("status", JobStatus.READY),
+    m.set("ownerAccountId", ownerAccountId),
   ]);
 
   const job = new DKHPTDJob(safeData);

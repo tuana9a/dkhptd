@@ -5,7 +5,7 @@ import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper, JwtFilter } from "app/middlewares";
 import { RateLimit } from "app/middlewares";
 import { encryptJobV2 } from "app/dto";
-import { modify, PickProps, NormalizeStringProp, NormalizeArrayProp, NormalizeIntProp, SetProp } from "app/modifiers";
+import { modify, m } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
 import { isEmpty, isFalsy } from "app/utils";
 import { EmptyStringError, FaslyValueError, MissingRequestBodyDataError, RequireLengthFailed } from "app/exceptions";
@@ -20,14 +20,14 @@ router.post("/api/accounts/current/v2/dkhptd", JwtFilter(cfg.SECRET), RateLimit(
 
   const ownerAccountId = new ObjectId(req.__accountId);
   const safeData = modify(data, [
-    PickProps(["username", "password", "classIds", "timeToStart"]),
-    NormalizeStringProp("username"),
-    NormalizeStringProp("password"),
-    NormalizeArrayProp("classIds"),
-    NormalizeIntProp("timeToStart"),
-    SetProp("createdAt", Date.now()),
-    SetProp("status", JobStatus.READY),
-    SetProp("ownerAccountId", ownerAccountId),
+    m.pick(["username", "password", "classIds", "timeToStart"]),
+    m.normalizeString("username"),
+    m.normalizeString("password"),
+    m.normalizeArray("classIds"),
+    m.normalizeInt("timeToStart"),
+    m.set("createdAt", Date.now()),
+    m.set("status", JobStatus.READY),
+    m.set("ownerAccountId", ownerAccountId),
   ]);
 
   const job = new DKHPTDJobV2(safeData);

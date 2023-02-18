@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { mongoConnectionPool } from "app/connections";
 import { UsernameNotFoundError, WrongPasswordError } from "app/exceptions";
 import { ExceptionWrapper } from "app/middlewares";
-import { modify, PickProps, NormalizeStringProp } from "app/modifiers";
+import { modify, m } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
 import LoginWithUsernamePasswordRequest from "app/payloads/LoginWithUsernamePasswordRequest";
 import { toSHA256 } from "app/utils";
@@ -15,9 +15,9 @@ export const router = express.Router();
 router.post("/api/login", ExceptionWrapper(async (req, resp) => {
   const body = new LoginWithUsernamePasswordRequest(
     modify(req.body, [
-      PickProps(["username", "password"]),
-      NormalizeStringProp("username"),
-      NormalizeStringProp("password"),
+      m.pick(["username", "password"]),
+      m.normalizeString("username"),
+      m.normalizeString("password"),
     ])
   );
 

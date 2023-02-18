@@ -5,7 +5,7 @@ import { Account } from "app/entities";
 import { FaslyValueError, UsernameExistedError } from "app/exceptions";
 import { ExceptionWrapper } from "app/middlewares";
 import { isFalsy } from "app/utils";
-import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith } from "app/modifiers";
+import { modify, m } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
 import LoginWithUsernamePasswordRequest from "app/payloads/LoginWithUsernamePasswordRequest";
 import { toSHA256 } from "app/utils";
@@ -16,10 +16,10 @@ export const router = express.Router();
 router.post("/api/signup", ExceptionWrapper(async (req, resp) => {
   const body = new LoginWithUsernamePasswordRequest(
     modify(req.body, [
-      PickProps(["username", "password"]),
-      NormalizeStringProp("username"),
-      NormalizeStringProp("password"),
-      ReplaceCurrentPropValueWith("password", (oldValue) =>
+      m.pick(["username", "password"]),
+      m.normalizeString("username"),
+      m.normalizeString("password"),
+      m.replace("password", (oldValue) =>
         toSHA256(oldValue)
       ),
     ])

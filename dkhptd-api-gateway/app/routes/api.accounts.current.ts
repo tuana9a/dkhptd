@@ -9,7 +9,7 @@ import { JwtFilter } from "app/middlewares";
 import { isFalsy } from "app/utils";
 import { UsernameNotFoundError } from "app/exceptions";
 import { Account } from "app/entities";
-import { modify, PickProps, NormalizeStringProp, ReplaceCurrentPropValueWith } from "app/modifiers";
+import { modify, m } from "app/modifiers";
 import { dropPassword } from "app/dto";
 
 export const router = express.Router();
@@ -33,9 +33,9 @@ router.put("/api/accounts/current/password", JwtFilter(cfg.SECRET), ExceptionWra
   const accountId = req.__accountId;
 
   const body = modify(req.body, [
-    PickProps(["password"]),
-    NormalizeStringProp("password"),
-    ReplaceCurrentPropValueWith("password", (oldValue) => toSHA256(oldValue)),
+    m.pick(["password"]),
+    m.normalizeString("password"),
+    m.replace("password", (oldValue) => toSHA256(oldValue)),
   ]);
 
   const newHashedPassword = body.password;
