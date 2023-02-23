@@ -10,29 +10,35 @@ import { SupportJobsDb } from "./repos";
 import WorkerController from "./controllers";
 import { PuppeteerDisconnectedError } from "./errors";
 import logger from "./logger";
-import loadConfig from "./loadConfig";
-import { ensureDirExists } from "./utils";
+import { ensureDirExists, update } from "./utils";
 import { JobSupplier } from "./types";
-import { cfg, Config } from "./configs";
+import { cfg, Config, correctConfig } from "./configs";
 
 export async function launch(initConfig: Config) {
   ioc.scan("dist/");
   ioc.addClass(PuppeteerWorker, "puppeteerWorker", { ignoreDeps: ["browser"] });
   ioc.di();
 
-  const config = loadConfig(initConfig);
+  if (initConfig.configFile) {
+    update(cfg, JSON.parse(fs.readFileSync(initConfig.configFile, { flag: "r", encoding: "utf-8" })));
+  }
+  update(cfg, initConfig);
+  correctConfig(cfg);
 
+  logger.use(cfg.logDest);
+  logger.info(cfg.toString());
   ensureDirExists(cfg.tmpDir);
   ensureDirExists(cfg.logDir);
+  ensureDirExists(cfg.userDataDir);
 
   const workerController: WorkerController = ioc.getBean("workerController").getInstance();
   const supportJobsDb: SupportJobsDb = ioc.getBean("supportJobsDb").getInstance();
   const lengthOfJs = ".js".length;
   const loadedJobs = [];
 
-  fs.readdirSync(config.jobDir)
+  fs.readdirSync(cfg.jobDir)
     .filter((x) => x.endsWith(".js"))
-    .map((x) => `../${path.join(config.jobDir, x)}`)
+    .map((x) => `../${path.join(cfg.jobDir, x)}`)
     .map((filepath) => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -56,7 +62,7 @@ export async function launch(initConfig: Config) {
   logger.info(`Loaded Jobs:\n${loadedJobs.reduce((a, c) => `${a}${c.name} -> ${c.filepath}\n`, "")}`);
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const browser = await require("puppeteer-core").launch(config.puppeteerLaunchOption);
+  const browser = await require("puppeteer-core").launch(cfg.puppeteerLaunchOption);
   await ensurePageCount(browser, 1);
 
   const puppeteerWorker: PuppeteerWorker = ioc.getBean(PuppeteerWorker).getInstance();

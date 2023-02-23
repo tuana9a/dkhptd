@@ -1,4 +1,11 @@
-import { update, toJson } from "./utils";
+import { BrowserConnectOptions, BrowserLaunchArgumentOptions, LaunchOptions, Product } from "puppeteer-core";
+import { toJson } from "./utils";
+
+const DEFAULT_TMP_DIR = "./tmp/";
+const DEFAULT_LOG_DIR = "./logs/";
+const DEFAULT_JOB_DIR = "./dist/jobs/";
+const DEFAULT_SCHEDULES_DIR = "./schedules.tmp/";
+const DEFAULT_USER_DATA_DIR = "./userdata.tmp/";
 
 export class Config {
   constructor(
@@ -13,15 +20,20 @@ export class Config {
     public maxTry?: number,
     public jobDir?: string,
     public scheduleDir?: string,
+    public userDataDir?: string,
     public httpWorkerPullConfigUrl?: string,
     public rabbitmqConnectionString?: string,
     public amqpEncryptionKey?: string,
-    public puppeteerLaunchOption?,
+    public puppeteerLaunchOption?: LaunchOptions & BrowserLaunchArgumentOptions & BrowserConnectOptions & {
+      product?: Product;
+      extraPrefsFirefox?: Record<string, unknown>;
+    },
   ) {
-    this.tmpDir = "./tmp/";
-    this.logDir = "./logs/";
-    this.jobDir = "./jobs/";
-    this.scheduleDir = "./schedules/";
+    this.tmpDir = DEFAULT_TMP_DIR;
+    this.logDir = DEFAULT_LOG_DIR;
+    this.jobDir = DEFAULT_JOB_DIR;
+    this.scheduleDir = DEFAULT_SCHEDULES_DIR;
+    this.userDataDir = DEFAULT_USER_DATA_DIR;
   }
 
   toJson() {
@@ -37,22 +49,6 @@ export class Config {
       output.push(`${key} = ${toJson(value, 2)}`);
     }
     return output.join("\n");
-  }
-
-  update(object) {
-    update(this, object);
-    return this;
-  }
-
-  defaultify() {
-    this.workerId = this.workerId || `worker${Date.now()}`;
-    this.workerType = this.workerType || "http";
-    this.tmpDir = "./tmp/";
-    this.scheduleDir = "./schedules/";
-    this.logDir = "./logs/";
-    this.logDest = this.logDest || "cs";
-    this.maxTry = this.maxTry || 10;
-    return this;
   }
 }
 
@@ -72,4 +68,18 @@ export const QueueName = {
 
   RUN_JOB_V2: "dkhptd.run-job-v2",
   PROCESS_JOB_V2_RESULT: "dkhptd.process-job-v2-result",
+};
+
+export const correctConfig = (c: Config) => {
+  c.workerId = c.workerId || `worker${Date.now()}`;
+  c.workerType = c.workerType || "http";
+  c.tmpDir = c.tmpDir || DEFAULT_TMP_DIR;
+  c.scheduleDir = c.scheduleDir || DEFAULT_SCHEDULES_DIR;
+  c.userDataDir = c.userDataDir || DEFAULT_USER_DATA_DIR;
+  c.logDir = c.logDir || DEFAULT_LOG_DIR;
+  c.logDest = c.logDest || "cs";
+  c.maxTry = c.maxTry || 10;
+  c.puppeteerLaunchOption = c.puppeteerLaunchOption || {};
+  c.puppeteerLaunchOption.userDataDir = c.puppeteerLaunchOption.userDataDir || c.userDataDir;
+  return c;
 };
