@@ -6,7 +6,7 @@ JobStatus.set(0, "Sẵn Sàng");
 JobStatus.set(1, "Đang Chạy");
 JobStatus.set(20, "Đã Hủy");
 JobStatus.set(21, "Xong");
-JobStatus.set(23, "Lỗi lạ");
+JobStatus.set(23, "Bị Đơ");
 JobStatus.set(24, "Quá lần thử lại");
 JobStatus.set(2, "Thất Bại");
 

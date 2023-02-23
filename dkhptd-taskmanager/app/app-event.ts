@@ -1,4 +1,4 @@
-import { nextStr } from "./utils";
+import { nextStr } from "./next";
 
 export const jobEvent = {
   NEW_JOB: nextStr(),

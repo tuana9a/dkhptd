@@ -2,7 +2,7 @@ import express from "express";
 import { cfg, CollectionName } from "app/cfg";
 import jwt from "jsonwebtoken";
 import { mongoConnectionPool } from "app/connections";
-import { UsernameNotFoundError, WrongPasswordError } from "app/exceptions";
+import { AccountNotFoundError, WrongPasswordError } from "app/exceptions";
 import { ExceptionWrapper } from "app/middlewares";
 import { modify, m } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
@@ -29,7 +29,7 @@ router.post("/api/login", ExceptionWrapper(async (req, resp) => {
     .collection(CollectionName.ACCOUNT)
     .findOne({ username: body.username });
 
-  if (!doc) throw new UsernameNotFoundError();
+  if (!doc) throw new AccountNotFoundError();
 
   const account = new Account(doc);
 

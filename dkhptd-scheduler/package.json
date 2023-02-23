@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "test": "echo tuana9a"
+    "test": "echo tuana9a",
+    "build": "tsc"
   },
   "author": "Tuan Nguyen Minh",
   "license": "GPL-3.0",

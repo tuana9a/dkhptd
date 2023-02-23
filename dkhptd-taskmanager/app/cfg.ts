@@ -20,7 +20,7 @@ export const JobStatus = {
   DONE: 21,
   FAILED: 22,
   TIMEOUT_OR_STALE: 23,
-  UNKOWN_ERROR: 23,
+  UNKOWN_ERROR: 30,
   MAX_RETRY_REACH: 24,
 };
 

@@ -7,10 +7,11 @@ import BaseResponse from "app/payloads/BaseResponse";
 import { toSHA256 } from "app/utils";
 import { JwtFilter } from "app/middlewares";
 import { isFalsy } from "app/utils";
-import { UsernameNotFoundError } from "app/exceptions";
+import { AccountNotFoundError } from "app/exceptions";
 import { Account } from "app/entities";
 import { modify, m } from "app/modifiers";
 import { dropPassword } from "app/dto";
+import jwt from "jsonwebtoken";
 
 export const router = express.Router();
 
@@ -24,7 +25,7 @@ router.get("/api/accounts/current", JwtFilter(cfg.SECRET), ExceptionWrapper(asyn
     .collection(CollectionName.ACCOUNT)
     .findOne(filter);
 
-  if (isFalsy(account)) throw new UsernameNotFoundError(accountId);
+  if (isFalsy(account)) throw new AccountNotFoundError(accountId);
 
   resp.send(new BaseResponse().ok(dropPassword(new Account(account))));
 }));
@@ -48,7 +49,7 @@ router.put("/api/accounts/current/password", JwtFilter(cfg.SECRET), ExceptionWra
     .collection(CollectionName.ACCOUNT)
     .findOne(filter);
 
-  if (isFalsy(account)) throw new UsernameNotFoundError(accountId);
+  if (isFalsy(account)) throw new AccountNotFoundError(accountId);
 
   await mongoConnectionPool
     .getClient()
@@ -57,4 +58,21 @@ router.put("/api/accounts/current/password", JwtFilter(cfg.SECRET), ExceptionWra
     .updateOne(filter, { $set: { password: newHashedPassword } });
 
   resp.send(new BaseResponse().ok(dropPassword(new Account(account))));
+}));
+
+router.get("/api/accounts/current/renew-token", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
+  const doc = await mongoConnectionPool
+    .getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(CollectionName.ACCOUNT)
+    .findOne({ _id: new ObjectId(req.__accountId) });
+
+  if (!doc) throw new AccountNotFoundError(req.__accountId);
+
+  const account = new Account(doc);
+
+  const token = jwt.sign({ id: account._id }, cfg.SECRET, {
+    expiresIn: "1d",
+  });
+  resp.send(new BaseResponse().ok({ token, username: account.username, role: account.role }));
 }));

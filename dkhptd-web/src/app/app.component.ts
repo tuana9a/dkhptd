@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { AccountsApi } from "src/apis/accounts.api";
 import { Session } from "src/repositories/is-authorized.repo";
@@ -10,8 +10,9 @@ import { CookieUtils } from "src/utils/cookie.utils";
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"]
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   title = "dkhptd-web";
+  intervalHandler: any;
   constructor(
     public toastMessagesRepo: ToastService,
     public cookieUtils: CookieUtils,
@@ -25,42 +26,27 @@ export class AppComponent implements OnInit {
         this.session.authenticated(res.data);
       }
     });
+    this.intervalHandler = setInterval(() => {
+      this.accountsApi.renewToken().subscribe(resNested => {
+        this.cookieUtils.set({ name: "jwt", value: resNested.data?.token });
+        this.session.authenticated(resNested.data);
+      });
+    }, 5000);
   }
-  showLogin() {
-    return !this.session.isAuthorized;
+  ngOnDestroy(): void {
+    clearInterval(this.intervalHandler);
   }
-  showRegister() {
-    return !this.session.isAuthorized;
-  }
-  showMessages() {
+  showAnyway() {
     return true;
   }
-  showUploadTKB() {
+  showIfAuthorized() {
+    return this.session.isAuthorized;
+  }
+  showIfUnauthorized() {
+    return !this.session.isAuthorized;
+  }
+  showIfAdmin() {
     return this.session.isAdmin();
-  }
-  showManageTermId() {
-    return this.session.isAdmin();
-  }
-  showPrefereces() {
-    return this.session.isAuthorized;
-  }
-  showSearchClassToRegister() {
-    return true;
-  }
-  showNewJobV1() {
-    return this.session.isAuthorized;
-  }
-  showManageJobs() {
-    return this.session.isAuthorized;
-  }
-  showManageJobByTermIds() {
-    return this.session.isAuthorized;
-  }
-  showProfile() {
-    return this.session.isAuthorized;
-  }
-  showLogout() {
-    return this.session.isAuthorized;
   }
   onLogout() {
     this.cookieUtils.set({ name: "jwt", value: "" });

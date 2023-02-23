@@ -13,26 +13,10 @@ export class NavbarOfTermIdComponent implements OnInit {
   ngOnInit(): void {
     //
   }
-
-  showUploadTKB() {
-    return this.session.isAdmin();
-  }
-  showPrefereces() {
-    return this.session.isAuthorized;
-  }
-  showSearchClassToRegister() {
+  showAnyway() {
     return true;
   }
-  showNewJobV1() {
-    return this.session.isAuthorized;
-  }
-  showManageJobs() {
-    return this.session.isAuthorized;
-  }
-  showManageJobByTermIds() {
-    return this.session.isAuthorized;
-  }
-  showProfile() {
+  showIfAuthorized() {
     return this.session.isAuthorized;
   }
 }

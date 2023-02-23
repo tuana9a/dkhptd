@@ -4,6 +4,10 @@
 import { Filter, ObjectId } from "mongodb";
 import _ from "lodash";
 
+export const merinCfg = {
+  regexFlags: "i",
+};
+
 export const auto = (value) => {
   let output = value;
   try {
@@ -56,7 +60,7 @@ export const aggregate = <T>(filter: Filter<T>, query: Query) => {
   } else if (query.operator == "<=") {
     _.set(filter, `${query.key}.$lte`, query.value);
   } else if (query.operator == "*=") {
-    _.set(filter, `${query.key}.$regex`, new RegExp(query.value));
+    _.set(filter, `${query.key}.$regex`, new RegExp(query.value, merinCfg.regexFlags));
   }
   return filter;
 };

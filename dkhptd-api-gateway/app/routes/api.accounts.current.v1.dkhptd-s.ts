@@ -7,7 +7,7 @@ import { modify, m, } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
 import { resolveMongoFilter } from "app/merin";
 import { RateLimit } from "app/middlewares";
-import { FaslyValueError, NotAnArrayError, JobNotFoundError, EmptyStringError, RequireLengthFailed } from "app/exceptions";
+import { FaslyValueError, NotAnArrayError, JobNotFoundError, EmptyStringError, RequireLengthFailed, OutOfTryError } from "app/exceptions";
 import { isEmpty, isFalsy } from "app/utils";
 import { decryptJobV1Result } from "app/dto";
 import { DKHPTDJobV1, DKHPTDJobResult, DKHPTDJobV1Result } from "app/entities";
@@ -134,13 +134,15 @@ router.post("/api/accounts/current/v1/dkhptd-s/:jobId/retry", JwtFilter(cfg.SECR
     _id: new ObjectId(req.params.jobId),
     ownerAccountId: new ObjectId(accountId),
   };
-  const existedJob = await mongoConnectionPool
+  const doc = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)
     .collection(CollectionName.DKHPTDV1)
     .findOne(filter);
 
-  if (!existedJob) throw new JobNotFoundError(req.params.jobId);
+  if (!doc) throw new JobNotFoundError(req.params.jobId);
+  const existedJob = new DKHPTDJobV1(doc);
+  if (existedJob.no > 10) throw new OutOfTryError(existedJob._id);
 
   await mongoConnectionPool
     .getClient()

@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Account, AccountPreference } from "src/entities";
-import { BaseResponse } from "src/payloads";
+import { BaseResponse, LoginResponse } from "src/payloads";
 
 @Injectable({
   providedIn: "root"
@@ -12,6 +12,10 @@ export class AccountsApi {
 
   current() {
     return this.httpClient.get<BaseResponse<Account>>("/api/accounts/current");
+  }
+
+  renewToken() {
+    return this.httpClient.get<BaseResponse<LoginResponse>>("/api/accounts/current/renew-token");
   }
 
   changeCurrentPassword(newPassword: string) {

@@ -21,7 +21,6 @@ export class UnauthorizedInterceptor implements HttpInterceptor {
       catchError((error: HttpErrorResponse) => {
         if (error.status == 401) {
           this.session.unAuthorized();
-          this.router.navigate(["/login"]);
         }
         // If you want to return a new response:
         //return of(new HttpResponse({body: [{name: "Default value..."}]}));

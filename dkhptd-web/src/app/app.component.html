@@ -2,15 +2,15 @@
 <!-- This nav gives you links to click, which tells the router which route to use (defined in the routes constant in  AppRoutingModule) -->
 <nav class="overflow-auto">
   <div class="flex max-w-full flex-wrap">
-    <div *ngIf="showLogin()" class="p-1"><a routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">Đăng Nhập</a></div>
-    <div *ngIf="showRegister()" class="p-1"><a routerLink="/signup" routerLinkActive="active" ariaCurrentWhenActive="page">Đăng Ký</a></div>
+    <div *ngIf="showIfUnauthorized()" class="p-1"><a routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">Đăng Nhập</a></div>
+    <div *ngIf="showIfUnauthorized()" class="p-1"><a routerLink="/signup" routerLinkActive="active" ariaCurrentWhenActive="page">Đăng Ký</a></div>
     <div class="p-1"><a routerLink="/term-ids" routerLinkActive="active" ariaCurrentWhenActive="page">Chọn Kỳ Học</a></div>
-    <div *ngIf="showManageJobs()" class="p-1"><a routerLink="/manage-job-v1" routerLinkActive="active" ariaCurrentWhenActive="page">Quản Lý Hẹn Giờ (Toàn Bộ)</a></div>
-    <div *ngIf="showUploadTKB()" class="p-1"><a routerLink="/upload-tkb-xlsx" routerLinkActive="active" ariaCurrentWhenActive="page">Upload TKB.xlsx</a></div>
-    <div *ngIf="showManageTermId()" class="p-1"><a routerLink="/manage-term-id" routerLinkActive="active" ariaCurrentWhenActive="page">Quản lý kỳ học</a></div>
-    <div *ngIf="showMessages()" class="p-1"><a routerLink="/messages" routerLinkActive="active" ariaCurrentWhenActive="page">Thông Báo ({{toastMessagesRepo.messages.length}})</a></div>
-    <div *ngIf="showProfile()" class="p-1"><a routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page">Cá Nhân ({{currentUsername()}})</a></div>
-    <div *ngIf="showLogout()" class="p-1"><a (click)="onLogout()">Đăng Xuất</a></div>
+    <div *ngIf="showIfAuthorized()" class="p-1"><a routerLink="/manage-job-v1" routerLinkActive="active" ariaCurrentWhenActive="page">Quản Lý Hẹn Giờ (Toàn Bộ)</a></div>
+    <div *ngIf="showIfAdmin()" class="p-1"><a routerLink="/upload-tkb-xlsx" routerLinkActive="active" ariaCurrentWhenActive="page">Upload TKB.xlsx</a></div>
+    <div *ngIf="showIfAdmin()" class="p-1"><a routerLink="/manage-term-id" routerLinkActive="active" ariaCurrentWhenActive="page">Quản lý kỳ học</a></div>
+    <div *ngIf="showAnyway()" class="p-1"><a routerLink="/messages" routerLinkActive="active" ariaCurrentWhenActive="page">Thông Báo ({{toastMessagesRepo.messages.length}})</a></div>
+    <div *ngIf="showIfAuthorized()" class="p-1"><a routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page">Cá Nhân ({{currentUsername()}})</a></div>
+    <div *ngIf="showIfAuthorized()" class="p-1"><a (click)="onLogout()">Đăng Xuất</a></div>
   </div>
 </nav>
 <!-- The routed views render in the <router-outlet>-->

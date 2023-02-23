@@ -231,11 +231,11 @@ export class UsernameExistedError extends SafeError {
   }
 }
 
-export class UsernameNotFoundError extends SafeError {
+export class AccountNotFoundError extends SafeError {
   accountId: string | ObjectId;
 
   constructor(accountId?: string | ObjectId) {
-    super("USERNAME_NOT_FOUND");
+    super("ACCOUNT_NOT_FOUND");
     this.accountId = accountId;
   }
 
@@ -254,5 +254,18 @@ export class WrongPasswordError extends SafeError {
 
   toBaseResponse(): BaseResponse<unknown> {
     return new BaseResponse().failed(this.accountId).m(this.message);
+  }
+}
+
+export class OutOfTryError extends SafeError {
+  jobId: string | ObjectId;
+
+  constructor(jobId?: string | ObjectId) {
+    super("OUT_OF_TRY");
+    this.jobId = jobId;
+  }
+
+  toBaseResponse(): BaseResponse<unknown> {
+    return new BaseResponse().failed(this.jobId).m(this.message);
   }
 }
