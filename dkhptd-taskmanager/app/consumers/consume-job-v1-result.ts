@@ -45,7 +45,13 @@ export const setup = () => {
           return;
         }
 
-        // user error + captcha error + no error
+        if (String(result.vars.userError).match(/captcha/i)) {
+          logger.info(`Received job v1 ${result.id} result with captchaError ${toJson(result.vars.userError, 2)}`);
+          jobV1Bus.emit(jobV1Event.JOB_V1_CAPTCHA_ERROR, result, job);
+          return;
+        }
+
+        // user error + no error
         logger.info(`Received job v1 ${result.id} result done`);
         jobV1Bus.emit(jobV1Event.JOB_V1_DONE, result, job);
       } catch (err) {

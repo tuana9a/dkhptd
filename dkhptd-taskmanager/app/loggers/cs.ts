@@ -7,7 +7,7 @@ export default {
       msg = JSON.stringify(data, null, 2);
     }
     // eslint-disable-next-line no-console
-    console.log(`${moment().format("YYYY-MM-DD hh:mm:ss")} [INFO] ${msg}`);
+    console.log(`${moment().format("YYYY-MM-DD HH:mm:ss")} [INFO] ${msg}`);
   },
   warn: (data) => {
     let msg = data;
@@ -15,7 +15,7 @@ export default {
       msg = JSON.stringify(data, null, 2);
     }
     // eslint-disable-next-line no-console
-    console.log(`${moment().format("YYYY-MM-DD hh:mm:ss")} [WARN] ${msg}`);
+    console.log(`${moment().format("YYYY-MM-DD HH:mm:ss")} [WARN] ${msg}`);
   },
   error: (error) => {
     const msg = {
@@ -24,6 +24,6 @@ export default {
       stack: error.stack.split("\n"),
     };
     // eslint-disable-next-line no-console
-    console.log(`${moment().format("YYYY-MM-DD hh:mm:ss")} [ERROR] ${JSON.stringify(msg, null, 2)}`);
+    console.log(`${moment().format("YYYY-MM-DD HH:mm:ss")} [ERROR] ${JSON.stringify(msg, null, 2)}`);
   },
 };

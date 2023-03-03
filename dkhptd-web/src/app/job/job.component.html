@@ -20,6 +20,10 @@
     </tr>
     <tr>
       <td>Hẹn Giờ</td>
+      <td><span>{{job?.originTimeToStart | date:'dd-MM-YYYY HH:mm:ss'}}</span></td>
+    </tr>
+    <tr>
+      <td>Hệ Thống Hẹn Giờ</td>
       <td><span>{{job?.timeToStart | date:'dd-MM-YYYY HH:mm:ss'}}</span></td>
     </tr>
     <tr>
@@ -32,7 +36,7 @@
     </tr>
   </table>
   <div *ngFor="let result of results; let i = index">
-    <div class="flex"><h2>Lần thứ {{i+1}}</h2><div class="flex items-center ml-1"><span>({{result.createdAt | date: "yyyy-MM-dd hh:mm:ss"}})</span></div></div>
+    <div class="flex"><h2>Lần thứ {{i+1}}</h2><div class="flex items-center ml-1"><span>({{result.createdAt | date: "yyyy-MM-dd HH:mm:ss"}})</span></div></div>
     <div app-job-v1-result [job]="job" [id]="id" [result]="result"></div>
   </div>
 </div>

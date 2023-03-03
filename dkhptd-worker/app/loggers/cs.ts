@@ -7,14 +7,14 @@ export default {
     if (typeof data === "object") {
       msg = JSON.stringify(data, null, 2);
     }
-    console.log(`${moment().format("YYYY-MM-DD hh:mm:ss")} [INFO] ${msg}`);
+    console.log(`${moment().format("YYYY-MM-DD HH:mm:ss")} [INFO] ${msg}`);
   },
   warn: (data) => {
     let msg = data;
     if (typeof data === "object") {
       msg = JSON.stringify(data, null, 2);
     }
-    console.log(`${moment().format("YYYY-MM-DD hh:mm:ss")} [WARN] ${msg}`);
+    console.log(`${moment().format("YYYY-MM-DD HH:mm:ss")} [WARN] ${msg}`);
   },
   error: (error: Error) => {
     const msg = {
@@ -22,6 +22,6 @@ export default {
       message: error.message,
       stack: error.stack.split("\n"),
     };
-    console.log(`${moment().format("YYYY-MM-DD hh:mm:ss")} [ERROR] ${JSON.stringify(msg, null, 2)}`);
+    console.log(`${moment().format("YYYY-MM-DD HH:mm:ss")} [ERROR] ${JSON.stringify(msg, null, 2)}`);
   },
 };

@@ -96,6 +96,7 @@ router.post("/api/accounts/current/term-ids/:termId/v1/dkhptd-s", JwtFilter(cfg.
       ]);
 
       const job = new DKHPTDJobV1(safeEntry);
+      job.originTimeToStart = job.timeToStart;
       job.termId = termId;
 
       if (isFalsy(job.username)) throw new FaslyValueError("job.username", job.username);

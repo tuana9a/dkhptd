@@ -11,6 +11,7 @@ export const jobV1Event = {
   NEW_JOB_V1_RESULT: nextStr(), // deprecated
   JOB_V1_UNKNOWN_ERROR: nextStr(),
   JOB_V1_SYSTEM_ERROR: nextStr(),
+  JOB_V1_CAPTCHA_ERROR: nextStr(),
   JOB_V1_DONE: nextStr(),
   INSERT_JOB_V1_RESULT: nextStr(),
   STALE_JOB_V1: nextStr(),

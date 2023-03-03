@@ -4,9 +4,11 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
+    "dev": "nodemon ./dist/index.js",
     "start": "node dist/index.js",
     "test": "echo tuana9a",
-    "build": "tsc"
+    "build": "tsc",
+    "build:watch": "tsc --watch"
   },
   "author": "Tuan Nguyen Minh",
   "license": "GPL-3.0",

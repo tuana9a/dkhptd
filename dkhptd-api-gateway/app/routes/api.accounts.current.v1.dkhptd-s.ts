@@ -92,6 +92,7 @@ router.post("/api/accounts/current/v1/dkhptd-s", JwtFilter(cfg.SECRET), RateLimi
       ]);
 
       const job = new DKHPTDJobV1(safeEntry);
+      job.originTimeToStart = job.timeToStart;
 
       if (isFalsy(job.username)) throw new FaslyValueError("job.username", job.username);
       if (isEmpty(job.username)) throw new EmptyStringError("job.username", job.username);

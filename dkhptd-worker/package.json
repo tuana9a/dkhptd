@@ -8,7 +8,9 @@
     "start": "node ./bin/dkhptd-worker --config-file config.json",
     "dev": "nodemon ./bin/dkhptd-worker --config-file config.json",
     "test": "jest test",
-    "test:watch": "jest --watch test"
+    "test:watch": "jest --watch test",
+    "build": "tsc",
+    "build:watch": "tsc --watch"
   },
   "bin": {
     "dkhptd-worker": "./bin/dkhptd-worker"
@@ -40,7 +42,6 @@
     "eslint-plugin-n": "^15.6.0",
     "eslint-plugin-promise": "^6.1.1",
     "jest": "27.5.1",
-    "nodemon": "^2.0.20",
     "typescript": "^4.8.4"
   }
 }

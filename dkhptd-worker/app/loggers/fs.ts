@@ -9,7 +9,7 @@ export default {
       msg = JSON.stringify(data, null, 2);
     }
     const filepath = `${cfg.logDir + moment().format("YYYY-MM-DD")}.log`;
-    fs.appendFileSync(filepath, `${moment().format("YYYY-MM-DD hh:mm:ss")} [INFO] ${msg}\n`);
+    fs.appendFileSync(filepath, `${moment().format("YYYY-MM-DD HH:mm:ss")} [INFO] ${msg}\n`);
   },
   warn: (data) => {
     let msg = data;
@@ -17,7 +17,7 @@ export default {
       msg = JSON.stringify(data, null, 2);
     }
     const filepath = `${cfg.logDir + moment().format("YYYY-MM-DD")}.log`;
-    fs.appendFileSync(filepath, `${moment().format("YYYY-MM-DD hh:mm:ss")} [WARN] ${msg}\n`);
+    fs.appendFileSync(filepath, `${moment().format("YYYY-MM-DD HH:mm:ss")} [WARN] ${msg}\n`);
   },
   error: (error: Error) => {
     const msg = {
@@ -26,6 +26,6 @@ export default {
       stack: error.stack.split("\n"),
     };
     const filepath = `${cfg.logDir + moment().format("YYYY-MM-DD")}.log`;
-    fs.appendFileSync(filepath, `${moment().format("YYYY-MM-DD hh:mm:ss")} [ERROR] ${JSON.stringify(msg, null, 2)}\n`);
+    fs.appendFileSync(filepath, `${moment().format("YYYY-MM-DD HH:mm:ss")} [ERROR] ${JSON.stringify(msg, null, 2)}\n`);
   },
 };

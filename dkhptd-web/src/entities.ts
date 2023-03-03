@@ -133,6 +133,7 @@ export class DKHPTDJobV1 {
   password: string;
   classIds: string[];
   timeToStart: number;
+  originTimeToStart: number;
   status: number;
   createdAt: number;
   doingAt: number;
@@ -146,6 +147,7 @@ export class DKHPTDJobV1 {
     password: string;
     classIds: string[];
     timeToStart: number;
+    originTimeToStart: number;
     ownerAccountId: string;
     status: number;
     createdAt: number;
@@ -160,6 +162,7 @@ export class DKHPTDJobV1 {
     this.password = o.password;
     this.classIds = o.classIds;
     this.timeToStart = o.timeToStart;
+    this.originTimeToStart = o.originTimeToStart;
     this.status = o.status;
     this.createdAt = o.createdAt;
     this.doingAt = o.doingAt || -1;

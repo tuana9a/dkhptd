@@ -23,7 +23,7 @@ router.post("/api/accounts/current/term-ids/:termId/v1/dkhptd", JwtFilter(cfg.SE
   if (!isValidTermId(termId)) throw new InvalidTermIdError(termId);
 
   const ownerAccountId = new ObjectId(req.__accountId);
-  const safeData = modify(data, [
+  const safeEntry = modify(data, [
     m.pick(["username", "password", "classIds", "timeToStart"]),
     m.normalizeString("username"),
     m.normalizeString("password"),
@@ -35,7 +35,8 @@ router.post("/api/accounts/current/term-ids/:termId/v1/dkhptd", JwtFilter(cfg.SE
     m.set("ownerAccountId", ownerAccountId),
   ]);
 
-  const job = new DKHPTDJobV1(safeData);
+  const job = new DKHPTDJobV1(safeEntry);
+  job.originTimeToStart = job.timeToStart;
   job.termId = termId;
 
   if (isFalsy(job.username)) throw new FaslyValueError("job.username", job.username);
