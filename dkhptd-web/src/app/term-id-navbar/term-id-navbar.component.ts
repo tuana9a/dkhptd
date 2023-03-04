@@ -2,11 +2,11 @@ import { Component, OnInit } from "@angular/core";
 import { Session } from "src/repositories/is-authorized.repo";
 
 @Component({
-  selector: "app-navbar-of-term-id",
-  templateUrl: "./navbar-of-term-id.component.html",
-  styleUrls: ["./navbar-of-term-id.component.scss"]
+  selector: "app-term-id-navbar",
+  templateUrl: "./term-id-navbar.component.html",
+  styleUrls: ["./term-id-navbar.component.scss"]
 })
-export class NavbarOfTermIdComponent implements OnInit {
+export class TermIdNavbarComponent implements OnInit {
 
   constructor(private session: Session) { }
 

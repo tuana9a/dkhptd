@@ -24,7 +24,7 @@ const queryTemplates = [
   styleUrls: ["./term-id-search-class-to-register.component.scss"]
 })
 export class TermIdSearchClassToRegisterComponent implements OnInit {
-  @Input() showIdColumn = false;
+  @Input() showId = false;
   @Input() navigateOnQueryChange = true;
   @Input() showQueryKeys = false;
   @Input() q = "";
@@ -44,6 +44,9 @@ export class TermIdSearchClassToRegisterComponent implements OnInit {
   faXmark = faXmark;
   faArrowRight = faArrowRightLong;
   faArrowLeft = faArrowLeftLong;
+  @Output() uncheckedEvent = new EventEmitter<ClassToRegister>();
+  @Output() checkedEvent = new EventEmitter<ClassToRegister>();
+  @Input() checkedClassIds: Set<number | undefined> = new Set();
 
   constructor(private activatedRoute: ActivatedRoute, private router: Router, private api: ClassToRegsitersApi) {
   }
@@ -130,5 +133,13 @@ export class TermIdSearchClassToRegisterComponent implements OnInit {
     this.listQuery.splice(i, 1);
     this.q = build(this.listQuery);
     this.onQueryChange();
+  }
+
+  onUnchecked(s: ClassToRegister) {
+    this.uncheckedEvent.emit(s);
+  }
+
+  onChecked(s: ClassToRegister) {
+    this.checkedEvent.emit(s);
   }
 }

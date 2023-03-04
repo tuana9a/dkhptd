@@ -1,5 +1,6 @@
 <tr>
-  <td *ngIf="showIdColumn">_id</td>
+  <td *ngIf="showCheckbox"></td>
+  <td *ngIf="showId">_id</td>
   <td><div><a>Kỳ Học</a></div><div *ngIf="showQueryKeys">termId</div></td>
   <td><div><a>Mã Lớp</a></div><div *ngIf="showQueryKeys">classId</div></td>
   <td><div><a>Mã Lớp Kèm</a></div><div *ngIf="showQueryKeys">secondClassId</div></td>
@@ -12,6 +13,6 @@
   <td><div><a>Phòng Học</a></div><div *ngIf="showQueryKeys">learnRoom</div></td>
   <td><div><a>Học Vào Các Tuần</a></div><div *ngIf="showQueryKeys">learnWeek</div></td>
   <td><div><a>Ghi Chú</a></div><div *ngIf="showQueryKeys">describe</div></td>
-  <td *ngIf="showCreatedAtColumn"><div>Cập Nhật Lúc</div><div *ngIf="showQueryKeys">createdAt</div></td>
+  <td *ngIf="showCreatedAt"><div>Cập Nhật Lúc</div><div *ngIf="showQueryKeys">createdAt</div></td>
 </tr>
-<tr app-class-to-register-row (click)="onClickClass(c)" [c]="c" [showIdColumn]="showIdColumn" [showCreatedAtColumn]="showCreatedAtColumn" *ngFor="let c of classes"></tr>
+<tr app-class-to-register-row (click)="onClassClicked(c)" [c]="c" [showId]="showId" [showCreatedAt]="showCreatedAt" *ngFor="let c of classes" (checkedEvent)="onChecked($event)" (uncheckedEvent)="onUnchecked($event)" [checked]="checkedClassIds.has(c.classId)"></tr>

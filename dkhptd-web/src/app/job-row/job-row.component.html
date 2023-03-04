@@ -1,3 +1,4 @@
+<td *ngIf="showTermId">{{job?.termId}}</td>
 <td *ngIf="showId" class="ObjectId">{{job?._id}}</td>
 <td>{{job?.username}}</td>
 <td>
@@ -11,11 +12,10 @@
     <a [routerLink]="['/term-ids', job?.termId, 'search-class-to-register']" [queryParams]="{q: 'classId==' + classId}">{{classId}}</a>
   </span>
 </td>
-<td>{{job?.timeToStart | date:'dd-MM-YYYY HH:mm:ss'}}</td>
+<td *ngIf="showTimeToStart">{{job?.timeToStart | date:'dd-MM-YYYY HH:mm:ss'}}</td>
 <td>{{job?.originTimeToStart | date:'dd-MM-YYYY HH:mm:ss'}}</td>
 <td>{{job?.createdAt | date:'dd-MM-YYYY HH:mm:ss'}}</td>
-<td *ngIf="showTermId">{{job?.termId}}</td>
 <td>{{job?.status | JobStatus}}</td>
-<td><a [routerLink]="['/v1/dkhptd-s/', job?._id]" routerLinkActive="active" ariaCurrentWhenActive="page">Chi Tiết</a></td>
+<td><a [routerLink]="[job?._id]" routerLinkActive="active" ariaCurrentWhenActive="page">Chi Tiết</a></td>
 <td><button [disabled]="!isCancelable()" (click)="onCancelJob()">Hủy</button></td>
 <td><button [disabled]="!isRetryable()" (click)="onRetryJob()">Thử Lại</button></td>

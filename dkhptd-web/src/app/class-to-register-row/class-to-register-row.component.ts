@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { ClassToRegister } from "src/entities";
 
 @Component({
@@ -8,10 +8,18 @@ import { ClassToRegister } from "src/entities";
 })
 export class ClassToRegisterRowComponent implements OnInit {
   @Input() c: ClassToRegister = new ClassToRegister({});
-  @Input() showIdColumn = false;
-  @Input() showCreatedAtColumn = false;
+  @Input() showId = false;
+  @Input() showCreatedAt = false;
+  @Input() showCheckbox = true;
+  @Input() checked = false;
+  @Output() uncheckedEvent = new EventEmitter<ClassToRegister>();
+  @Output() checkedEvent = new EventEmitter<ClassToRegister>();
 
   ngOnInit(): void {
     //
+  }
+
+  onCheckboxChange() {
+    return this.checked ? this.checkedEvent.emit(this.c) : this.uncheckedEvent.emit(this.c);
   }
 }

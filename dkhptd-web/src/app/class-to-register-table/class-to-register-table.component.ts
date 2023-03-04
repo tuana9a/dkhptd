@@ -7,14 +7,18 @@ import { ClassToRegister } from "src/entities";
   styleUrls: ["./class-to-register-table.component.scss"]
 })
 export class ClassToRegisterTableComponent {
-  @Input() showIdColumn = false;
-  @Input() showCreatedAtColumn = true;
+  @Input() showId = false;
+  @Input() showCreatedAt = true;
   @Input() showQueryKeys = false;
   @Input() classes: ClassToRegister[] = [];
   @Output() classClickedEvent = new EventEmitter<ClassToRegister>();
   @Input() hoverClass = "mouse-out";
+  @Input() showCheckbox = true;
+  @Output() uncheckedEvent = new EventEmitter<ClassToRegister>();
+  @Output() checkedEvent = new EventEmitter<ClassToRegister>();
+  @Input() checkedClassIds: Set<number | undefined> = new Set();
 
-  onClickClass(c: ClassToRegister) {
+  onClassClicked(c: ClassToRegister) {
     this.classClickedEvent.emit(c);
   }
 
@@ -24,5 +28,13 @@ export class ClassToRegisterTableComponent {
 
   onMouseOut() {
     this.hoverClass = "mouse-out";
+  }
+
+  onUnchecked(s: ClassToRegister) {
+    this.uncheckedEvent.emit(s);
+  }
+
+  onChecked(s: ClassToRegister) {
+    this.checkedEvent.emit(s);
   }
 }

@@ -1,4 +1,5 @@
-<td *ngIf="showIdColumn">{{c._id}}</td>
+<td *ngIf="showCheckbox"><div class="flex items-centers m-1"><input [(ngModel)]="checked" (change)="onCheckboxChange()" type="checkbox"></div></td>
+<td *ngIf="showId">{{c._id}}</td>
 <td>{{c.termId}}</td>
 <td>{{c.classId}}</td>
 <td>{{c.secondClassId}}</td>
@@ -11,4 +12,4 @@
 <td>{{c.learnRoom}}</td>
 <td>{{c.learnWeek}}</td>
 <td>{{c.describe}}</td>
-<td *ngIf="showCreatedAtColumn">{{c.createdAt | date:'dd-MM-YYYY HH:mm:ss'}}</td>
+<td *ngIf="showCreatedAt">{{c.createdAt | date:'dd-MM-YYYY HH:mm:ss'}}</td>

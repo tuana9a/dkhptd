@@ -30,11 +30,15 @@ export class AccountsApi {
     return this.httpClient.get<BaseResponse<AccountPreference[]>>(`/api/accounts/current/term-ids/${termId}/preferences`);
   }
 
-  addPreference(preference?: AccountPreference) {
+  addPreference(preference: AccountPreference) {
     return this.httpClient.post<BaseResponse<unknown>>("/api/accounts/current/preference", preference);
   }
 
   changePreference(preferenceId: string, preference: AccountPreference) {
     return this.httpClient.put<BaseResponse<unknown>>(`/api/accounts/current/preferences/${preferenceId}`, preference);
+  }
+
+  deletePreference(preferenceId: string) {
+    return this.httpClient.delete<BaseResponse<unknown>>(`/api/accounts/current/preferences/${preferenceId}`);
   }
 }

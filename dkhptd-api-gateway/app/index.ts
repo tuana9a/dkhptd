@@ -37,6 +37,7 @@ async function main() {
   ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.PREFERENCE, { ownerAccountId: 1 });
   ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.PREFERENCE, { ownerAccountId: 1, termId: 1 });
   ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.SUBJECT, { subjectId: 1 });
+  ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.SUBJECT, { subjectName: 1 });
   ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.SUBJECT, { subjectId: 1, subjectName: 1 });
 
   amqplib.connect(cfg.RABBITMQ_CONNECTION_STRING, (error0, connection) => {

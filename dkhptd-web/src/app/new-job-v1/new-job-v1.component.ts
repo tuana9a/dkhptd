@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { TermIdsJobV1sApi } from "src/apis/term-ids.dkhptd-v1-s.api";
 import { ClassToRegister } from "src/entities";
 
@@ -21,6 +21,8 @@ export class NewJobV1 implements OnInit {
   @Input() showSuggestBox = false;
   @Input() isShowPassword = false;
   faEye = faEye;
+  faPlus = faPlus;
+  faMinus = faMinus;
 
   constructor(private api: TermIdsJobV1sApi, private activatedRoute: ActivatedRoute) { }
 
@@ -75,13 +77,25 @@ export class NewJobV1 implements OnInit {
     this.showSuggestBox = true;
   }
 
-  takeClickedClassToRegister(c: ClassToRegister) {
-    if (c.classId) {
-      this.classIds.add(String(c.classId));
+  toggleShowPasswd() {
+    this.isShowPassword = !this.isShowPassword;
+  }
+
+  onCheckedCTR(c: ClassToRegister) {
+    const classId = String(c.classId);
+    if (classId && !this.classIds.has(classId)) {
+      this.classIds.add(classId);
     }
   }
 
-  toggleShowPasswd() {
-    this.isShowPassword = !this.isShowPassword;
+  onUncheckedCTR(c: ClassToRegister) {
+    const classId = String(c.classId);
+    if (classId) {
+      this.classIds.delete(classId);
+    }
+  }
+
+  getSelectedClassIdsAsNumber() {
+    return new Set(Array.from(this.classIds.values()).map(x => parseInt(x)));
   }
 }

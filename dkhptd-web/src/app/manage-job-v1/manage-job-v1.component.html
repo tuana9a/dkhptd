@@ -1,19 +1,20 @@
 <div>
   <table>
     <tr>
-      <td>_id</td>
+      <td>Kỳ Học</td>
+      <td *ngIf="showId">_id</td>
       <td>username</td>
       <td><span>password</span><fa-icon class="ml-1" (click)="toggleShowPassword()" [icon]="faEye"></fa-icon></td>
       <td>Danh Sách Mã Lớp</td>
       <td>Hẹn Giờ</td>
-      <td>Hệ Thống Hẹn Giờ</td>
+      <td *ngIf="showTimeToStart">Hệ Thống Hẹn Giờ</td>
       <td>Thời Gian Tạo</td>
-      <td>Kỳ Học</td>
       <td>Trạng Thái</td>
       <!-- <td></td> -->
       <!-- <td></td> -->
       <!-- <td></td> -->
     </tr>
-    <tr *ngFor="let job of jobs" app-job-row [intervalUpdate]="true" [showTermId]="true" [job]="job" [showPassword]="showPassword"></tr>
+    <tr *ngFor="let job of jobs" app-job-row [intervalUpdate]="true" [showTermId]="true" [job]="job" [showPassword]="showPassword" [showTimeToStart]="showTimeToStart" [showId]="showId"></tr>
   </table>
 </div>
+<router-outlet></router-outlet>

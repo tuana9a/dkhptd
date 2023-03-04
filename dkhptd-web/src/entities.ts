@@ -326,3 +326,18 @@ export class ActionLog {
 
   at?: number;
 }
+
+export class Subject {
+  _id?: string;
+  subjectId?: string;
+  subjectName?: string;
+  constructor(o: {
+    _id?: string;
+    subjectId?: string;
+    subjectName?: string;
+  }) {
+    this._id = o._id;
+    this.subjectId = o.subjectId;
+    this.subjectName = o.subjectName;
+  }
+}

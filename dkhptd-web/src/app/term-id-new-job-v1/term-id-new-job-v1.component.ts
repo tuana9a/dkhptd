@@ -3,11 +3,11 @@ import { ActivatedRoute } from "@angular/router";
 import { ClassToRegister } from "src/entities";
 
 @Component({
-  selector: "app-new-job-v1-for-term-id",
-  templateUrl: "./new-job-v1-for-term-id.component.html",
-  styleUrls: ["./new-job-v1-for-term-id.component.scss"]
+  selector: "app-term-id-new-job-v1",
+  templateUrl: "./term-id-new-job-v1.component.html",
+  styleUrls: ["./term-id-new-job-v1.component.scss"]
 })
-export class NewJobV1ForTermIdComponent implements OnInit {
+export class TermIdNewJobV1Component implements OnInit {
   @Input() termId = "";
   @Input() classIds: Set<string>;
   @Input() hideSearchBox = true;

@@ -13,7 +13,7 @@ export class ManageTermIdComponent implements OnInit {
   faPlus = faPlus;
   faMinus = faMinus;
   @Input() showUpdateButton = true;
-  @Input() showIdColumn = true;
+  @Input() showId = true;
   termId = "";
   constructor(private termIdsApi: TermIdsApi, private toast: ToastService) { }
 

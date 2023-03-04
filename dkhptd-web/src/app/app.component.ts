@@ -4,6 +4,7 @@ import { AccountsApi } from "src/apis/accounts.api";
 import { Session } from "src/repositories/is-authorized.repo";
 import { ToastService } from "src/repositories/toast-messages.repo";
 import { CookieUtils } from "src/utils/cookie.utils";
+import ms from "ms";
 
 @Component({
   selector: "app-root",
@@ -31,7 +32,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.cookieUtils.set({ name: "jwt", value: resNested.data?.token });
         this.session.authenticated(resNested.data);
       });
-    }, 5000);
+    }, ms("1m"));
   }
   ngOnDestroy(): void {
     clearInterval(this.intervalHandler);

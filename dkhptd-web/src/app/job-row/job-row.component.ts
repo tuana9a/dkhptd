@@ -16,6 +16,7 @@ export class JobRowComponent implements OnInit, OnDestroy {
   @Input() showTermId = false;
   @Input() showId = true;
   @Input() intervalUpdate = false;
+  @Input() showTimeToStart = false;
   faEye = faEye;
   stopInterval: any;
 

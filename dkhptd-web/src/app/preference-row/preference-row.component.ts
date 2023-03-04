@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { AccountsApi } from "src/apis/accounts.api";
 import { AccountPreference } from "src/entities";
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
@@ -11,7 +11,9 @@ import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 export class PreferenceRowComponent implements OnInit {
   @Input() preference: AccountPreference = new AccountPreference({ termId: "", wantedSubjectIds: [] });
   @Input() showUpdateButton = true;
-  @Input() showIdColumn = true;
+  @Input() showAddButton = true;
+  @Input() showId = true;
+  @Output() afterAddPreference = new EventEmitter<unknown>();
   subjectId = "";
   message?= "";
   faPlus = faPlus;
@@ -37,6 +39,14 @@ export class PreferenceRowComponent implements OnInit {
   onUpdatePreference() {
     if (!this.preference) return;
     this.api.changePreference(this.preference._id as string, this.preference).subscribe();
+  }
+
+  onAddPreference() {
+    this.api.addPreference(this.preference).subscribe(res => {
+      if (res.success) {
+        this.afterAddPreference.emit();
+      }
+    });
   }
 
   onKeyPressSubjectId(e: KeyboardEvent) {

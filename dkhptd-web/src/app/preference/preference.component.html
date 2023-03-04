@@ -1,29 +1,19 @@
-<div class="flex">
+<div>
   <table>
     <tr>
-      <td *ngIf="showIdColumn">_id</td>
+      <td *ngIf="showId">_id</td>
       <td>Kỳ Học</td>
-      <td>Mã Học Phần Mong Muốn</td>
-      <td *ngIf="showUpdateButton"></td>
+      <td>Học Phần Mong Muốn, <a href="javascript:void" (click)="openSearchBox()">Tìm Kiếm</a></td>
+      <td></td>
     </tr>
-    <tr *ngIf="preference">
-      <td *ngIf="showIdColumn" class="ObjectId">{{preference._id}}</td>
-      <td><input type="text" [(ngModel)]="preference.termId"></td>
-      <td>
-        <table>
-          <tr *ngFor="let subjectId of preference.wantedSubjectIds">
-            <td class="border border-solid border-black">{{subjectId}}</td>
-            <td class=""><button (click)="onRemoveSubjectId(subjectId)">Xóa</button></td>
-          </tr>
-          <tr>
-            <td class="border border-solid border-black"><input type="text" [(ngModel)]="subjectId" (keypress)="onKeyPressSubjectId($event)"></td>
-            <td class=""><button (click)="onAddSubjectId()">Thêm</button></td>
-          </tr>
-        </table>
-      </td>
-      <td *ngIf="showUpdateButton">
-        <button (click)="onUpdatePreference()">Cập Nhật</button>
-      </td>
-    </tr>
+    <tr app-preference-row [preference]="preference" [showId]="showId" [showUpdateButton]="true" [showAddButton]="false"></tr>
   </table>
+</div>
+<div *ngIf="showSearchBox" class="fixed w-screen h-screen search-box top-0">
+  <div class="w-full h-full relative flex justify-center overflow-auto">
+    <div class="absolute top-0 left-0 w-full h-full backdrop-blur-sm bg-white/30 z-0" (click)="closeSearchBox()"></div>
+    <div class="absolute max-w-[90%] min-w-[50%] max-h-full overflow-auto z-10 bg-black">
+      <div app-search-subject [showExample]="false" [navigateOnQueryChange]="false" (checkedEvent)="onChecked($event)" (uncheckedEvent)="onUnchecked($event)" [checkedSubjectIds]="getSelectedSubjectIds()"></div>
+    </div>
+  </div>
 </div>

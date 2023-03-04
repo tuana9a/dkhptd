@@ -1,4 +1,4 @@
-<div class="max-w-full overflow-auto">
+<div class="overflow-auto">
   <div>
     <table>
       <tr>
@@ -24,7 +24,7 @@
     </table>
   </div>
   <div class="flex">
-    <table class="">
+    <table>
       <tr>
         <td>Phân Trang</td>
         <td><fa-icon class="px-2 flex items-center" [icon]="faArrowLeft" (click)="prevPage()"></fa-icon></td>
@@ -35,6 +35,6 @@
       </tr>
     </table>
   </div>
-  <table class="w-full" (classClickedEvent)="onClassClickedEvent($event)" app-class-to-register-table [classes]="classes" [showId]="showId" [showQueryKeys]="showQueryKeys" [checkedClassIds]="checkedClassIds" (classClickedEvent)="onClassClickedEvent($event)" (checkedEvent)="onChecked($event)" (uncheckedEvent)="onUnchecked($event)">
+  <table app-subject-table [subjects]="subjects" [showId]="showId" [showQueryKeys]="showQueryKeys" [checkedSubjectIds]="checkedSubjectIds" (subjectClickedEvent)="onSubjectClickedEvent($event)" (checkedEvent)="onChecked($event)" (uncheckedEvent)="onUnchecked($event)">
   </table>
 </div>

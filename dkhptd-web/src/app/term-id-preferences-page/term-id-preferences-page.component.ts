@@ -4,13 +4,13 @@ import { AccountsApi } from "src/apis/accounts.api";
 import { AccountPreference } from "src/entities";
 
 @Component({
-  selector: "app-preferences-of-term-id-page",
-  templateUrl: "./preferences-of-term-id-page.component.html",
-  styleUrls: ["./preferences-of-term-id-page.component.scss"]
+  selector: "app-term-id-preferences-page",
+  templateUrl: "./term-id-preferences-page.component.html",
+  styleUrls: ["./term-id-preferences-page.component.scss"]
 })
-export class PreferencesOfTermIdPageComponent implements OnInit {
+export class TermIdPreferencesPageComponent implements OnInit {
   @Input() termId = "";
-  @Input() preferences?: AccountPreference[];
+  @Input() preferences: AccountPreference[] = [];
   constructor(private activatedRoute: ActivatedRoute, private api: AccountsApi) { }
   ngOnInit(): void {
     this.activatedRoute.params.subscribe(params => {
@@ -19,7 +19,9 @@ export class PreferencesOfTermIdPageComponent implements OnInit {
       this.api.currentPreferencesOfTermId(termId).subscribe(res => {
         if (res.success) {
           if (this.termId == termId) {
-            this.preferences = res.data;
+            if (res.data) {
+              this.preferences = res.data;
+            }
           }
         }
       });

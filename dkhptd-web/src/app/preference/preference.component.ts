@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { AccountsApi } from "src/apis/accounts.api";
-import { AccountPreference } from "src/entities";
+import { AccountPreference, Subject } from "src/entities";
 
 @Component({
   selector: "[app-preference]",
@@ -8,20 +8,29 @@ import { AccountPreference } from "src/entities";
   styleUrls: ["./preference.component.scss"]
 })
 export class PreferenceComponent implements OnInit {
-  @Input() preference?: AccountPreference;
+  @Input() preference: AccountPreference = new AccountPreference({ termId: "", wantedSubjectIds: [] });
   @Input() showUpdateButton = true;
-  @Input() showIdColumn = true;
-  subjectId = "";
-  message?= "";
+  @Input() showId = true;
+  @Input() showSearchBox = false;
+  @Input() termId = "";
+
   constructor(private api: AccountsApi) { }
 
   ngOnInit(): void {
     //
   }
 
-  onAddSubjectId() {
-    if (this.subjectId && !this.subjectId.match(/^\s*$/)) {
-      this.preference?.wantedSubjectIds?.push(this.subjectId);
+  openSearchBox() {
+    this.showSearchBox = true;
+  }
+
+  closeSearchBox() {
+    this.showSearchBox = false;
+  }
+
+  onAddSubjectId(subjectId: string) {
+    if (subjectId && !subjectId.match(/^\s*$/)) {
+      this.preference?.wantedSubjectIds?.push(subjectId);
     }
   }
 
@@ -35,9 +44,24 @@ export class PreferenceComponent implements OnInit {
     this.api.changePreference(this.preference._id as string, this.preference).subscribe();
   }
 
-  onKeyPressSubjectId(e: KeyboardEvent) {
-    if (e.key == "Enter") {
-      this.onAddSubjectId();
+  getSelectedSubjectIds() {
+    return new Set(this.preference?.wantedSubjectIds);
+  }
+
+  onChecked(subject: Subject) {
+    const subjectId = subject.subjectId;
+    if (subjectId && !subjectId.match(/^\s*$/) && this.preference.wantedSubjectIds.indexOf(subjectId) == -1) {
+      this.preference.wantedSubjectIds.push(subjectId);
+    }
+  }
+
+  onUnchecked(subject: Subject) {
+    const subjectId = subject.subjectId;
+    if (subjectId && !subjectId.match(/^\s*$/)) {
+      const i = this.preference.wantedSubjectIds.indexOf(subjectId);
+      if (i != -1) {
+        this.preference.wantedSubjectIds.splice(i, 1);
+      }
     }
   }
 }

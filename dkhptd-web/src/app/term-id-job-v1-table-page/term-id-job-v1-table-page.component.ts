@@ -4,11 +4,11 @@ import { TermIdsJobV1sApi } from "src/apis/term-ids.dkhptd-v1-s.api";
 import { DKHPTDJobV1 } from "src/entities";
 
 @Component({
-  selector: "app-job-v1-table-of-term-id-page",
-  templateUrl: "./job-v1-table-of-term-id-page.component.html",
-  styleUrls: ["./job-v1-table-of-term-id-page.component.scss"]
+  selector: "app-term-id-job-v1-table-page",
+  templateUrl: "./term-id-job-v1-table-page.component.html",
+  styleUrls: ["./term-id-job-v1-table-page.component.scss"]
 })
-export class JobV1TableOfTermIdPageComponent implements OnInit {
+export class TermIdJobV1TablePageComponent implements OnInit {
   @Input() termId = "";
   @Input() jobs?: DKHPTDJobV1[];
   constructor(private activatedRoute: ActivatedRoute, private api: TermIdsJobV1sApi) { }

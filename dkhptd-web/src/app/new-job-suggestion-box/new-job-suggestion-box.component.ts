@@ -11,13 +11,16 @@ import { ClassToRegister } from "src/entities";
   styleUrls: ["./new-job-suggestion-box.component.scss"]
 })
 export class NewJobSuggestionBoxComponent implements OnInit {
-  @Input() showIdColumn = false;
-  @Input() showCreatedAtColumn = false;
+  @Input() showId = false;
+  @Input() showCreatedAt = false;
   preferences?: AccountPreference[] = [];
   suggestClasses: ClassToRegister[] = [];
   @Input() selectedTermId?= "";
   @Input() termId = "";
   @Output() classClicked = new EventEmitter<ClassToRegister>();
+  @Output() uncheckedEvent = new EventEmitter<ClassToRegister>();
+  @Output() checkedEvent = new EventEmitter<ClassToRegister>();
+  @Input() checkedClassIds: Set<number | undefined> = new Set();
 
   constructor(private classToRegisterApi: ClassToRegsitersApi, private accountsApi: AccountsApi, private activatedRoute: ActivatedRoute) { }
 
@@ -50,5 +53,13 @@ export class NewJobSuggestionBoxComponent implements OnInit {
 
   onClassClickedEvent(c: ClassToRegister) {
     this.classClicked.emit(c);
+  }
+
+  onUnchecked(s: ClassToRegister) {
+    this.uncheckedEvent.emit(s);
+  }
+
+  onChecked(s: ClassToRegister) {
+    this.checkedEvent.emit(s);
   }
 }

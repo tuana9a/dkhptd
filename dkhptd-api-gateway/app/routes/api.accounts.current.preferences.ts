@@ -80,3 +80,19 @@ router.post("/api/accounts/current/preference", JwtFilter(cfg.SECRET), Exception
     .insertOne(newPreference);
   resp.send(new BaseResponse().ok());
 }));
+
+router.delete("/api/accounts/current/preferences/:preferenceId", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
+  const accountId = req.__accountId;
+  const preferenceId = new ObjectId(req.params.preferenceId);
+
+  const filter: Filter<AccountPreference> = {
+    _id: preferenceId,
+    ownerAccountId: new ObjectId(accountId),
+  };
+  await mongoConnectionPool
+    .getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(CollectionName.PREFERENCE)
+    .deleteMany(filter);
+  resp.send(new BaseResponse().ok());
+}));
