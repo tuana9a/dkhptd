@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { faMinus } from "@fortawesome/free-solid-svg-icons";
 import { ClassToRegsitersApi } from "src/apis/class-to-register.apis";
 import { ToastService } from "src/repositories/toast-messages.repo";
 
@@ -9,8 +10,9 @@ import { ToastService } from "src/repositories/toast-messages.repo";
 })
 export class UploadTkbXlsxComponent implements OnInit {
   secret = "";
-  files?: File[] = [];
+  files: File[] = [];
   @ViewChild("input") input?: ElementRef<HTMLInputElement>;
+  faMinus = faMinus;
 
   constructor(private api: ClassToRegsitersApi, private toast: ToastService) { }
 
@@ -61,6 +63,10 @@ export class UploadTkbXlsxComponent implements OnInit {
   }
 
   fileNames() {
-    return this.files?.map(x => x.name);
+    return this.files.map(x => x.name);
+  }
+
+  removeSelectedFile(f: any) {
+    this.files = this.files.filter(x => x != f);
   }
 }

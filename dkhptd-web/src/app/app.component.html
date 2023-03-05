@@ -9,7 +9,7 @@
     <div *ngIf="showIfAuthorized()" class="p-1"><a routerLink="/manage-job-v1" routerLinkActive="active" ariaCurrentWhenActive="page">Quản Lý Hẹn Giờ (Toàn Bộ)</a></div>
     <div *ngIf="showIfAdmin()" class="p-1"><a routerLink="/upload-tkb-xlsx" routerLinkActive="active" ariaCurrentWhenActive="page">Upload TKB.xlsx</a></div>
     <div *ngIf="showIfAdmin()" class="p-1"><a routerLink="/manage-term-id" routerLinkActive="active" ariaCurrentWhenActive="page">Quản lý kỳ học</a></div>
-    <div *ngIf="showAnyway()" class="p-1"><a routerLink="/messages" routerLinkActive="active" ariaCurrentWhenActive="page">Thông Báo ({{toastMessagesRepo.messages.length}})</a></div>
+    <div *ngIf="showAnyway()" class="p-1"><a routerLink="/messages" routerLinkActive="active" ariaCurrentWhenActive="page">Thông Báo ({{toast.messages.length}})</a></div>
     <div *ngIf="showIfAuthorized()" class="p-1"><a routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page">Cá Nhân ({{currentUsername()}})</a></div>
     <div *ngIf="showIfAuthorized()" class="p-1"><a (click)="onLogout()">Đăng Xuất</a></div>
   </div>

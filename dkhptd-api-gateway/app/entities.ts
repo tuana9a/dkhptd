@@ -324,11 +324,17 @@ export class Timestamp {
 
 export class Settings {
   termIds: string[] = [];
+  renewTokenEvery: string; // use ms lib
+  refreshJobEvery: string; // use ms lib
   constructor(o?: {
     _id?: ObjectId;
     termIds?: string[];
+    renewTokenEvery?: string; // use ms lib
+    refreshJobEvery?: string; // use ms lib
   }) {
     this.termIds = o?.termIds || [];
+    this.renewTokenEvery = o?.renewTokenEvery || "1m"; // 1 minute
+    this.refreshJobEvery = o?.refreshJobEvery || "1s"; // 1 second
   }
 
   addTermIds(termIds: string[]) {

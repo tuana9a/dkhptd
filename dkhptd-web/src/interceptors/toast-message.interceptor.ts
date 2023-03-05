@@ -13,7 +13,7 @@ import { ToastService } from "src/repositories/toast-messages.repo";
 
 @Injectable()
 export class ToastMessageInterceptor implements HttpInterceptor {
-  constructor(private toastMessageRepo: ToastService) {
+  constructor(private toast: ToastService) {
 
   }
   intercept(request: HttpRequest<unknown>, next: HttpHandler) {
@@ -22,7 +22,7 @@ export class ToastMessageInterceptor implements HttpInterceptor {
         if (event instanceof HttpResponse) {
           const body = event.body;
           if (!body?.success) {
-            this.toastMessageRepo.push(`Thất bại: ${body?.message}`);
+            this.toast.push(`Thất bại: ${body?.message}`);
           }
           event = event.clone({ body: body });
         }

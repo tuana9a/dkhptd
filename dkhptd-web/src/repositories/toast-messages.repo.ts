@@ -1,11 +1,11 @@
 import { Injectable } from "@angular/core";
+import moment from "moment";
 import { BaseResponse } from "src/payloads";
 
 @Injectable({
   providedIn: "root"
 })
 export class ToastService {
-  i = 0;
   visibleMessages: (string | undefined)[] = [];
   messages: (string | undefined)[] = [];
 
@@ -18,9 +18,8 @@ export class ToastService {
   }
 
   push(message: string | undefined) {
-    this.i += 1;
     this.__append(message);
-    this.visibleMessages.push(`${this.i} ${message}`);
+    this.visibleMessages.push(`${moment().format("HH:mm:ss")} ${message}`);
     setTimeout(() => this.visibleMessages.shift(), 2000);
   }
 

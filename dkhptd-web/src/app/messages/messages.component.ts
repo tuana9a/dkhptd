@@ -8,7 +8,7 @@ import { ToastService } from "src/repositories/toast-messages.repo";
 })
 export class MessagesComponent implements OnInit {
 
-  constructor(public toastMessagesRepo: ToastService) { }
+  constructor(public toast: ToastService) { }
 
   ngOnInit(): void {
     //

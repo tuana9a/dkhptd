@@ -6,14 +6,13 @@ import {
   HttpErrorResponse
 } from "@angular/common/http";
 
-import { EMPTY } from "rxjs";
+import { throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { Session } from "src/repositories/is-authorized.repo";
-import { Router } from "@angular/router";
 
 @Injectable()
 export class UnauthorizedInterceptor implements HttpInterceptor {
-  constructor(private session: Session, private router: Router) {
+  constructor(private session: Session) {
 
   }
   intercept(request: HttpRequest<unknown>, next: HttpHandler) {
@@ -26,7 +25,7 @@ export class UnauthorizedInterceptor implements HttpInterceptor {
         //return of(new HttpResponse({body: [{name: "Default value..."}]}));
 
         // or just return nothing:
-        return EMPTY;
+        return throwError(() => error);
       })
     );
   }

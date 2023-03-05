@@ -2,22 +2,24 @@
   <input #input hidden class="w-full" type="file" (change)="onFileSelected($event)">
   <table>
     <tr>
+      <td><div><span>Nhấp</span>&nbsp;<a href="javascript:void(0)" (click)="onSelectFile()">vào đây</a>&nbsp;<span>để chọn file</span></div></td>
+      <td></td>
+    </tr>
+    <tr>
       <td>
-        <div class="min-h-[100px] min-w-[200px] w-full flex items-center justify-center" (drop)="onDrop($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
-          <div *ngIf="files?.length; else dropHere">
-            <div *ngFor="let f of files">
-              <span>{{f.name}}</span>
-            </div>
+        <div class="min-h-[100px] min-w-[200px] w-full" (drop)="onDrop($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
+          <div>
+            <div><span>Hoặc kéo thả vào đây</span></div>
           </div>
-          <ng-template #dropHere>
-            <div>
-              <div><span>Nhấp</span>&nbsp;<a href="javascript:void(0)" (click)="onSelectFile()">vào đây</a>&nbsp;<span>để chọn file</span></div>
-              <div><span>Hoặc kéo thả vào đây</span></div>
-            </div>
-          </ng-template> 
+          <table>
+            <tr *ngFor="let f of files">
+              <td class="border border-solid border-black"><span>{{f.name}}</span></td>
+              <td><fa-icon class="p-1 bg-black flex items-center" [styles]="{'stroke': 'red', 'color': 'red'}" [icon]="faMinus" (click)="removeSelectedFile(f)"></fa-icon></td>
+            </tr>
+          </table>
         </div>
       </td>
-      <td><button (click)="upload()">UPLOAD</button></td>
+      <td><button class="py-1 mx-1" (click)="upload()">UPLOAD</button></td>
     </tr>
   </table>
 </div>

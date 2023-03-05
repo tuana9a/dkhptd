@@ -1,4 +1,4 @@
 <div *ngIf="jobs?.length; else empty" app-term-id-job-v1-table [termId]="termId" [jobs]="jobs"></div>
 <ng-template #empty>
-  <div>Danh sách trống hãy&nbsp;<a class="neon" [routerLink]="['/term-ids', this.termId, 'new-job-v1']">đăng ký ở đây</a></div>
+  <div>Danh sách trống hãy&nbsp;<a class="neon" [routerLink]="['/term-ids', this.termId, 'new-job-v1']">tạo mới ở đây</a></div>
 </ng-template>

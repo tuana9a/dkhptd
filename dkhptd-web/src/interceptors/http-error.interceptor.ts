@@ -12,12 +12,12 @@ import { ToastService } from "src/repositories/toast-messages.repo";
 
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {
-  constructor(private toastMessagesRepo: ToastService) { }
+  constructor(private toast: ToastService) { }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler) {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
-        this.toastMessagesRepo.push(error.message);
+        this.toast.push(error.statusText);
         // If you want to return a new response:
         //return of(new HttpResponse({body: [{name: "Default value..."}]}));
 

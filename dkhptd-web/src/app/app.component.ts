@@ -5,6 +5,7 @@ import { Session } from "src/repositories/is-authorized.repo";
 import { ToastService } from "src/repositories/toast-messages.repo";
 import { CookieUtils } from "src/utils/cookie.utils";
 import ms from "ms";
+import { SettingsRepo } from "src/repositories/settings.repo";
 
 @Component({
   selector: "app-root",
@@ -15,11 +16,12 @@ export class AppComponent implements OnInit, OnDestroy {
   title = "dkhptd-web";
   intervalHandler: any;
   constructor(
-    public toastMessagesRepo: ToastService,
+    public toast: ToastService,
     public cookieUtils: CookieUtils,
     public session: Session,
     public accountsApi: AccountsApi,
     public router: Router,
+    private settings: SettingsRepo,
   ) { }
   ngOnInit(): void {
     this.accountsApi.current().subscribe(res => {
@@ -32,7 +34,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.cookieUtils.set({ name: "jwt", value: resNested.data?.token });
         this.session.authenticated(resNested.data);
       });
-    }, ms("1m"));
+    }, ms(this.settings.renewTokenEvery));
   }
   ngOnDestroy(): void {
     clearInterval(this.intervalHandler);

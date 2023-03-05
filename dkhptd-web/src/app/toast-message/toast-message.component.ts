@@ -7,17 +7,17 @@ import { ToastService } from "src/repositories/toast-messages.repo";
   styleUrls: ["./toast-message.component.scss"]
 })
 export class ToastMessageComponent implements OnInit {
-  constructor(private toastMessagesRepo: ToastService) { }
+  constructor(private toast: ToastService) { }
 
   ngOnInit(): void {
     //
   }
 
   messages() {
-    return this.toastMessagesRepo.messages;
+    return this.toast.messages;
   }
 
   visible() {
-    return this.toastMessagesRepo.visibleMessages;
+    return this.toast.visibleMessages;
   }
 }

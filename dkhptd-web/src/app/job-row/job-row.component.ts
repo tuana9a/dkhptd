@@ -1,7 +1,9 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import ms from "ms";
 import { DKHPTDV1sApi } from "src/apis/dkhptd-v1-s.api";
 import { DKHPTDJobV1 } from "src/entities";
+import { SettingsRepo } from "src/repositories/settings.repo";
 import { ToastService } from "src/repositories/toast-messages.repo";
 import { JobStatusUtils } from "src/utils/job-status.utils";
 
@@ -22,7 +24,7 @@ export class JobRowComponent implements OnInit, OnDestroy {
   stopInterval: any;
   faEyeSlash = faEyeSlash;
 
-  constructor(private api: DKHPTDV1sApi, private jobStatusUtils: JobStatusUtils, private toast: ToastService) {
+  constructor(private api: DKHPTDV1sApi, private jobStatusUtils: JobStatusUtils, private toast: ToastService, private settings: SettingsRepo) {
   }
 
   ngOnInit(): void {
@@ -31,7 +33,7 @@ export class JobRowComponent implements OnInit, OnDestroy {
         this.api.getCurrentDecryptJob(this.job?._id as string).subscribe(res => {
           this.job = res.data;
         });
-      }, 2000);
+      }, ms(this.settings.refreshJobEvery));
     }
   }
 
