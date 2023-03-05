@@ -7,6 +7,6 @@
 </div>
 <div *ngFor="let p of preferences">
   <div *ngFor="let s of p.wantedSubjectIds">
-    <div app-term-id-search-class-to-register (classClicked)="onClassClickedEvent($event)" [termId]="p.termId" [q]="'subjectId==' + s" [showExample]="false" [navigateOnQueryChange]="false" [searchOnInit]="true" [showQueryKeys]="false" (checkedEvent)="onChecked($event)" (uncheckedEvent)="onUnchecked($event)" [checkedClassIds]="checkedClassIds"></div>
+    <div app-term-id-search-class-to-register (classClicked)="onClassClickedEvent($event)" [termId]="p.termId" [q]="'subjectId==' + s" [showExample]="false" [navigateOnQueryChange]="false" [searchOnInit]="true" [showQueryKeys]="false" (checkedEvent)="onChecked($event)" (uncheckedEvent)="onUnchecked($event)" [checkedClassIds]="checkedClassIds" [showCheckbox]="showCheckbox"></div>
   </div>
 </div>

@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { AccountsApi } from "src/apis/accounts.api";
 import { AccountPreference } from "src/entities";
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
+import { ToastService } from "src/repositories/toast-messages.repo";
 
 @Component({
   selector: "[app-preference-row]",
@@ -19,7 +20,7 @@ export class PreferenceRowComponent implements OnInit {
   faPlus = faPlus;
   faMinus = faMinus;
 
-  constructor(private api: AccountsApi) { }
+  constructor(private api: AccountsApi, private toast: ToastService) { }
 
   ngOnInit(): void {
     //
@@ -38,11 +39,12 @@ export class PreferenceRowComponent implements OnInit {
 
   onUpdatePreference() {
     if (!this.preference) return;
-    this.api.changePreference(this.preference._id as string, this.preference).subscribe();
+    this.api.changePreference(this.preference._id as string, this.preference).subscribe(res => this.toast.handleResponse(res));
   }
 
   onAddPreference() {
     this.api.addPreference(this.preference).subscribe(res => {
+      this.toast.handleResponse(res);
       if (res.success) {
         this.afterAddPreference.emit();
       }

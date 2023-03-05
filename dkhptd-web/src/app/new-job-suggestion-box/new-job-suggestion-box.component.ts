@@ -13,6 +13,7 @@ import { ClassToRegister } from "src/entities";
 export class NewJobSuggestionBoxComponent implements OnInit {
   @Input() showId = false;
   @Input() showCreatedAt = false;
+  @Input() showCheckbox = true;
   preferences?: AccountPreference[] = [];
   suggestClasses: ClassToRegister[] = [];
   @Input() selectedTermId?= "";

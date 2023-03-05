@@ -1,7 +1,8 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { DKHPTDV1sApi } from "src/apis/dkhptd-v1-s.api";
 import { DKHPTDJobV1 } from "src/entities";
+import { ToastService } from "src/repositories/toast-messages.repo";
 import { JobStatusUtils } from "src/utils/job-status.utils";
 
 @Component({
@@ -19,8 +20,9 @@ export class JobRowComponent implements OnInit, OnDestroy {
   @Input() showTimeToStart = false;
   faEye = faEye;
   stopInterval: any;
+  faEyeSlash = faEyeSlash;
 
-  constructor(private api: DKHPTDV1sApi, private jobStatusUtils: JobStatusUtils) {
+  constructor(private api: DKHPTDV1sApi, private jobStatusUtils: JobStatusUtils, private toast: ToastService) {
   }
 
   ngOnInit(): void {
@@ -50,10 +52,10 @@ export class JobRowComponent implements OnInit, OnDestroy {
   }
 
   onCancelJob() {
-    this.api.cancelJob(this.job?._id).subscribe();
+    this.api.cancelJob(this.job?._id).subscribe(res => this.toast.handleResponse(res));
   }
 
   onRetryJob() {
-    this.api.retryJob(this.job?._id).subscribe();
+    this.api.retryJob(this.job?._id).subscribe(res => this.toast.handleResponse(res));
   }
 }

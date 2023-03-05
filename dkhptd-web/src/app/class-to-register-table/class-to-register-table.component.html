@@ -15,4 +15,4 @@
   <td><div><a>Ghi Chú</a></div><div *ngIf="showQueryKeys">describe</div></td>
   <td *ngIf="showCreatedAt"><div>Cập Nhật Lúc</div><div *ngIf="showQueryKeys">createdAt</div></td>
 </tr>
-<tr app-class-to-register-row (click)="onClassClicked(c)" [c]="c" [showId]="showId" [showCreatedAt]="showCreatedAt" *ngFor="let c of classes" (checkedEvent)="onChecked($event)" (uncheckedEvent)="onUnchecked($event)" [checked]="checkedClassIds.has(c.classId)"></tr>
+<tr app-class-to-register-row (click)="onClassClicked(c)" [c]="c" [showId]="showId" [showCreatedAt]="showCreatedAt" *ngFor="let c of classes" (checkedEvent)="onChecked($event)" (uncheckedEvent)="onUnchecked($event)" [checked]="checkedClassIds.has(c.classId)" [showCheckbox]="showCheckbox"></tr>

@@ -27,7 +27,6 @@ export class TermIdPreferencePageComponent implements OnInit {
       if (res.success) {
         if (this.termId == termId) {
           if (res.data) {
-            console.log(res.data.length);
             if (res.data.length == 0) {
               this.api.addPreference(this.preference).subscribe(() => {
                 this.fetchAllGetFirst();

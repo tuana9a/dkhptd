@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { TermIdsJobV1sApi } from "src/apis/term-ids.dkhptd-v1-s.api";
 import { DKHPTDJobV1 } from "src/entities";
 
@@ -16,6 +16,7 @@ export class TermIdJobV1TableComponent implements OnInit {
   @Input() showTimeToStart = false;
   @Input() showId = false;
   faEye = faEye;
+  faEyeSlash = faEyeSlash;
 
   constructor(private api: TermIdsJobV1sApi) {
   }

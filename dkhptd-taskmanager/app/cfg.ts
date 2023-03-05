@@ -11,6 +11,8 @@ export const cfg = {
   MONGODB_CONNECTION_STRING: process.env.MONGODB_CONNECTION_STRING || "mongodb://localhost:27017",
   DATABASE_NAME: "dkhptd",
   JOB_MAX_TRY: 10,
+  LOG_WORKER_DOING: parseInt(process.env.LOG_WORKER_DOING),
+  LOG_WORKER_PING: parseInt(process.env.LOG_WORKER_PING),
 };
 
 export const JobStatus = {

@@ -5,7 +5,7 @@ import { mongoConnectionPool } from "app/connections";
 import { ExceptionWrapper, InjectTermId } from "app/middlewares";
 import BaseResponse from "app/payloads/BaseResponse";
 import { modify, m } from "app/modifiers";
-import { toNormalizedString } from "app/utils";
+import { toNormalizedString, toSafeInt } from "app/utils";
 import { resolveMongoFilter } from "app/merin";
 import { ClassToRegister } from "app/entities";
 
@@ -42,8 +42,19 @@ router.get("/api/term-ids/:termId/class-to-registers", InjectTermId(), Exception
 router.get("/api/term-ids/:termId/class-to-registers/:id", InjectTermId(), ExceptionWrapper(async (req, resp) => {
   const id = toNormalizedString(req.params.id);
   const termId = req.__termId;
-  const filter: Filter<ClassToRegister> = { _id: new ObjectId(id) };
-  filter.termId = termId;
+  const filter: Filter<ClassToRegister> = { _id: new ObjectId(id), termId: termId };
+  const classToRegister = await mongoConnectionPool
+    .getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(CollectionName.CTR)
+    .findOne(filter);
+  resp.send(new BaseResponse().ok(classToRegister));
+}));
+
+router.get("/api/term-ids/:termId/class-to-registers/class-ids/:classId", InjectTermId(), ExceptionWrapper(async (req, resp) => {
+  const classId = toSafeInt(req.params.classId);
+  const termId = req.__termId;
+  const filter: Filter<ClassToRegister> = { classId: classId, termId: termId };
   const classToRegister = await mongoConnectionPool
     .getClient()
     .db(cfg.DATABASE_NAME)

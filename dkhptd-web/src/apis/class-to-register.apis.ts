@@ -31,6 +31,9 @@ export class ClassToRegsitersApi {
   searchByClassIds() {
     return this.httpClient.get<BaseResponse<ClassToRegister[]>>("/api/class-to-registers/class-ids");
   }
+  findByTermIdAndClassId(termId: string, classId: string | number) {
+    return this.httpClient.get<BaseResponse<ClassToRegister>>(`/api/term-ids/${termId}/class-to-registers/class-ids/${classId}`);
+  }
   uploadTkbXlsx(secret: string, file: File) {
     const body = new FormData();
     body.append("file", file);

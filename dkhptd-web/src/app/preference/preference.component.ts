@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { AccountsApi } from "src/apis/accounts.api";
 import { AccountPreference, Subject } from "src/entities";
+import { ToastService } from "src/repositories/toast-messages.repo";
 
 @Component({
   selector: "[app-preference]",
@@ -14,7 +15,7 @@ export class PreferenceComponent implements OnInit {
   @Input() showSearchBox = false;
   @Input() termId = "";
 
-  constructor(private api: AccountsApi) { }
+  constructor(private api: AccountsApi, private toast: ToastService) { }
 
   ngOnInit(): void {
     //
@@ -41,7 +42,8 @@ export class PreferenceComponent implements OnInit {
 
   onUpdatePreference() {
     if (!this.preference) return;
-    this.api.changePreference(this.preference._id as string, this.preference).subscribe();
+    if (!this.preference._id) return;
+    this.api.changePreference(this.preference._id, this.preference).subscribe(res => this.toast.handleResponse(res));
   }
 
   getSelectedSubjectIds() {

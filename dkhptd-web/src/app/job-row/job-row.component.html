@@ -2,9 +2,9 @@
 <td *ngIf="showId" class="ObjectId">{{job?._id}}</td>
 <td>{{job?.username}}</td>
 <td>
-  <div class="flex items-center">
+  <div class="flex items-center justify-between">
     <div class="flex items-center mr-1"><span>{{job?.password | password: showPassword}}</span></div>
-    <div class="flex items-center"><fa-icon class="flex items-center" (click)="toggleShowPassword()" [icon]="faEye"></fa-icon></div>
+    <div class="flex items-center"><fa-icon class="flex items-center" (click)="toggleShowPassword()" [icon]="showPassword ? faEye: faEyeSlash"></fa-icon></div>
   </div>
 </td>
 <td>
@@ -17,5 +17,5 @@
 <td>{{job?.createdAt | date:'dd-MM-YYYY HH:mm:ss'}}</td>
 <td>{{job?.status | JobStatus}}</td>
 <td><a [routerLink]="[job?._id]" routerLinkActive="active" ariaCurrentWhenActive="page">Chi Tiết</a></td>
-<td><button [disabled]="!isCancelable()" (click)="onCancelJob()">Hủy</button></td>
-<td><button [disabled]="!isRetryable()" (click)="onRetryJob()">Thử Lại</button></td>
+<td><button class="px-1" [disabled]="!isCancelable()" (click)="onCancelJob()">Hủy</button></td>
+<td><button class="px-1" [disabled]="!isRetryable()" (click)="onRetryJob()">Thử Lại</button></td>

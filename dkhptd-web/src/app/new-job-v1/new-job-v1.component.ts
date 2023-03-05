@@ -1,8 +1,9 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { faEye, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { TermIdsJobV1sApi } from "src/apis/term-ids.dkhptd-v1-s.api";
 import { ClassToRegister } from "src/entities";
+import { ToastService } from "src/repositories/toast-messages.repo";
 
 @Component({
   selector: "[app-new-job-v1]",
@@ -23,8 +24,9 @@ export class NewJobV1 implements OnInit {
   faEye = faEye;
   faPlus = faPlus;
   faMinus = faMinus;
+  faEyeSlash = faEyeSlash;
 
-  constructor(private api: TermIdsJobV1sApi, private activatedRoute: ActivatedRoute) { }
+  constructor(private api: TermIdsJobV1sApi, private activatedRoute: ActivatedRoute, private toast: ToastService) { }
 
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe(query => {
@@ -36,7 +38,7 @@ export class NewJobV1 implements OnInit {
   onSubmit() {
     const timeToStart = new Date(this.timeToStart).getTime();
     const classIds = Array.from(this.classIds).map(x => x.trim()).filter(x => x);
-    this.api.termIdSubmitCurrentNewJobV1(this.termId, this.username, this.password, classIds, timeToStart).subscribe();
+    this.api.termIdSubmitCurrentNewJobV1(this.termId, this.username, this.password, classIds, timeToStart).subscribe(res => this.toast.handleResponse(res));
   }
 
   onAddClassId() {

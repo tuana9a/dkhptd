@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { DKHPTDV1sApi } from "src/apis/dkhptd-v1-s.api";
 import { DKHPTDJobResult } from "src/entities";
 import { DKHPTDJobV1 } from "src/entities";
@@ -15,6 +15,7 @@ export class JobComponent implements OnInit {
   @Input() results?: DKHPTDJobResult[] = [];
   @Input() showPassword = false;
   faEye = faEye;
+  faEyeSlash = faEyeSlash;
 
   constructor(private dkhptdV1sApi: DKHPTDV1sApi) { }
 

@@ -9,8 +9,13 @@
       <td><span>{{job?.username}}</span></td>
     </tr>
     <tr>
-      <td><span class="mr-1">password</span><fa-icon [icon]="faEye" (click)="toggleShowPassword()"></fa-icon></td>
-      <td><span>{{job?.password | password: showPassword}}</span></td>
+      <td><span class="mr-1">password</span></td>
+      <td>
+        <div class="flex items-center">
+          <span>{{job?.password | password: showPassword}}</span>
+          <fa-icon class="ml-1" [icon]="showPassword ? faEye: faEyeSlash" (click)="toggleShowPassword()"></fa-icon>
+        </div>
+      </td>
     </tr>
     <tr>
       <td>Danh Sách Mã Lớp</td>

@@ -55,6 +55,7 @@ import { SubjectTableComponent } from "./subject-table/subject-table.component";
 import { SearchSubjectComponent } from "./search-subject/search-subject.component";
 import { PreferenceRowSubjectComponent } from "./preference-row-subject/preference-row-subject.component";
 import { TermIdPreferencePageComponent } from "./term-id-preference-page/term-id-preference-page.component";
+import { NewJobV1RowClassIdComponent } from "./new-job-v1-row-class-id/new-job-v1-row-class-id.component";
 
 const routes: Routes = [
   { path: "login", component: LoginComponent },
@@ -135,6 +136,7 @@ const routes: Routes = [
     SearchSubjectComponent,
     PreferenceRowSubjectComponent,
     TermIdPreferencePageComponent,
+    NewJobV1RowClassIdComponent,
   ],
   imports: [
     BrowserModule,

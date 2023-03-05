@@ -25,6 +25,7 @@ const queryTemplates = [
 })
 export class TermIdSearchClassToRegisterComponent implements OnInit {
   @Input() showId = false;
+  @Input() showCheckbox = false;
   @Input() navigateOnQueryChange = true;
   @Input() showQueryKeys = false;
   @Input() q = "";
