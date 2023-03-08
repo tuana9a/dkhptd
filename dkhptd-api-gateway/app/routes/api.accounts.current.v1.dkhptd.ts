@@ -25,13 +25,14 @@ router.post("/api/accounts/current/v1/dkhptd", JwtFilter(cfg.SECRET), RateLimit(
     m.normalizeString("password"),
     m.normalizeArray("classIds", "string"),
     m.normalizeInt("timeToStart"),
-    m.normalizeInt("termId"),
+    m.normalizeString("termId"),
     m.set("createdAt", Date.now()),
     m.set("status", JobStatus.READY),
     m.set("ownerAccountId", ownerAccountId),
   ]);
 
   const job = new DKHPTDJobV1(safeData);
+  job.originTimeToStart = job.timeToStart;
 
   if (isFalsy(job.username)) throw new FaslyValueError("job.username", job.username);
   if (isEmpty(job.username)) throw new EmptyStringError("job.username", job.username);
@@ -44,7 +45,6 @@ router.post("/api/accounts/current/v1/dkhptd", JwtFilter(cfg.SECRET), RateLimit(
   if (job.classIds.length == 0) throw new RequireLengthFailed("job.classIds");
 
   if (isFalsy(job.timeToStart)) throw new FaslyValueError("job.timeToStart");
-  if (isFalsy(job.termId)) throw new FaslyValueError("job.termId");
 
   const eJob = new DKHPTDJobV1(encryptJobV1(job));
   await mongoConnectionPool
