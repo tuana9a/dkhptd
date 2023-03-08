@@ -32,9 +32,7 @@ export default () => new Job({
   actions: [
     BringToFront(),
     Try([
-      // GoTo("https://dk-sis.hust.edu.vn/"),
       GoTo("https://dk-sis.hust.edu.vn/Users/Login.aspx"),
-      // GoTo("https://ctt-sis.hust.edu.vn/"),
       WaitForTimeout(3000),
       Reload(),
       Click("#tbUserName", { clickCount: 3 }),
@@ -46,9 +44,10 @@ export default () => new Job({
       WaitForTimeout(3000),
       // must be https://dk-sis.hust.edu.vn/ not https://dk-sis.hust.edu.vn
       // current url will return with '/' at the end
-      If(IsEqual(CurrentUrl(), "https://dk-sis.hust.edu.vn/Users/Login.aspx" /* van o trang dang nhap */)).Then([
-        SetVars("userError", TextContent("#lbStatus") /*sai tai khoan*/),
-        SetVars("captchaError", TextContent("#ccCaptcha_TB_EC") /*sai captcha*/),
+      If(IsEqual(CurrentUrl(), "https://dk-sis.hust.edu.vn/Users/Login.aspx")).Then([
+        /* van o trang dang nhap */
+        SetVars("userError", TextContent("#lbStatus")), //sai tai khoan
+        SetVars("captchaError", TextContent("#ccCaptcha_TB_EC")), //sai captcha
         Break(),
       ]),
       For(Params("classIds")).Each([
@@ -65,6 +64,7 @@ export default () => new Job({
       WaitForTimeout(1000),
       /* xac nhan gui dang ky */
       Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_pcYesNo_pcYesNoBody1_ASPxRoundPanel1_btnYes"),
+      WaitForTimeout(1000),
       SetVars("registerResult", PageEval(CrawlRegisterResultHandler)),
       GoTo("https://dk-sis.hust.edu.vn/Users/Logout.aspx"),
     ]).Catch([

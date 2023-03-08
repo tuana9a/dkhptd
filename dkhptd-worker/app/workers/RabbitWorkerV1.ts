@@ -37,11 +37,16 @@ export class RabbitWorkerV1 {
             const request = JSON.parse(c(cfg.amqpEncryptionKey).d(msg.content.toString(), msg.properties.headers.iv));
             try {
               logger.info(`Received ${msg.fields.routingKey} ${toJson(request, 2)}`);
-
-              const onDoing = (doing: DoingInfo) => {
-                logger.info(`Doing ${request.id} ${toJson(doing, 2)}`);
+              let onDoing = (doing: DoingInfo) => {
                 channel.publish(ExchangeName.WORKER_DOING, "", toBuffer(toJson({ workerId: cfg.workerId, doing })));
               };
+
+              if (cfg.logWorkerDoing) {
+                onDoing = (doing: DoingInfo) => {
+                  logger.info(`Doing ${request.id} ${toJson(doing, 2)}`);
+                  channel.publish(ExchangeName.WORKER_DOING, "", toBuffer(toJson({ workerId: cfg.workerId, doing })));
+                };
+              }
               const { logs, vars } = await puppeteerWorkerController.do(request, onDoing);
               logger.info(`Logs ${request.id} ${toJson(logs, 2)}`);
 

@@ -8,33 +8,26 @@ const DEFAULT_SCHEDULES_DIR = "./schedules.tmp/";
 const DEFAULT_USER_DATA_DIR = "./userdata.tmp/";
 
 export class Config {
-  constructor(
-    public configFile?: string,
-    public workerId?: string,
-    public workerType?: string,
-    public tmpDir?: string,
-    public logDest?: string,
-    public logDir?: string,
-    public secret?: string,
-    public accessToken?: string,
-    public maxTry?: number,
-    public jobDir?: string,
-    public scheduleDir?: string,
-    public userDataDir?: string,
-    public httpWorkerPullConfigUrl?: string,
-    public rabbitmqConnectionString?: string,
-    public amqpEncryptionKey?: string,
-    public puppeteerLaunchOption?: LaunchOptions & BrowserLaunchArgumentOptions & BrowserConnectOptions & {
-      product?: Product;
-      extraPrefsFirefox?: Record<string, unknown>;
-    },
-  ) {
-    this.tmpDir = DEFAULT_TMP_DIR;
-    this.logDir = DEFAULT_LOG_DIR;
-    this.jobDir = DEFAULT_JOB_DIR;
-    this.scheduleDir = DEFAULT_SCHEDULES_DIR;
-    this.userDataDir = DEFAULT_USER_DATA_DIR;
-  }
+  configFile?: string = "config.json";
+  workerId?: string = String(Date.now());
+  workerType?: string = "";
+  tmpDir?: string = DEFAULT_TMP_DIR;
+  logDest?: string = "cs";
+  logDir?: string = DEFAULT_LOG_DIR;
+  secret?: string = String(Date.now());
+  accessToken?: string = "";
+  maxTry?: number = 10;
+  jobDir?: string = DEFAULT_JOB_DIR;
+  scheduleDir?: string = DEFAULT_SCHEDULES_DIR;
+  userDataDir?: string = DEFAULT_USER_DATA_DIR;
+  httpWorkerPullConfigUrl?: string = "";
+  rabbitmqConnectionString?: string = "";
+  amqpEncryptionKey?: string = "";
+  puppeteerLaunchOption?: LaunchOptions & BrowserLaunchArgumentOptions & BrowserConnectOptions & {
+    product?: Product;
+    extraPrefsFirefox?: Record<string, unknown>;
+  } = {};
+  logWorkerDoing?: boolean = false;
 
   toJson() {
     return {

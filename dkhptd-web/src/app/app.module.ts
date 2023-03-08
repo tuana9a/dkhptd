@@ -67,6 +67,7 @@ const routes: Routes = [
       { path: ":id", component: JobPageComponent },
     ]
   },
+  { path: "new-job-v1", component: NewJobV1PageComponent },
   { path: "upload-tkb-xlsx", component: UploadTkbXlsxComponent },
   { path: "manage-term-id", component: ManageTermIdComponent },
   { path: "messages", component: MessagesComponent },

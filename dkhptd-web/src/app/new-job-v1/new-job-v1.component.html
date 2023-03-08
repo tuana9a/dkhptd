@@ -2,7 +2,7 @@
   <div>
     <span>Điền đầy đủ thông tin sau đó bấm nút Gửi</span>
   </div>
-  <div>
+  <div *ngIf="showOpenSearchOrSuggestBox">
     <span>Mục chọn mã lớp các bạn có thể bấm Tìm kiếm hoặc Xem Gợi ý sau đó tích vào checkbox để lựa chọn mã lớp</span>
   </div>
 </div>
@@ -30,17 +30,17 @@
           <table>
             <tr>
               <td class="border border-solid border-black">Mã Lớp</td>
-              <td class="border border-solid border-black">Tên Học Phần</td>
+              <td *ngIf="showOpenSearchOrSuggestBox" class="border border-solid border-black">Tên Học Phần</td>
               <td class="border border-solid border-black"></td>
             </tr>
-            <tr *ngFor="let classId of classIds" app-new-job-v1-row-class-id [classId]="classId" [termId]="termId" (removeClassIdEvent)="onDeleteClassId($event)"></tr>
+            <tr *ngFor="let classId of classIds" app-new-job-v1-row-class-id [classId]="classId" [termId]="termId" (removeClassIdEvent)="onDeleteClassId($event)" [findOnInit]="findWhenAddClassId"></tr>
             <tr>
-              <td colspan="2" class="border border-solid border-black"><input class="w-full" type="text" (keypress)="onKeyPressClassId($event)" [(ngModel)]="classId"></td>
+              <td [colSpan]="showOpenSearchOrSuggestBox ? '2' : '0'" class="border border-solid border-black"><input class="w-full" type="text" (keypress)="onKeyPressClassId($event)" [(ngModel)]="classId"></td>
               <td class=""><fa-icon class="p-1 bg-black flex items-center" [styles]="{'stroke': '#1eff00', 'color': '#1eff00'}" [icon]="faPlus" (click)="onAddClassId()"></fa-icon></td>
             </tr>
           </table>
         </td>
-        <td>
+        <td *ngIf="showOpenSearchOrSuggestBox">
           <a href="javascript:void" (click)="openSearchBox()">Tìm Kiếm</a>&nbsp;<span>hoặc</span>&nbsp;<a href="javascript:void" (click)="openSuggestBox()">Xem Gợi Ý</a>
         </td>
       </tr>

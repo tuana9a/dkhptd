@@ -1,4 +1,4 @@
-import { BringToFront, GoTo, WaitForTimeout, ScreenShot, TypeIn, Click, GetValueFromParams, CurrentUrl, GetTextContent, PageEval, If, IsEqual, For, Job, Break, SetVars, Try } from "puppeteer-worker-job-builder";
+import { BringToFront, GoTo, WaitForTimeout, ScreenShot, TypeIn, Click, CurrentUrl, PageEval, If, IsEqual, For, Job, Break, SetVars, Try, Params, TextContent } from "puppeteer-worker-job-builder";
 import { ResolveCaptcha } from "../job-builders";
 import { toPrettyErr } from "../utils";
 
@@ -37,30 +37,30 @@ export default () => new Job({
       GoTo("http://dk-sis.hust.edu.vn/"),
       WaitForTimeout(1000),
       Click("#tbUserName", { clickCount: 3 }),
-      TypeIn("#tbUserName", GetValueFromParams((p) => p.username)),
-      TypeIn("#tbPassword_CLND", GetValueFromParams((p) => p.password)),
+      TypeIn("#tbUserName", Params((p) => p.username)),
+      TypeIn("#tbPassword_CLND", Params((p) => p.password)),
       ScreenShot("#ccCaptcha_IMG", "./tmp/temp.png", "png"),
       TypeIn("#ccCaptcha_TB_I", ResolveCaptcha("./tmp/temp.png", "https://hcr.tuana9a.com")),
       Click("button"),
       WaitForTimeout(3000),
       If(IsEqual(CurrentUrl(), "http://dk-sis.hust.edu.vn/" /* van o trang dang nhap */)).Then([
-        SetVars("userError", GetTextContent("#lbStatus") /*sai tai khoan*/),
-        SetVars("captchaError", GetTextContent("#ccCaptcha_TB_EC") /*sai captcha*/),
+        SetVars("userError", TextContent("#lbStatus") /*sai tai khoan*/),
+        SetVars("captchaError", TextContent("#ccCaptcha_TB_EC") /*sai captcha*/),
         Break(),
       ]),
       If(IsEqual(CurrentUrl(), "http://www.dk-sis.hust.edu.vn/" /* van o trang dang nhap */)).Then([
-        SetVars("userError", GetTextContent("#lbStatus") /*sai tai khoan*/),
-        SetVars("captchaError", GetTextContent("#ccCaptcha_TB_EC") /*sai captcha*/),
+        SetVars("userError", TextContent("#lbStatus") /*sai tai khoan*/),
+        SetVars("captchaError", TextContent("#ccCaptcha_TB_EC") /*sai captcha*/),
         Break(),
       ]),
-      For(GetValueFromParams((x) => x.classIds)).Each([
+      For(Params((x) => x.classIds)).Each([
         Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_tbDirectClassRegister_I", { clickCount: 3 }),
         (classId) => TypeIn("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_tbDirectClassRegister_I", classId),
         /* gui dang ky 1 lop */
         Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_btDirectClassRegister_CD"),
         WaitForTimeout(1000),
         /* xem tin nhan tra ve */
-        GetTextContent("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_lbKQ"),
+        TextContent("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_lbKQ"),
       ]),
       /* gui tat ca dang ky */
       Click("#ctl00_ctl00_ASPxSplitter1_Content_ContentSplitter_MainContent_ASPxCallbackPanel1_btSendRegister_CD"),

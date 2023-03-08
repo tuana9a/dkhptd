@@ -10,7 +10,6 @@ import { PuppeteerWorker } from "puppeteer-worker";
 import { SupportJobsDb } from "./repos";
 import { JobRequest } from "./types";
 import { HttpWorker } from "./workers/HttpWorker";
-import { RabbitWorkerV2 } from "./workers/RabbitWorkerV2";
 import { RabbitWorkerV1 } from "./workers/RabbitWorkerV1";
 import { StandaloneWorker } from "./workers/StandaloneWorker";
 import { RabbitWorker } from "./workers/RabbitWorker";
@@ -66,7 +65,6 @@ export default class WorkerController {
     private httpWorker: HttpWorker,
     private rabbitWorker: RabbitWorker,
     private rabbitWorkerV1: RabbitWorkerV1,
-    private rabbitWorkerV2: RabbitWorkerV2,
     private standaloneWorker: StandaloneWorker,
   ) {
   }
@@ -84,10 +82,6 @@ export default class WorkerController {
 
   rabbit_v1() {
     return this.rabbitWorkerV1;
-  }
-
-  rabbit_v2() {
-    return this.rabbitWorkerV2;
   }
 
   http() {

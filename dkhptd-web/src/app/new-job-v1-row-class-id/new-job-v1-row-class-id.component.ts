@@ -12,6 +12,7 @@ export class NewJobV1RowClassIdComponent implements OnInit {
   @Input() termId = "";
   @Input() subjectName?: string;
   @Output() removeClassIdEvent = new EventEmitter<string>();
+  @Input() findOnInit = true;
 
   faPlus = faPlus;
   faMinus = faMinus;
@@ -19,11 +20,13 @@ export class NewJobV1RowClassIdComponent implements OnInit {
   constructor(private api: ClassToRegsitersApi) { }
 
   ngOnInit(): void {
-    this.api.findByTermIdAndClassId(this.termId, this.classId).subscribe(res => {
-      if (res.success) {
-        this.subjectName = res.data?.subjectName;
-      }
-    });
+    if (this.findOnInit) {
+      this.api.findByTermIdAndClassId(this.termId, this.classId).subscribe(res => {
+        if (res.success) {
+          this.subjectName = res.data?.subjectName;
+        }
+      });
+    }
   }
 
   onRemoveClassId(subjectId: string) {

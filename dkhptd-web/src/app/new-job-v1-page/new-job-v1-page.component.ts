@@ -1,5 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { TermIdsApi } from "src/apis/term-ids.api";
 
 @Component({
   selector: "app-new-job-v1-page",
@@ -7,14 +6,11 @@ import { TermIdsApi } from "src/apis/term-ids.api";
   styleUrls: ["./new-job-v1-page.component.scss"]
 })
 export class NewJobV1PageComponent implements OnInit {
-  termIds?: string[] = [];
-  constructor(private api: TermIdsApi) { }
+  constructor() { 
+    //
+  }
 
   ngOnInit(): void {
-    this.api.all().subscribe(res => {
-      if (res.success) {
-        this.termIds = res.data;
-      }
-    });
+    //
   }
 }

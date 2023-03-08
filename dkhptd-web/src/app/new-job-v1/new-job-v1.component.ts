@@ -25,6 +25,8 @@ export class NewJobV1 implements OnInit {
   faPlus = faPlus;
   faMinus = faMinus;
   faEyeSlash = faEyeSlash;
+  @Input() showOpenSearchOrSuggestBox = true;
+  @Input() findWhenAddClassId = true;
 
   constructor(private api: TermIdsJobV1sApi, private activatedRoute: ActivatedRoute, private toast: ToastService) { }
 
@@ -38,7 +40,8 @@ export class NewJobV1 implements OnInit {
   onSubmit() {
     const timeToStart = new Date(this.timeToStart).getTime();
     const classIds = Array.from(this.classIds).map(x => x.trim()).filter(x => x);
-    this.api.termIdSubmitCurrentNewJobV1(this.termId, this.username, this.password, classIds, timeToStart).subscribe(res => this.toast.handleResponse(res));
+    if (this.termId) this.api.termIdSubmitCurrentNewJobV1(this.termId, this.username, this.password, classIds, timeToStart).subscribe(res => this.toast.handleResponse(res));
+    else this.api.submitCurrentNewJobV1(this.termId, this.username, this.password, classIds, timeToStart).subscribe(res => this.toast.handleResponse(res));
   }
 
   onAddClassId() {
