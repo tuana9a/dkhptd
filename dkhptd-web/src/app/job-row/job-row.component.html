@@ -7,11 +7,16 @@
     <div class="flex items-center"><fa-icon class="flex items-center" (click)="toggleShowPassword()" [icon]="showPassword ? faEye: faEyeSlash"></fa-icon></div>
   </div>
 </td>
-<td>
+<td *ngIf="job?.termId; else default">
   <span class="classId mr-1" *ngFor="let classId of job?.classIds">
     <a [routerLink]="['/term-ids', job?.termId, 'search-class-to-register']" [queryParams]="{q: 'classId==' + classId}">{{classId}}</a>
   </span>
 </td>
+<ng-template #default>
+  <td>
+    <span class="classId mr-1" *ngFor="let classId of job?.classIds">{{classId}}</span>
+  </td>
+</ng-template>
 <td *ngIf="showTimeToStart">{{job?.timeToStart | date:'dd-MM-YYYY HH:mm:ss'}}</td>
 <td>{{job?.originTimeToStart | date:'dd-MM-YYYY HH:mm:ss'}}</td>
 <td>{{job?.createdAt | date:'dd-MM-YYYY HH:mm:ss'}}</td>
