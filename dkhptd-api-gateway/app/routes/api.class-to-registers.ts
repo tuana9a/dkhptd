@@ -1,18 +1,17 @@
 import express from "express";
 import { Filter } from "mongodb";
 import multer from "multer";
-import { tkbBus } from "app/bus";
-import { cfg, CollectionName } from "app/cfg";
-import { mongoConnectionPool } from "app/connections";
+import { cfg, CollectionName, QueueName } from "app/cfg";
+import { mongoConnectionPool, rabbitmqConnectionPool } from "app/connections";
 import { ExceptionWrapper, IsAdminFilter, JwtFilter } from "app/middlewares";
 import { modify, m } from "app/modifiers";
 import BaseResponse from "app/payloads/BaseResponse";
-import { toNormalizedString, toSafeInt } from "app/utils";
+import { toBuffer, toNormalizedString, toSafeInt } from "app/utils";
 import { resolveMongoFilter } from "app/merin";
 import { FaslyValueError, NotAnArrayError } from "app/exceptions";
 import { isFalsy } from "app/utils";
-import { tkbEvent } from "app/app-event";
 import { ClassToRegister } from "app/entities";
+import logger from "app/loggers/logger";
 
 export const router = express.Router();
 
@@ -79,7 +78,8 @@ router.post("/api/class-to-registers", JwtFilter(cfg.SECRET), IsAdminFilter(), E
 
 router.post("/api/class-to-registers/file", JwtFilter(cfg.SECRET), IsAdminFilter(), multer({ limits: { fileSize: 5 * 1000 * 1000 /* 5mb */ } }).single("file"), ExceptionWrapper(async (req, resp) => {
   const file = req.file;
-  tkbBus.emit(tkbEvent.TKB_XLSX_UPLOADED, file.buffer);
+  logger.info(`Received uploaded TKB xlsx length ${file.buffer.length}`);
+  rabbitmqConnectionPool.getChannel().sendToQueue(QueueName.PARSE_TKB_XLSX, toBuffer(file.buffer));
   resp.send(new BaseResponse().ok());
 }));
 

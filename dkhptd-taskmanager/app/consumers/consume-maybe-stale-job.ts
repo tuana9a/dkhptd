@@ -1,7 +1,6 @@
-import { jobEvent } from "../app-event";
-import { jobBus } from "../bus";
+import { bus } from "../bus";
+import { ExchangeName, AppEvent } from "../cfg";
 import { rabbitmqConnectionPool } from "../connections";
-import { jobExchangeName } from "../exchange-name";
 import logger from "../loggers/logger";
 
 export const setup = () => {
@@ -10,11 +9,11 @@ export const setup = () => {
       logger.error(error2);
       return;
     }
-    rabbitmqConnectionPool.getChannel().bindQueue(q.queue, jobExchangeName.MAYBE_STALE_JOB, "");
+    rabbitmqConnectionPool.getChannel().bindQueue(q.queue, ExchangeName.MAYBE_STALE_JOB, "");
     rabbitmqConnectionPool.getChannel().consume(q.queue, async (msg) => {
       try {
         const jobId = msg.content.toString();
-        jobBus.emit(jobEvent.STALE_JOB, jobId);
+        bus.emit(AppEvent.STALE_JOB, jobId);
       } catch (err) {
         logger.error(err);
       }

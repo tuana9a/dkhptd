@@ -1,12 +1,11 @@
-import { classToRegisterEvent } from "app/app-event";
-import { classToRegisterBus } from "app/bus";
-import { cfg, CollectionName } from "app/cfg";
+import { bus } from "app/bus";
+import { cfg, CollectionName, AppEvent } from "app/cfg";
 import { mongoConnectionPool } from "app/connections";
 import { ClassToRegister } from "app/entities";
 import logger from "app/loggers/logger";
 
 export const setup = () => {
-  classToRegisterBus.on(classToRegisterEvent.UPSERT_MANY_CTR, async (classes: ClassToRegister[]) => {
+  bus.on(AppEvent.UPSERT_MANY_CTR, async (classes: ClassToRegister[]) => {
     logger.info(`Upsert many class to register count ${classes.length}`);
     try {
       for (const c of classes) {

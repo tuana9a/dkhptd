@@ -1,8 +1,7 @@
 import { ObjectId } from "mongodb";
 import ms from "ms";
-import { jobV1Event } from "../app-event";
-import { jobV1Bus } from "../bus";
-import { cfg, CollectionName, JobStatus } from "../cfg";
+import { bus } from "../bus";
+import { cfg, CollectionName, JobStatus, AppEvent } from "../cfg";
 import { mongoConnectionPool } from "../connections";
 import { DKHPTDJobV1 } from "../entities";
 import logger from "../loggers/logger";
@@ -17,7 +16,7 @@ export const setup = () => loop.infinity(async () => {
     while (await cursor.hasNext()) {
       const entry = await cursor.next();
       const job = decryptJobV1(new DKHPTDJobV1(entry));
-      jobV1Bus.emit(jobV1Event.NEW_JOB_V1, toJobV1WorkerMessage(job));
+      bus.emit(AppEvent.NEW_JOB_V1, toJobV1WorkerMessage(job));
       await mongoConnectionPool.getClient()
         .db(cfg.DATABASE_NAME)
         .collection(CollectionName.DKHPTDV1)

@@ -1,20 +1,18 @@
 import crypto from "crypto";
 
-import { jobV1Event } from "../app-event";
-import { jobV1Bus } from "../bus";
-import { cfg } from "../cfg";
+import { bus } from "../bus";
+import { cfg, QueueName, AppEvent } from "../cfg";
 import { rabbitmqConnectionPool } from "../connections";
 import { c } from "../cypher";
 import logger from "../loggers/logger";
-import { jobV1QueueName } from "../queue-name";
 import { toJson, toBuffer } from "../utils";
 
 export const setup = () => {
-  rabbitmqConnectionPool.getChannel().assertQueue(jobV1QueueName.RUN_JOB_V1, {});
-  jobV1Bus.on(jobV1Event.NEW_JOB_V1, (job) => logger.info("New job V1: " + job.id));
-  jobV1Bus.on(jobV1Event.NEW_JOB_V1, (job) => {
+  rabbitmqConnectionPool.getChannel().assertQueue(QueueName.RUN_JOB_V1, {});
+  bus.on(AppEvent.NEW_JOB_V1, (job) => logger.info("New job V1: " + job.id));
+  bus.on(AppEvent.NEW_JOB_V1, (job) => {
     const iv = crypto.randomBytes(16).toString("hex");
-    rabbitmqConnectionPool.getChannel().sendToQueue(jobV1QueueName.RUN_JOB_V1, toBuffer(c(cfg.AMQP_ENCRYPTION_KEY).e(toJson(job), iv)), {
+    rabbitmqConnectionPool.getChannel().sendToQueue(QueueName.RUN_JOB_V1, toBuffer(c(cfg.AMQP_ENCRYPTION_KEY).e(toJson(job), iv)), {
       headers: {
         iv: iv,
       }

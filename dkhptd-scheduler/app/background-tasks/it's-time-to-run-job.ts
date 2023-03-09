@@ -1,7 +1,6 @@
 import { ObjectId } from "mongodb";
-import { jobEvent } from "../app-event";
-import { jobBus } from "../bus";
-import { cfg, CollectionName, JobStatus } from "../cfg";
+import { bus } from "../bus";
+import { AppEvent, cfg, CollectionName, JobStatus } from "../cfg";
 import { mongoConnectionPool } from "../connections";
 import { DKHPTDJob } from "../entities";
 import logger from "../loggers/logger";
@@ -17,7 +16,7 @@ export const setup = () => loop.infinity(async () => {
     while (await cursor.hasNext()) {
       const entry = await cursor.next();
       const job = new DKHPTDJob(entry);
-      jobBus.emit(jobEvent.NEW_JOB, toJobWorkerMessage(job));
+      bus.emit(AppEvent.NEW_JOB, toJobWorkerMessage(job));
       await mongoConnectionPool.getClient()
         .db(cfg.DATABASE_NAME).collection(CollectionName.DKHPTD).updateOne({ _id: new ObjectId(job._id) }, {
           $set: {

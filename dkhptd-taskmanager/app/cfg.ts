@@ -1,4 +1,5 @@
 import * as dotenv from "dotenv";
+import { nextStr } from "./next";
 
 dotenv.config();
 
@@ -36,4 +37,37 @@ export const CollectionName = {
   DKHPTDV1Result: "dkhptdV1Result",
   DKHPTDV2: "dkhptdV2",
   DKHPTDV2Result: "dkhptdV2Result",
+};
+
+export const QueueName = {
+  RUN_JOB: "run-job",
+  PROCESS_JOB_RESULT: "process-job-result",
+  RUN_JOB_V1: "run-job-v1",
+  PROCESS_JOB_V1_RESULT: "process-job-v1-result",
+  RUN_JOB_V2: "run-job-v2",
+  PROCESS_JOB_V2_RESULT: "process-job-v2-result",
+};
+
+export const ExchangeName = {
+  WORKER_PING: "worker-ping",
+  WORKER_DOING: "worker-doing",
+  MAYBE_STALE_JOB: "maybe-stale-job",
+  MAYBE_STALE_JOB_V1: "maybe-stale-job-v1",
+  MAYBE_STALE_JOB_V2: "maybe-stale-job-v2",
+};
+
+
+export const AppEvent = {
+  NEW_JOB: nextStr(),
+  NEW_JOB_RESULT: nextStr(),
+  STALE_JOB: nextStr(),
+  NEW_JOB_V1: nextStr(),
+  NEW_JOB_V1_RESULT: nextStr(), // deprecated
+  JOB_V1_UNKNOWN_ERROR: nextStr(),
+  JOB_V1_SYSTEM_ERROR: nextStr(),
+  JOB_V1_CAPTCHA_ERROR: nextStr(),
+  JOB_V1_DONE: nextStr(),
+  NEW_JOB_V2: nextStr(),
+  NEW_JOB_V2_RESULT: nextStr(),
+  STALE_JOB_V2: nextStr(),
 };

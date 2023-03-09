@@ -1,7 +1,6 @@
 import ms from "ms";
-import { jobEvent } from "../app-event";
-import { jobBus } from "../bus";
-import { cfg, CollectionName, JobStatus } from "../cfg";
+import { bus } from "../bus";
+import { cfg, CollectionName, JobStatus, AppEvent } from "../cfg";
 import { mongoConnectionPool } from "../connections";
 import { DKHPTDJob } from "../entities";
 import logger from "../loggers/logger";
@@ -17,7 +16,7 @@ export const setup = () => loop.infinity(async () => {
       const entry = await cursor.next();
       const job = new DKHPTDJob(entry);
       logger.info(`Found stale job ${job._id}`);
-      jobBus.emit(jobEvent.STALE_JOB, job._id);
+      bus.emit(AppEvent.STALE_JOB, job._id);
     }
   } catch (err) {
     logger.error(err);

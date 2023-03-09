@@ -39,3 +39,17 @@ export const CollectionName = {
   SETTINGS: "settings",
   SUBJECT: "subject",
 };
+
+export const QueueName = {
+  PARSE_TKB_XLSX: "parse-tkb-xslx",
+  PROCESS_PARSE_TKB_XLSX_RESULT: "process-parse-tkb-xlsx-result"
+};
+
+export const AppEvent = {
+  TKB_XLSX_UPLOADED: "tkb-xlsx-uploaded",
+  TKB_XLSX_PARSED: "tkb-xlsx-parsed",
+  ADD_TERM_IDS: "add-term-ids",
+  REPLACE_TERM_IDS: "replace-term-ids",
+  UPSERT_MANY_SUBJECTS: "upsert-many-subjects",
+  UPSERT_MANY_CTR: "upsert-many-class-to-registers",
+};

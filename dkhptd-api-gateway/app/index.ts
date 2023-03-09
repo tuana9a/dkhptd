@@ -6,11 +6,10 @@ import * as amqplib from "amqplib/callback_api";
 import { MongoClient } from "mongodb";
 import cors from "cors";
 
-import { cfg, CollectionName } from "./cfg";
+import { cfg, CollectionName, QueueName } from "./cfg";
 import logger from "./loggers/logger";
-import { ensureIndex, toKeyValueString } from "./utils";
+import { ensureIndex, toJson, toKeyValueString } from "./utils";
 import { mongoConnectionPool, rabbitmqConnectionPool } from "./connections";
-import { tkbQueueName } from "./queue-name";
 import { cachedSettings } from "./services";
 
 async function main() {
@@ -51,11 +50,13 @@ async function main() {
         return;
       }
       rabbitmqConnectionPool.addChannel(channel);
-      channel.assertQueue(tkbQueueName.PARSE_TKB_XLSX);
-      channel.assertQueue(tkbQueueName.PROCESS_PARSE_TKB_XLSX_RESULT);
+      channel.assertQueue(QueueName.PARSE_TKB_XLSX);
+      channel.assertQueue(QueueName.PROCESS_PARSE_TKB_XLSX_RESULT);
       app.use(require("./auto-route").setup("./dist/routes"));
-      require("./auto-consumer").setup("./dist/consumers");
-      require("./auto-listener").setup("./dist/listeners");
+      const loadedConsumers = require("./auto-consumer").setup("./dist/consumers");
+      logger.info(`Loaded consumers: ${toJson(loadedConsumers, 2)}`);
+      const loadedListeners = require("./auto-listener").setup("./dist/listeners");
+      logger.info(`Loaded listeners ${toJson(loadedListeners, 2)}`);
     });
   });
 }

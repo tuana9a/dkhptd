@@ -1,11 +1,13 @@
-import { tkbEvent } from "../app-event";
-import { tkbBus } from "../bus";
+import { QueueName, AppEvent } from "app/cfg";
+import { ClassToRegister, Subject } from "app/entities";
+import { modify, m } from "app/modifiers";
+import ParsedClassToRegister from "app/payloads/ParsedClassToRegister";
+import { bus } from "../bus";
 import { rabbitmqConnectionPool } from "../connections";
 import logger from "../loggers/logger";
-import { tkbQueueName } from "../queue-name";
 
 export const setup = () => {
-  rabbitmqConnectionPool.getChannel().assertQueue(tkbQueueName.PROCESS_PARSE_TKB_XLSX_RESULT, {}, (error2, q) => {
+  rabbitmqConnectionPool.getChannel().assertQueue(QueueName.PROCESS_PARSE_TKB_XLSX_RESULT, {}, (error2, q) => {
     if (error2) {
       logger.error(error2);
       return;
@@ -13,8 +15,36 @@ export const setup = () => {
 
     rabbitmqConnectionPool.getChannel().consume(q.queue, async (msg) => {
       try {
-        const result = JSON.parse(msg.content.toString());
-        tkbBus.emit(tkbEvent.TKB_XLSX_PARSED, result);
+        const result: { data: ParsedClassToRegister[] } = JSON.parse(msg.content.toString());
+        try {
+          logger.info(`Received parsed class to register, count: ${result.data.length}`);
+          const classes = result.data
+            .map((x) => new ParsedClassToRegister(x))
+            .map((x) => x.toCTR())
+            .map((x) => modify(x, [
+              m.normalizeInt("classId"),
+              m.normalizeInt("secondClassId"),
+              m.normalizeString("subjectId"),
+              m.normalizeString("subjectName"),
+              m.normalizeString("classType"),
+              m.normalizeInt("learnDayNumber"),
+              m.normalizeInt("learnAtDayOfWeek"),
+              m.normalizeString("learnTime"),
+              m.normalizeString("learnRoom"),
+              m.normalizeString("learnWeek"),
+              m.normalizeString("describe"),
+              m.normalizeString("termId"),
+              m.set("createdAt", Date.now()),
+            ]))
+            .map((x) => new ClassToRegister(x));
+          const termIds = Array.from(classes.reduce((t, c) => t.add(c.termId), new Set<string>()));
+          const subjects = Array.from(classes.reduce((t, c) => t.set(c.subjectId, new Subject({ subjectId: c.subjectId, subjectName: c.subjectName })), new Map<string, Subject>()).values());
+          bus.emit(AppEvent.ADD_TERM_IDS, termIds);
+          bus.emit(AppEvent.UPSERT_MANY_CTR, classes);
+          bus.emit(AppEvent.UPSERT_MANY_SUBJECTS, subjects);
+        } catch (err) {
+          logger.error(err);
+        }
       } catch (err) {
         logger.error(err);
       }

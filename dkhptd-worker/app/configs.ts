@@ -48,19 +48,19 @@ export class Config {
 export const cfg = new Config();
 
 export const ExchangeName = {
-  WORKER_PING: "dkhptd.worker-ping",
-  WORKER_DOING: "dkhptd.worker-doing",
+  WORKER_PING: "worker-ping",
+  WORKER_DOING: "worker-doing",
 };
 
 export const QueueName = {
-  RUN_JOB: "dkhptd.run-job",
-  PROCESS_JOB_RESULT: "dkhptd.process-job-result",
+  RUN_JOB: "run-job",
+  PROCESS_JOB_RESULT: "process-job-result",
 
-  RUN_JOB_V1: "dkhptd.run-job-v1",
-  PROCESS_JOB_V1_RESULT: "dkhptd.process-job-v1-result",
+  RUN_JOB_V1: "run-job-v1",
+  PROCESS_JOB_V1_RESULT: "process-job-v1-result",
 
-  RUN_JOB_V2: "dkhptd.run-job-v2",
-  PROCESS_JOB_V2_RESULT: "dkhptd.process-job-v2-result",
+  RUN_JOB_V2: "run-job-v2",
+  PROCESS_JOB_V2_RESULT: "process-job-v2-result",
 };
 
 export const correctConfig = (c: Config) => {
