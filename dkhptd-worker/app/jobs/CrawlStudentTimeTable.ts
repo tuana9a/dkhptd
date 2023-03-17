@@ -1,6 +1,53 @@
-import { BringToFront, GoTo, WaitForTimeout, ScreenShot, TypeIn, Click, CurrentUrl, PageEval, If, IsEqual, Job, Break, SetVars, TextContent, Params } from "puppeteer-worker-job-builder";
-import { ResolveCaptcha } from "../job-builders";
+import {
+  BringToFront,
+  GoTo,
+  WaitForTimeout,
+  ScreenShot,
+  TypeIn,
+  Click,
+  CurrentUrl,
+  PageEval,
+  If,
+  IsEqual,
+  Job,
+  Break,
+  SetVars,
+  TextContent,
+  Params,
+  Action,
+  RequiredParamError,
+} from "puppeteer-worker-job-builder";
 
+export class ResolveCaptchaAction extends Action {
+  imgPath: string;
+  endPoint: string;
+
+  constructor(imgPath: string, endpoint: string) {
+    super(ResolveCaptchaAction.name);
+    this.imgPath = imgPath;
+    this.endPoint = endpoint;
+  }
+
+  async run() {
+    try {
+      const { fs, axios, FormData } = this.__context.libs;
+      const form = new FormData();
+      form.append("file", fs.createReadStream(this.imgPath));
+      const predict = await axios
+        .post(this.endPoint, form, { headers: form.getHeaders() })
+        .then((res) => String(res.data));
+      return predict;
+    } catch (err) {
+      return err.message;
+    }
+  }
+}
+
+export const ResolveCaptcha = (imgPath: string, endpoint: string) => {
+  if (!imgPath) throw new RequiredParamError("imgPath").withBuilderName(ResolveCaptcha.name);
+  if (!endpoint) throw new RequiredParamError("endpoint").withBuilderName(ResolveCaptcha.name);
+  return new ResolveCaptchaAction(imgPath, endpoint).withName(`${ResolveCaptcha.name}: ${endpoint} ${imgPath}`);
+};
 
 const CrawlTimeTableHandler = () => {// browser scope not nodejs scope
   // eslint-disable-next-line no-undef

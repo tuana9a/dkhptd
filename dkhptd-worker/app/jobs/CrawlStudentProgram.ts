@@ -1,10 +1,54 @@
-import { BringToFront, GoTo, WaitForTimeout, SetVars, ScreenShot, TypeIn, Click, GetValueFromParams, CurrentUrl, GetTextContent, PageEval, If, IsEqual, Job, Break } from "puppeteer-worker-job-builder";
-import { ResolveCaptcha } from "../job-builders";
+import {
+  BringToFront,
+  GoTo,
+  WaitForTimeout,
+  SetVars,
+  ScreenShot,
+  TypeIn,
+  Click,
+  CurrentUrl,
+  PageEval,
+  If,
+  IsEqual,
+  Job,
+  Break,
+  Params,
+  TextContent,
+  Action,
+  RequiredParamError
+} from "puppeteer-worker-job-builder";
 
-const LOGIN_URL = "https://ctt-sis.hust.edu.vn/Account/Login.aspx";
-const LOGOUT_URL = "https://ctt-sis.hust.edu.vn/Account/Logout.aspx";
-const STUDENT_PROGRAM_URL = "https://ctt-sis.hust.edu.vn/Students/StudentProgram.aspx";
-const SAVE_CAPTCHA_TO = "./tmp/temp.png";
+
+class ResolveCaptchaAction extends Action {
+  imgPath: string;
+  endPoint: string;
+
+  constructor(imgPath: string, endpoint: string) {
+    super(ResolveCaptchaAction.name);
+    this.imgPath = imgPath;
+    this.endPoint = endpoint;
+  }
+
+  async run() {
+    try {
+      const { fs, axios, FormData } = this.__context.libs;
+      const form = new FormData();
+      form.append("file", fs.createReadStream(this.imgPath));
+      const predict = await axios
+        .post(this.endPoint, form, { headers: form.getHeaders() })
+        .then((res) => String(res.data));
+      return predict;
+    } catch (err) {
+      return err.message;
+    }
+  }
+}
+
+const ResolveCaptcha = (imgPath: string, endpoint: string) => {
+  if (!imgPath) throw new RequiredParamError("imgPath").withBuilderName(ResolveCaptcha.name);
+  if (!endpoint) throw new RequiredParamError("endpoint").withBuilderName(ResolveCaptcha.name);
+  return new ResolveCaptchaAction(imgPath, endpoint).withName(`${ResolveCaptcha.name}: ${endpoint} ${imgPath}`);
+};
 
 const CrawlStudentProgramHandler = () => {
   // note: browser scope not nodejs scope
@@ -40,25 +84,25 @@ export default () => new Job({
   name: "CrawlStudentProgram",
   actions: [
     BringToFront(),
-    GoTo(LOGIN_URL),
+    GoTo("https://ctt-sis.hust.edu.vn/Account/Login.aspx"),
     WaitForTimeout(1000),
     Click("#ctl00_ctl00_contentPane_MainPanel_MainContent_rblAccountType_RB0"),
     Click("#ctl00_ctl00_contentPane_MainPanel_MainContent_tbUserName_I", { clickCount: 3 }),
-    TypeIn("#ctl00_ctl00_contentPane_MainPanel_MainContent_tbUserName_I", GetValueFromParams((p) => p.username)),
-    TypeIn("#ctl00_ctl00_contentPane_MainPanel_MainContent_tbPassword_I_CLND", GetValueFromParams((p) => p.password)),
-    ScreenShot("#ctl00_ctl00_contentPane_MainPanel_MainContent_ASPxCaptcha1_IMG", SAVE_CAPTCHA_TO, "png"),
-    TypeIn("#ctl00_ctl00_contentPane_MainPanel_MainContent_ASPxCaptcha1_TB_I", ResolveCaptcha(SAVE_CAPTCHA_TO, "https://hcr.tuana9a.com")),
+    TypeIn("#ctl00_ctl00_contentPane_MainPanel_MainContent_tbUserName_I", Params((p) => p.username)),
+    TypeIn("#ctl00_ctl00_contentPane_MainPanel_MainContent_tbPassword_I_CLND", Params((p) => p.password)),
+    ScreenShot("#ctl00_ctl00_contentPane_MainPanel_MainContent_ASPxCaptcha1_IMG", "./tmp/temp.png", "png"),
+    TypeIn("#ctl00_ctl00_contentPane_MainPanel_MainContent_ASPxCaptcha1_TB_I", ResolveCaptcha("./tmp/temp.png", "https://hcr.tuana9a.com")),
     Click("#ctl00_ctl00_contentPane_MainPanel_MainContent_btLogin_CD"),
     WaitForTimeout(3000),
-    If(IsEqual(CurrentUrl(), LOGIN_URL /* van o trang dang nhap */)).Then([
-      SetVars("userError", GetTextContent("#ctl00_ctl00_contentPane_MainPanel_MainContent_FailureText")/* sai tai khoan */),
-      SetVars("catpchaError", GetTextContent("#ctl00_ctl00_contentPane_MainPanel_MainContent_ASPxCaptcha1_TB_EC") /* sai captcha */),
+    If(IsEqual(CurrentUrl(), "https://ctt-sis.hust.edu.vn/Account/Login.aspx" /* van o trang dang nhap */)).Then([
+      SetVars("userError", TextContent("#ctl00_ctl00_contentPane_MainPanel_MainContent_FailureText")/* sai tai khoan */),
+      SetVars("catpchaError", TextContent("#ctl00_ctl00_contentPane_MainPanel_MainContent_ASPxCaptcha1_TB_EC") /* sai captcha */),
       SetVars("studentProgram", PageEval(CrawlStudentProgramHandler)),
       Break(),
     ]).Else([
-      GoTo(STUDENT_PROGRAM_URL),
+      GoTo("https://ctt-sis.hust.edu.vn/Students/StudentProgram.aspx"),
       SetVars("studentProgram", PageEval(CrawlStudentProgramHandler)),
-      GoTo(LOGOUT_URL),
+      GoTo("https://ctt-sis.hust.edu.vn/Account/Logout.aspx"),
       Break(),
     ]),
   ],
