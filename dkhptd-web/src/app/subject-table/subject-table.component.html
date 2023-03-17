@@ -1,7 +1,0 @@
-<tr>
-  <td *ngIf="showCheckbox"></td>
-  <td *ngIf="showId">_id</td>
-  <td><div><a>Mã Học Phần</a></div><div *ngIf="showQueryKeys">subjectId</div></td>
-  <td><div><a>Tên Học Phần</a></div><div *ngIf="showQueryKeys">subjectName</div></td>
-</tr>
-<tr app-subject-row (click)="onSubjectClicked(s)" [s]="s" [checked]="checkedSubjectIds.has(s.subjectId)" [showId]="showId" [showCheckbox]="showCheckbox" *ngFor="let s of subjects" (checkedEvent)="onChecked($event)" (uncheckedEvent)="onUnchecked($event)"></tr>
