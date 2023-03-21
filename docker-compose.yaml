@@ -1,0 +1,32 @@
+version: "3.1"
+
+services:
+  api-gateway:
+    image: tuana9a/dkhptd-api-gateway
+    network_mode: host
+    restart: unless-stopped
+    env_file:
+      - api-gateway.env
+  taskmanager:
+    image: tuana9a/dkhptd-taskmanager
+    network_mode: host
+    restart: unless-stopped
+    env_file:
+      - taskmanager.env
+  scheduler:
+    image: tuana9a/dkhptd-scheduler
+    network_mode: host
+    restart: unless-stopped
+    env_file:
+      - scheduler.env
+  hust-tkb-xlsx-parser:
+    image: tuana9a/hust-tkb-xlsx-parser
+    network_mode: host
+    restart: unless-stopped
+    env_file:
+      - hust-tkb-xlsx-parser.env
+  worker:
+    image: tuana9a/dkhptd-worker
+    network_mode: host
+    volumes:
+      - ./worker-config.json:/app/config.json
