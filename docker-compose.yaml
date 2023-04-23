@@ -3,30 +3,76 @@ version: "3.1"
 services:
   api-gateway:
     image: tuana9a/dkhptd-api-gateway
-    network_mode: host
     restart: unless-stopped
     env_file:
       - api-gateway.env
+    networks:
+      net1:
+        ipv4_address: 172.22.0.2
+
   taskmanager:
     image: tuana9a/dkhptd-taskmanager
-    network_mode: host
     restart: unless-stopped
     env_file:
       - taskmanager.env
+    networks:
+      net1:
+        ipv4_address: 172.22.0.3
+
   scheduler:
     image: tuana9a/dkhptd-scheduler
-    network_mode: host
     restart: unless-stopped
     env_file:
       - scheduler.env
+    networks:
+      net1:
+        ipv4_address: 172.22.0.4
+
   hust-tkb-xlsx-parser:
     image: tuana9a/hust-tkb-xlsx-parser
-    network_mode: host
     restart: unless-stopped
     env_file:
       - hust-tkb-xlsx-parser.env
+    networks:
+      net1:
+        ipv4_address: 172.22.0.5
+
   worker:
     image: tuana9a/dkhptd-worker
-    network_mode: host
+    restart: unless-stopped
+    env_file:
+      - worker.env
+    networks:
+      net1:
+        ipv4_address: 172.22.0.6
+
+  mongo:
+    container_name: mongo-4.4
+    image: mongo:4.4.8
+    command:
+      - --config
+      - /etc/mongod.conf
     volumes:
-      - ./worker-config.json:/app/config.json
+      - ./data/db:/data/db
+      - ./mongod.conf:/etc/mongod.conf
+    restart: unless-stopped
+    networks:
+      net1:
+        ipv4_address: 172.22.0.7
+
+  rabbitmq:
+    image: rabbitmq:3.9.22-management
+    container_name: rabbitmq-3.9
+    env_file:
+      - rabbitmq.env
+    restart: unless-stopped
+    networks:
+      net1:
+        ipv4_address: 172.22.0.8
+
+networks:
+  net1:
+    # name of docker network
+    ipam:
+      config:
+        - subnet: 172.22.0.0/24
