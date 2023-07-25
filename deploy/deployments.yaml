@@ -1,0 +1,137 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dkhptd-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dkhptd-web
+  template:
+    metadata:
+      labels:
+        app: dkhptd-web
+    spec:
+      containers:
+        - name: dkhptd-web
+          image: tuana9a/dkhptd-web:2023.07.04
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "250m"
+            limits:
+              memory: "200Mi"
+              cpu: "500m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dkhptd-api-gateway
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dkhptd-api-gateway
+  template:
+    metadata:
+      labels:
+        app: dkhptd-api-gateway
+    spec:
+      containers:
+        - name: dkhptd-api-gateway
+          image: tuana9a/dkhptd-api-gateway:2023.07.22
+          envFrom:
+            - configMapRef:
+                name: dkhptd-api-gateway
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "500m"
+            limits:
+              memory: "500Mi"
+              cpu: "1000m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dkhptd-scheduler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dkhptd-scheduler
+  template:
+    metadata:
+      labels:
+        app: dkhptd-scheduler
+    spec:
+      containers:
+        - name: dkhptd-scheduler
+          image: tuana9a/dkhptd-scheduler:2023.06.16
+          envFrom:
+            - configMapRef:
+                name: dkhptd-scheduler
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "250m"
+            limits:
+              memory: "500Mi"
+              cpu: "500m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dkhptd-taskmanager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dkhptd-taskmanager
+  template:
+    metadata:
+      labels:
+        app: dkhptd-taskmanager
+    spec:
+      containers:
+        - name: dkhptd-taskmanager
+          image: tuana9a/dkhptd-taskmanager:2023.06.16
+          envFrom:
+            - configMapRef:
+                name: dkhptd-taskmanager
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "250m"
+            limits:
+              memory: "500Mi"
+              cpu: "500m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dkhptd-worker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dkhptd-worker
+  template:
+    metadata:
+      labels:
+        app: dkhptd-worker
+    spec:
+      containers:
+        - name: dkhptd-worker
+          image: tuana9a/dkhptd-worker:2023.07.04
+          envFrom:
+            - configMapRef:
+                name: dkhptd-worker
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "250m"
+            limits:
+              memory: "500Mi"
+              cpu: "1000m"

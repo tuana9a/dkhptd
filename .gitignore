@@ -1,4 +1,4 @@
 .vscode
 *tmp*
 *.env
-/worker-config.json
+*.conf
