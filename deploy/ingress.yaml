@@ -2,14 +2,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dkhptd
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: nginx
-  tls:
-    - hosts:
-        - dkhptd.tuana9a.com
-      secretName: tuana9a-dkhptd-tls
   rules:
     - host: dkhptd.tuana9a.com
       http:
