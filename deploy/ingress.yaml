@@ -12,13 +12,6 @@ spec:
             path: "/"
             backend:
               service:
-                name: dkhptd-web
-                port:
-                  number: 80
-          - pathType: Prefix
-            path: "/api"
-            backend:
-              service:
                 name: dkhptd-api-gateway
                 port:
                   number: 8080
