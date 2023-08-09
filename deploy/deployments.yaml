@@ -24,8 +24,8 @@ spec:
               memory: "100Mi"
               cpu: "500m"
             limits:
-              memory: "500Mi"
-              cpu: "1000m"
+              memory: "100Mi"
+              cpu: "500m"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -52,8 +52,8 @@ spec:
               memory: "100Mi"
               cpu: "250m"
             limits:
-              memory: "500Mi"
-              cpu: "500m"
+              memory: "100Mi"
+              cpu: "250m"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -80,8 +80,8 @@ spec:
               memory: "100Mi"
               cpu: "250m"
             limits:
-              memory: "500Mi"
-              cpu: "500m"
+              memory: "100Mi"
+              cpu: "250m"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -108,5 +108,5 @@ spec:
               memory: "100Mi"
               cpu: "250m"
             limits:
-              memory: "500Mi"
-              cpu: "1000m"
+              memory: "100Mi"
+              cpu: "250m"
