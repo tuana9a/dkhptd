@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: dkhptd-api-gateway
 spec:
-  replicas: 1
+  # replicas: 1 # auto-scaling
   selector:
     matchLabels:
       app: dkhptd-api-gateway
@@ -88,7 +88,7 @@ kind: Deployment
 metadata:
   name: dkhptd-worker
 spec:
-  replicas: 1
+  # replicas: 1 # auto-scaling
   selector:
     matchLabels:
       app: dkhptd-worker
