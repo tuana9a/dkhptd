@@ -5,11 +5,11 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: dkhptd.tuana9a.com
+    - host: dkhptd-api.tuana9a.com
       http:
         paths:
           - pathType: Prefix
-            path: "/api"
+            path: "/"
             backend:
               service:
                 name: dkhptd-api-gateway
