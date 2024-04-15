@@ -1,0 +1,9 @@
+<nav class="overflow-auto">
+  <div class="flex max-w-full flex-wrap">
+    <div *ngIf="showIfAuthorized()" class="p-1"><a routerLink="manage-job-v1" routerLinkActive="active" ariaCurrentWhenActive="page">Quản Lý Hẹn Giờ</a></div>
+    <div *ngIf="showIfAuthorized()" class="p-1"><a routerLink="new-job-v1" routerLinkActive="active" ariaCurrentWhenActive="page">Tạo Hẹn Giờ Mới</a></div>
+    <div *ngIf="showAnyway()" class="p-1"><a routerLink="search-class-to-register" routerLinkActive="active" ariaCurrentWhenActive="page">Tìm Lớp Đăng Ký</a></div>
+    <div *ngIf="showIfAuthorized()" class="p-1"><a routerLink="preference" routerLinkActive="active" ariaCurrentWhenActive="page">Tùy chỉnh Nguyện Vọng</a></div>
+  </div>
+</nav>
+<router-outlet></router-outlet>

@@ -1,0 +1,13 @@
+{
+  "args": [
+    "--no-sandbox",
+    "--disable-setuid-sandbox"
+  ],
+  "slowMo": 10,
+  "defaultViewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "executablePath": "google-chrome-stable",
+  "userDataDir": "./userdata.tmp/"
+}

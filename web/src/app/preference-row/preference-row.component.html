@@ -1,0 +1,22 @@
+<td *ngIf="showId" class="ObjectId">{{preference._id}}</td>
+<td>{{preference.termId}}</td>
+<td>
+  <table>
+    <tr>
+      <td class="border border-solid border-black">Mã Học Phần</td>
+      <td class="border border-solid border-black">Tên Học Phần</td>
+      <td class="border border-solid border-black"></td>
+    </tr>
+    <tr *ngFor="let subjectId of preference.wantedSubjectIds" app-preference-row-subject [subjectId]="subjectId" (removeSubjectIdEvent)="onRemoveSubjectId($event)"></tr>
+    <tr>
+      <td colspan="2" class="border border-solid border-black"><input class="w-full" type="text" [(ngModel)]="subjectId" (keypress)="onKeyPressSubjectId($event)"></td>
+      <td class=""><fa-icon class="p-1 bg-black flex items-center" [styles]="{'stroke': '#1eff00', 'color': '#1eff00'}" [icon]="faPlus" (click)="onAddSubjectId()"></fa-icon></td>
+    </tr>
+  </table>
+</td>
+<td *ngIf="showUpdateButton">
+  <button class="p-1 m-1" (click)="onUpdatePreference()">SAVE</button>
+</td>
+<td *ngIf="showAddButton">
+  <button class="p-1 m-1" (click)="onAddPreference()">SAVE</button>
+</td>

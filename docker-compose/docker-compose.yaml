@@ -1,0 +1,79 @@
+version: "3.1"
+
+services:
+  api-gateway:
+    image: tuana9a/dkhptd-api-gateway
+    restart: unless-stopped
+    env_file:
+      - api-gateway.env
+    networks:
+      net1:
+        ipv4_address: 172.222.0.2
+
+  taskmanager:
+    image: tuana9a/dkhptd-taskmanager
+    restart: unless-stopped
+    env_file:
+      - taskmanager.env
+    networks:
+      net1:
+        ipv4_address: 172.222.0.3
+
+  scheduler:
+    image: tuana9a/dkhptd-scheduler
+    restart: unless-stopped
+    env_file:
+      - scheduler.env
+    networks:
+      net1:
+        ipv4_address: 172.222.0.4
+
+  # OPTIONAL
+  thoi-khoa-bieu-parser:
+    image: tuana9a/dkhptd-thoi-khoa-bieu-parser
+    restart: unless-stopped
+    env_file:
+      - thoi-khoa-bieu-parser.env
+    networks:
+      net1:
+        ipv4_address: 172.222.0.5
+
+  worker:
+    image: tuana9a/dkhptd-worker
+    restart: unless-stopped
+    env_file:
+      - worker.env
+    networks:
+      net1:
+        ipv4_address: 172.222.0.6
+
+  mongo:
+    image: mongo:5.0
+    command:
+      - --config
+      - /etc/mongod.conf
+    volumes:
+      - ./data/db:/data/db
+      - ./mongod.conf:/etc/mongod.conf
+    restart: unless-stopped
+    networks:
+      net1:
+        ipv4_address: 172.222.0.7
+
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    env_file:
+      - rabbitmq.env
+    restart: unless-stopped
+    hostname: rabbitmq
+    volumes:
+      - ./data/mnesia:/var/lib/rabbitmq/mnesia
+    networks:
+      net1:
+        ipv4_address: 172.222.0.8
+
+networks:
+  net1:
+    ipam:
+      config:
+        - subnet: 172.222.0.0/24

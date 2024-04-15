@@ -1,0 +1,7 @@
+{
+  "slowMo": 10,
+  "headless": false,
+  "defaultViewport": null,
+  "executablePath": "google-chrome-stable",
+  "userDataDir": "./userdata.tmp/"
+}

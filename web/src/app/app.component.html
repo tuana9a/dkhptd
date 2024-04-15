@@ -1,0 +1,20 @@
+<h1>đăng ký lớp tự động</h1>
+<div class="fixed top-0 right-0" app-toast-message></div>
+<iframe *ngIf="showIfUnauthorized()" class="flex border border-solid border-white m-1" width="530" height="350" src="https://www.youtube.com/embed/fPReXnlELCs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<!-- This nav gives you links to click, which tells the router which route to use (defined in the routes constant in  AppRoutingModule) -->
+<nav class="overflow-auto">
+  <div class="flex max-w-full flex-wrap">
+    <div *ngIf="showIfUnauthorized()" class="p-1"><a routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">Đăng Nhập</a></div>
+    <div *ngIf="showIfUnauthorized()" class="p-1"><a routerLink="/signup" routerLinkActive="active" ariaCurrentWhenActive="page">Đăng Ký</a></div>
+    <div class="p-1"><a routerLink="/term-ids" routerLinkActive="active" ariaCurrentWhenActive="page">Chọn Kỳ Học</a></div>
+    <div *ngIf="showIfAuthorized()" class="p-1"><a routerLink="/manage-job-v1" routerLinkActive="active" ariaCurrentWhenActive="page">Quản Lý Hẹn Giờ (Toàn Bộ)</a></div>
+    <div *ngIf="showIfAuthorized()" class="p-1"><a routerLink="/new-job-v1" routerLinkActive="active" ariaCurrentWhenActive="page">Tạo Mới Hẹn Giờ</a></div>
+    <div *ngIf="showIfAdmin()" class="p-1"><a routerLink="/upload-tkb-xlsx" routerLinkActive="active" ariaCurrentWhenActive="page">Upload TKB.xlsx</a></div>
+    <div *ngIf="showIfAdmin()" class="p-1"><a routerLink="/manage-term-id" routerLinkActive="active" ariaCurrentWhenActive="page">Quản lý kỳ học</a></div>
+    <div *ngIf="showAnyway()" class="p-1"><a routerLink="/messages" routerLinkActive="active" ariaCurrentWhenActive="page">Thông Báo ({{toast.messages.length}})</a></div>
+    <div *ngIf="showIfAuthorized()" class="p-1"><a routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page">Cá Nhân ({{currentUsername()}})</a></div>
+    <div *ngIf="showIfAuthorized()" class="p-1"><a (click)="onLogout()">Đăng Xuất</a></div>
+  </div>
+</nav>
+<!-- The routed views render in the <router-outlet>-->
+<router-outlet></router-outlet>

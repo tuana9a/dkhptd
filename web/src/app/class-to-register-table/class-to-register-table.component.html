@@ -1,0 +1,18 @@
+<tr>
+  <td *ngIf="showCheckbox"></td>
+  <td *ngIf="showId">_id</td>
+  <td><div><a>Kỳ Học</a></div><div *ngIf="showQueryKeys">termId</div></td>
+  <td><div><a>Mã Lớp</a></div><div *ngIf="showQueryKeys">classId</div></td>
+  <td><div><a>Mã Lớp Kèm</a></div><div *ngIf="showQueryKeys">secondClassId</div></td>
+  <td><div><a>Loại Lớp</a></div><div *ngIf="showQueryKeys">classType</div></td>
+  <td><div><a>Mã Học Phần</a></div><div *ngIf="showQueryKeys">subjectId</div></td>
+  <td><div><a>Tên Học Phần</a></div><div *ngIf="showQueryKeys">subjectName</div></td>
+  <td><div><a>Buổi Học Số</a></div><div *ngIf="showQueryKeys">learnDayNumber</div></td>
+  <td><div><a>Học Vào Thứ</a></div><div *ngIf="showQueryKeys">learnAtDayOfWeek</div></td>
+  <td><div><a>Thời Gian Học</a></div><div *ngIf="showQueryKeys">learnTime</div></td>
+  <td><div><a>Phòng Học</a></div><div *ngIf="showQueryKeys">learnRoom</div></td>
+  <td><div><a>Học Vào Các Tuần</a></div><div *ngIf="showQueryKeys">learnWeek</div></td>
+  <td><div><a>Ghi Chú</a></div><div *ngIf="showQueryKeys">describe</div></td>
+  <td *ngIf="showCreatedAt"><div>Cập Nhật Lúc</div><div *ngIf="showQueryKeys">createdAt</div></td>
+</tr>
+<tr app-class-to-register-row (click)="onClassClicked(c)" [c]="c" [showId]="showId" [showCreatedAt]="showCreatedAt" *ngFor="let c of classes" (checkedEvent)="onChecked($event)" (uncheckedEvent)="onUnchecked($event)" [checked]="checkedClassIds.has(c.classId)" [showCheckbox]="showCheckbox"></tr>

@@ -1,0 +1,40 @@
+<div class="overflow-auto">
+  <div>
+    <table>
+      <tr>
+        <td>Bộ Lọc</td>
+        <td *ngIf="listQuery.length">
+          <div class="flex">
+            <div class="my-1 mr-1 flex text-center" *ngFor="let q of listQuery; let i = index">
+              <div class="flex items-center"><span class="bg-black text-white">{{q | q : keyTranslator : opTranslator}}</span></div>
+              <div class="ml-[1px] flex items-center"><fa-icon class="bg-black flex items-center px-1" (click)="removeQ(i)" [icon]="faXmark" [styles]="{'stroke': 'red', 'color': 'red'}"></fa-icon></div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <select [(ngModel)]="newQueryKey">
+            <option *ngFor="let t of queryTemplates" [value]="t.key">{{t.displayName}}</option>
+          </select>
+        </td>
+        <td>
+          <input class="w-full" [(ngModel)]="newQueryValue" (keypress)="onKeyPressOnNewQueryValue($event)" type="text">
+        </td>
+        <td><button (click)="addNewMatchQuery()">ENTER</button></td>
+      </tr>
+    </table>
+  </div>
+  <div class="flex">
+    <table>
+      <tr>
+        <td>Phân Trang</td>
+        <td><fa-icon class="px-2 flex items-center" [icon]="faArrowLeft" (click)="prevPage()"></fa-icon></td>
+        <td><input type="number" class="w-[50px] text-center" min="0" [(ngModel)]="page" (change)="onQueryChange()"></td>
+        <td><fa-icon class="px-2 flex items-center" [icon]="faArrowRight" (click)="nextPage()"></fa-icon></td>
+        <td>Số Lượng</td>
+        <td><input type="number" max="20" min="0" class="w-[50px] text-center" [(ngModel)]="size" (change)="onQueryChange()"></td>
+      </tr>
+    </table>
+  </div>
+  <table app-subject-table [subjects]="subjects" [showId]="showId" [showQueryKeys]="showQueryKeys" [checkedSubjectIds]="checkedSubjectIds" (subjectClickedEvent)="onSubjectClickedEvent($event)" (checkedEvent)="onChecked($event)" (uncheckedEvent)="onUnchecked($event)">
+  </table>
+</div>

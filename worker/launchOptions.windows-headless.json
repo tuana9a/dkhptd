@@ -1,0 +1,9 @@
+{
+  "slowMo": 10,
+  "defaultViewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "executablePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "userDataDir": "./userdata.tmp/"
+}

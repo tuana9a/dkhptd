@@ -1,0 +1,15 @@
+<td *ngIf="showCheckbox"><div class="flex items-centers justify-center"><input [(ngModel)]="checked" (change)="onCheckboxChange()" type="checkbox"></div></td>
+<td *ngIf="showId">{{c._id}}</td>
+<td>{{c.termId}}</td>
+<td>{{c.classId}}</td>
+<td>{{c.secondClassId}}</td>
+<td>{{c.classType}}</td>
+<td>{{c.subjectId}}</td>
+<td>{{c.subjectName}}</td>
+<td class="text-center">{{c.learnDayNumber}}</td>
+<td class="text-center">{{c.learnAtDayOfWeek}}</td>
+<td>{{c.learnTime}}</td>
+<td>{{c.learnRoom}}</td>
+<td>{{c.learnWeek}}</td>
+<td>{{c.describe}}</td>
+<td *ngIf="showCreatedAt">{{c.createdAt | date:'dd-MM-YYYY HH:mm:ss'}}</td>
