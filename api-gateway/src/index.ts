@@ -8,7 +8,7 @@ import cors from "cors";
 
 import { cfg, CollectionName, QueueName, Role } from "./cfg";
 import logger from "./loggers/logger";
-import { ensureIndex, toJson, toKeyValueString, toSHA256 } from "./utils";
+import { ensureIndex, toJson, toSHA256 } from "./utils";
 import { mongoConnectionPool, rabbitmqConnectionPool } from "./connections";
 import { cachedSettings } from "./services";
 import { Account } from "./entities";
@@ -34,7 +34,7 @@ async function ensureRootAccount() {
 }
 
 async function main() {
-  logger.info(`Config: \n${toKeyValueString(cfg)}`);
+  logger.info(`Config: ${toJson(cfg)}`);
 
   const app = express();
   app.use(cors());
@@ -77,10 +77,8 @@ async function main() {
       channel.assertQueue(QueueName.PARSE_TKB_XLSX);
       channel.assertQueue(QueueName.PROCESS_PARSE_TKB_XLSX_RESULT);
       app.use(require("./auto-route").setup("./dist/routes"));
-      const loadedConsumers = require("./auto-consumer").setup("./dist/consumers");
-      logger.info(`Loaded consumers: ${toJson(loadedConsumers)}`);
-      const loadedListeners = require("./auto-listener").setup("./dist/listeners");
-      logger.info(`Loaded listeners ${toJson(loadedListeners)}`);
+      require("./auto-consumer").setup("./dist/consumers");
+      require("./auto-listener").setup("./dist/listeners");
     });
   });
 }

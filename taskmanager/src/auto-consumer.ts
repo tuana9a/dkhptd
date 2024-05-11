@@ -1,23 +1,17 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import fs from "fs";
 import path from "path";
+import logger from "./loggers/logger";
+import { toJson } from "./utils";
 
 export const setup = (dir: string) => {
   const filepaths = fs.readdirSync(dir).filter(x => x.endsWith(".js"));
-  const loaded = [];
-
+  const loadedPaths = [];
   for (const filepath of filepaths) {
     const relativeFilepath = `${dir}/${filepath}`;
-    const stat = fs.statSync(relativeFilepath);
-
-    if (stat.isDirectory()) {
-      const childLoaded = setup(relativeFilepath);
-      loaded.push(...childLoaded);
-    } else {
-      require(path.resolve(relativeFilepath)).setup();
-      loaded.push(relativeFilepath);
-    }
+    require(path.resolve(relativeFilepath)).setup();
+    loadedPaths.push(relativeFilepath);
   }
-
-  return loaded;
+  logger.info(`Loaded consumers: ${toJson(loadedPaths)}`);
+  return loadedPaths;
 };

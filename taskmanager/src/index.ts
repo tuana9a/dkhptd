@@ -4,10 +4,10 @@ import { MongoClient } from "mongodb";
 import { cfg, ExchangeName } from "./cfg";
 import { mongoConnectionPool, rabbitmqConnectionPool } from "./connections";
 import logger from "./loggers/logger";
-import { toJson, toKeyValueString } from "./utils";
+import { toJson } from "./utils";
 
 async function main() {
-  logger.info(`Config: \n${toKeyValueString(cfg)}`);
+  logger.info(`Config: ${toJson(cfg)}`);
 
   const client = await new MongoClient(cfg.MONGODB_CONNECTION_STRING).connect();
   mongoConnectionPool.addClient(client);
@@ -31,10 +31,8 @@ async function main() {
       channel.assertExchange(ExchangeName.WORKER_DOING, "fanout");
       channel.assertExchange(ExchangeName.WORKER_PING, "fanout");
 
-      const loadedConsumers = require("./auto-consumer").setup("./dist/consumers");
-      logger.info(`Loaded consumers: ${toJson(loadedConsumers)}`);
-      const loadedListeners = require("./auto-listener").setup("./dist/listeners");
-      logger.info(`Loaded listeners: ${toJson(loadedListeners)}`);
+      require("./auto-consumer").setup("./dist/consumers");
+      require("./auto-listener").setup("./dist/listeners");
     });
   });
 }

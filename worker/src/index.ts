@@ -9,7 +9,7 @@ import { SupportJobsDb } from "./repos";
 import WorkerController, { PuppeteerWorkerController } from "./controllers";
 import { PuppeteerDisconnectedError } from "./errors";
 import logger from "./logger";
-import { ensureDirExists, update, ensurePageCount } from "./utils";
+import { ensureDirExists, update, ensurePageCount, toJson } from "./utils";
 import { JobSupplier } from "./types";
 import { cfg, Config, correctConfig } from "./configs";
 import { RabbitWorkerV1 } from "./workers/RabbitWorkerV1";
@@ -19,14 +19,13 @@ import { Browser } from "puppeteer-core";
 
 export async function launch(initConfig: Config) {
   update(cfg, initConfig);
-  cfg.puppeteerLaunchOptions = JSON.parse(fs.readFileSync(cfg.puppeteerLaunchOptionsPath, { encoding: "utf-8" }));
   correctConfig(cfg);
   ensureDirExists(cfg.tmpDir);
   ensureDirExists(cfg.logDir);
   ensureDirExists(cfg.puppeteerLaunchOptions.userDataDir);
 
   logger.use(cfg.logDest);
-  logger.info(cfg.toString());
+  logger.info(`Config: ${toJson(cfg)}`);
   const puppeteerWorker = new PuppeteerWorker();
   const supportJobsDb = new SupportJobsDb();
   const puppeteerWorkerController = new PuppeteerWorkerController(puppeteerWorker, supportJobsDb);
@@ -60,7 +59,7 @@ export async function launch(initConfig: Config) {
       supportJobsDb.update(name, job.supplier);
     });
 
-  logger.info(`Loaded Jobs:\n${loadedJobs.reduce((a, c) => `${a}${c.name} -> ${c.filepath}\n`, "")}`);
+  logger.info(`Loaded Jobs: ${loadedJobs.map(x => `${x.name} -> ${x.filepath}`).join(",")}`);
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const browser: Browser = await require("puppeteer-core").launch(cfg.puppeteerLaunchOptions);

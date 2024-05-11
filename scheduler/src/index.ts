@@ -4,10 +4,10 @@ import { MongoClient } from "mongodb";
 import { cfg } from "./cfg";
 import { mongoConnectionPool, rabbitmqConnectionPool } from "./connections";
 import logger from "./loggers/logger";
-import { toJson, toKeyValueString } from "./utils";
+import { toJson } from "./utils";
 
 async function main() {
-  logger.info(toKeyValueString(cfg));
+  logger.info(`Config: ${toJson(cfg)}`);
 
   const client = await new MongoClient(cfg.MONGODB_CONNECTION_STRING).connect();
   mongoConnectionPool.addClient(client);
@@ -23,12 +23,8 @@ async function main() {
         return;
       }
       rabbitmqConnectionPool.addChannel(channel);
-
-      const loadedBackgroundTasks = require("./auto-background-task").setup("./dist/background-tasks");
-      logger.info(`Loaded background tasks ${toJson(loadedBackgroundTasks)}`);
-
-      const loadedListeners = require("./auto-listener").setup("./dist/listeners");
-      logger.info(`Loaded listeners ${toJson(loadedListeners)}`);
+      require("./auto-background-task").setup("./dist/background-tasks");
+      require("./auto-listener").setup("./dist/listeners");
     });
   });
 }

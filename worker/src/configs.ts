@@ -1,5 +1,4 @@
 import { BrowserConnectOptions, BrowserLaunchArgumentOptions, LaunchOptions, Product } from "puppeteer-core";
-import { toJson } from "./utils";
 
 const DEFAULT_TMP_DIR = "./tmp/";
 const DEFAULT_LOG_DIR = "./logs/";
@@ -7,7 +6,6 @@ const DEFAULT_JOB_DIR = "./dist/jobs/";
 const DEFAULT_SCHEDULES_DIR = "./schedules.tmp/";
 const DEFAULT_USER_DATA_DIR = "./userdata.tmp/";
 const DEFAULT_LOG_DEST = "cs";
-const DEFAULT_PUPPETEER_LAUNCH_OPTIONS_PATH = "./launchOptions.windows.visible.json";
 
 export class Config {
   id?: string = String(Date.now());
@@ -17,7 +15,6 @@ export class Config {
   tmpDir?: string = DEFAULT_TMP_DIR;
   logDir?: string = DEFAULT_LOG_DIR;
   logWorkerDoing?: boolean = false;
-  puppeteerLaunchOptionsPath?: string = DEFAULT_PUPPETEER_LAUNCH_OPTIONS_PATH;
   puppeteerLaunchOptions?: LaunchOptions & BrowserLaunchArgumentOptions & BrowserConnectOptions & {
     product?: Product;
     extraPrefsFirefox?: Record<string, unknown>;
@@ -32,15 +29,6 @@ export class Config {
     return {
       ...this,
     };
-  }
-
-  toString() {
-    const output = ["Config: "];
-    for (const key of Object.keys(this)) {
-      const value = this[key];
-      output.push(`${key} = ${toJson(value)}`);
-    }
-    return output.join("\n");
   }
 }
 

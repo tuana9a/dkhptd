@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "node launch.js --config-file config.json",
-    "dev": "nodemon launch.js --config-file config.json",
+    "start": "./launch.js",
+    "dev": "nodemon launch.js",
     "test": "jest test",
     "test:watch": "jest --watch test",
     "build": "tsc --declaration",
