@@ -6,7 +6,7 @@ import { c } from "./cypher";
 import { DKHPTDJobV1, DKHPTDJobV2, DKHPTDJobV1Result, DKHPTDJobResult, DKHPTDJobV2Result } from "./entities";
 
 export const toBuffer = (input) => Buffer.from(input);
-export const toJson = (input, space?: string | number) => JSON.stringify(input, null, space);
+export const toJson = (input, space?: string | number) => JSON.stringify(input);
 export const toKeyValueString = (input) => Object.keys(input).reduce((agg: string, cur: string) => (`${agg + cur} = ${input[cur]}\n`), "").trim();
 export const toNormalizedString = (input) => {
   const safeString = toSafeString(input);

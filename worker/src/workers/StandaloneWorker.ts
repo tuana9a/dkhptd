@@ -24,7 +24,7 @@ export class StandaloneWorker {
     for (const filepath of files) {
       const absoluteFilepath = path.resolve(dir, filepath);
       const job = JSON.parse(fs.readFileSync(absoluteFilepath, { flag: "r", encoding: "utf-8" }));
-      logger.info(`Schedule ${toJson(job, 2)}`);
+      logger.info(`Schedule ${toJson(job)}`);
       schedules.push(job);
     }
     schedules.sort((x1, x2) => x1.timeToStart - x2.timeToStart);
