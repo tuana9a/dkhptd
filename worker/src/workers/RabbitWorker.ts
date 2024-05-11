@@ -31,15 +31,15 @@ export class RabbitWorker {
           }
           channel.consume(q.queue, async (msg) => {
             const job = JSON.parse(msg.content.toString());
-            logger.info(`Received ${msg.fields.routingKey} ${toJson(job, 2)}`);
+            logger.info(`Received ${msg.fields.routingKey} ${toJson(job)}`);
             const { logs, vars } = await puppeteerWorkerController.do(job, (doing: DoingInfo) => {
-              logger.info(`Doing ${job.id} ${toJson(doing, 2)}`);
+              logger.info(`Doing ${job.id} ${toJson(doing)}`);
               channel.publish(ExchangeName.WORKER_DOING, "", toBuffer(toJson({
                 workerId: cfg.id,
                 doing,
               })));
             });
-            logger.info(`Logs ${job.id} ${toJson(logs, 2)}`);
+            logger.info(`Logs ${job.id} ${toJson(logs)}`);
             channel.sendToQueue(QueueName.PROCESS_JOB_RESULT, toBuffer(toJson({
               id: job.id,
               workerId: cfg.id,

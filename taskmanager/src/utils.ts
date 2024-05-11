@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { ObjectId } from "mongodb";
 
 export const toBuffer = (input) => Buffer.from(input);
-export const toJson = (input, space?: string | number) => JSON.stringify(input, null, space);
+export const toJson = (input, space?: string | number) => JSON.stringify(input);
 export const toKeyValueString = (input) => Object.keys(input).reduce((agg: string, cur: string) => (`${agg + cur} = ${input[cur]}\n`), "").trim();
 export const toNormalizedString = (input) => {
   const safeString = toSafeString(input);

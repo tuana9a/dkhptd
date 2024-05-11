@@ -78,9 +78,9 @@ async function main() {
       channel.assertQueue(QueueName.PROCESS_PARSE_TKB_XLSX_RESULT);
       app.use(require("./auto-route").setup("./dist/routes"));
       const loadedConsumers = require("./auto-consumer").setup("./dist/consumers");
-      logger.info(`Loaded consumers: ${toJson(loadedConsumers, 2)}`);
+      logger.info(`Loaded consumers: ${toJson(loadedConsumers)}`);
       const loadedListeners = require("./auto-listener").setup("./dist/listeners");
-      logger.info(`Loaded listeners ${toJson(loadedListeners, 2)}`);
+      logger.info(`Loaded listeners ${toJson(loadedListeners)}`);
     });
   });
 }

@@ -47,19 +47,19 @@ export const setup = () => {
           .insertOne(dkhptdResult);
 
         if (result.err) {
-          logger.info(`Received job v1 ${result.id} result with error ${toJson(result.err, 2)}`);
+          logger.info(`Received job v1 ${result.id} result with error ${toJson(result.err)}`);
           bus.emit(AppEvent.JOB_V1_UNKNOWN_ERROR, result, job);
           return;
         }
 
         if (result.vars.systemError) {
-          logger.info(`Received job v1 ${result.id} result with systemError ${toJson(result.vars.systemError, 2)}`);
+          logger.info(`Received job v1 ${result.id} result with systemError ${toJson(result.vars.systemError)}`);
           bus.emit(AppEvent.JOB_V1_SYSTEM_ERROR, result, job);
           return;
         }
 
         if (String(result.vars.userError).match(/captcha/i)) {
-          logger.info(`Received job v1 ${result.id} result with captchaError ${toJson(result.vars.userError, 2)}`);
+          logger.info(`Received job v1 ${result.id} result with captchaError ${toJson(result.vars.userError)}`);
           bus.emit(AppEvent.JOB_V1_CAPTCHA_ERROR, result, job);
           return;
         }

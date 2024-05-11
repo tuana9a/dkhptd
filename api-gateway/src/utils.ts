@@ -23,7 +23,7 @@ export const isEmpty = (input: string) => !input || input.match(/^\s*$/);
 export const isValidTermId = (input: string) => input.match(/^\d+\w*$/);
 
 export const toBuffer = (input) => Buffer.from(input);
-export const toJson = (input, space?: string | number) => JSON.stringify(input, null, space);
+export const toJson = (input) => JSON.stringify(input);
 export const toKeyValueString = (input) => Object.keys(input).reduce((agg: string, cur: string) => (`${agg + cur} = ${input[cur]}\n`), "").trim();
 export const toNormalizedString = (input) => {
   const safeString = toSafeString(input);

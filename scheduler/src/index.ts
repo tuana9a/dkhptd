@@ -25,10 +25,10 @@ async function main() {
       rabbitmqConnectionPool.addChannel(channel);
 
       const loadedBackgroundTasks = require("./auto-background-task").setup("./dist/background-tasks");
-      logger.info(`Loaded background tasks ${toJson(loadedBackgroundTasks, 2)}`);
+      logger.info(`Loaded background tasks ${toJson(loadedBackgroundTasks)}`);
 
       const loadedListeners = require("./auto-listener").setup("./dist/listeners");
-      logger.info(`Loaded listeners ${toJson(loadedListeners, 2)}`);
+      logger.info(`Loaded listeners ${toJson(loadedListeners)}`);
     });
   });
 }

@@ -6,7 +6,7 @@ import { Browser } from "puppeteer-core";
 
 /* eslint-disable no-param-reassign */
 export const toBuffer = (input: string) => Buffer.from(input);
-export const toJson = (input, space = 0) => JSON.stringify(input, null, space);
+export const toJson = (input) => JSON.stringify(input);
 export const toPrettyErr = (err: Error) => ({
   name: err.name,
   message: err.message,

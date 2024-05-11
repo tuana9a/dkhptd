@@ -38,7 +38,7 @@ export class Config {
     const output = ["Config: "];
     for (const key of Object.keys(this)) {
       const value = this[key];
-      output.push(`${key} = ${toJson(value, 2)}`);
+      output.push(`${key} = ${toJson(value)}`);
     }
     return output.join("\n");
   }

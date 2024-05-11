@@ -32,9 +32,9 @@ async function main() {
       channel.assertExchange(ExchangeName.WORKER_PING, "fanout");
 
       const loadedConsumers = require("./auto-consumer").setup("./dist/consumers");
-      logger.info(`Loaded consumers: ${toJson(loadedConsumers, 2)}`);
+      logger.info(`Loaded consumers: ${toJson(loadedConsumers)}`);
       const loadedListeners = require("./auto-listener").setup("./dist/listeners");
-      logger.info(`Loaded listeners: ${toJson(loadedListeners, 2)}`);
+      logger.info(`Loaded listeners: ${toJson(loadedListeners)}`);
     });
   });
 }
