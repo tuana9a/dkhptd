@@ -42,5 +42,5 @@ jobs:
             -d "{
               \"chat_id\":\"${{ secrets.TELEGRAM_CHAT_ID }}\",
               \"disable_notification\":true,
-              \"text\":\"${{ job.status }} ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\\ntest build\"
+              \"text\":\"${{ job.status }} ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\\nimg: ${{ env.IMAGE_NAME }}\"
             }"

@@ -30,9 +30,6 @@ jobs:
           push: false
           tags: |
             ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ env.DOCKER_TAG_SECONDLY }}
-            ${{ env.IMAGE_NAME }}:${{ env.DOCKER_TAG_DAILY }}
-            ${{ env.IMAGE_NAME }}:${{ env.DOCKER_TAG_MONTHLY }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -45,5 +42,5 @@ jobs:
             -d "{
               \"chat_id\":\"${{ secrets.TELEGRAM_CHAT_ID }}\",
               \"disable_notification\":true,
-              \"text\":\"${{ job.status }} ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\\nimg: ${{ env.IMAGE_NAME }}:${{ env.DOCKER_TAG_SECONDLY }}\"
+              \"text\":\"${{ job.status }} ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\\nimg: ${{ env.IMAGE_NAME }}\"
             }"

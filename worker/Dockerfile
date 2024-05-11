@@ -1,8 +1,6 @@
 # https://github.com/puppeteer/puppeteer/blob/main/docker/Dockerfile
 FROM node:20-slim
 
-ENV LANG en_US.UTF-8
-
 # Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
 # Note: this installs the necessary libs to make the bundled version of Chromium that Puppeteer
 # installs, work.
@@ -30,7 +28,7 @@ WORKDIR /app
 COPY package.json .
 RUN npm install
 COPY src src
-COPY launch* .
+COPY launch.js .
 COPY tsconfig.json .
 RUN npm run build
 CMD [ "launch.js" ]
