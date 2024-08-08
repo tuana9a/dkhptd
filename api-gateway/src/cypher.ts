@@ -8,32 +8,28 @@ import crypto from "crypto";
 const ALGORITHM = "aes-256-cbc";
 
 class Cypher {
-  secret: string;
-  _iv: string;
+  __secret: string;
+  __iv: string;
 
-  constructor(secret: string) {
-    this.secret = secret;
+  constructor(secret: string, iv: string) {
+    this.__secret = secret;
+    this.__iv = iv;
   }
 
-  iv(iv: string) {
-    this._iv = iv;
-    return this;
-  }
-
-  encrypt(text: string) {
-    const cipher = crypto.createCipheriv(ALGORITHM, Buffer.from(this.secret, "hex"), Buffer.from(this._iv, "hex"));
+  e(text: string) {
+    const cipher = crypto.createCipheriv(ALGORITHM, Buffer.from(this.__secret, "hex"), Buffer.from(this.__iv, "hex"));
     let encrypted = cipher.update(text);
     encrypted = Buffer.concat([encrypted, cipher.final()]);
     return encrypted.toString("hex");
   }
 
-  decrypt(text: string) {
+  d(text: string) {
     const encryptedText = Buffer.from(text, "hex");
-    const decipher = crypto.createDecipheriv(ALGORITHM, Buffer.from(this.secret, "hex"), Buffer.from(this._iv, "hex"));
+    const decipher = crypto.createDecipheriv(ALGORITHM, Buffer.from(this.__secret, "hex"), Buffer.from(this.__iv, "hex"));
     let decrypted = decipher.update(encryptedText);
     decrypted = Buffer.concat([decrypted, decipher.final()]);
     return decrypted.toString();
   }
 }
 
-export const c = (secret: string) => new Cypher(secret);
+export const c = (secret: string, iv: string) => new Cypher(secret, iv);

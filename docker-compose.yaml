@@ -2,37 +2,42 @@ version: "3.1"
 
 services:
   api-gateway:
-    build:
-      context: ./api-gateway
-      dockerfile: Dockerfile
-    image: tuana9a/dkhptd-api-gateway
+    image: node:16-slim
     restart: unless-stopped
     env_file:
       - api-gateway/.env
+    volumes:
+      - ./api-gateway/:/app/
+    working_dir: /app
+    command: bash -c "npm install && npx tsc && node dist/index.js"
+    ports:
+      - ${API_PORT:-8080:8080}
     networks:
       net1:
         ipv4_address: 172.222.0.2
 
-  taskmanager:
-    build:
-      context: ./taskmanager
-      dockerfile: Dockerfile
-    image: tuana9a/dkhptd-taskmanager
+  web:
+    image: node:16-slim
     restart: unless-stopped
-    env_file:
-      - taskmanager/.env
+    working_dir: /app
+    volumes:
+      - ./web/:/app/
+    ports:
+      - ${WEB_PORT:-4200}:4200
+    command: bash -c "npm install && npm run dev"
     networks:
       net1:
         ipv4_address: 172.222.0.3
 
   scheduler:
-    build:
-      context: ./scheduler
-      dockerfile: Dockerfile
-    image: tuana9a/dkhptd-scheduler
+    image: node:16-slim
     restart: unless-stopped
     env_file:
       - scheduler/.env
+    volumes:
+      - ./scheduler/:/app/
+    working_dir: /app
+    command: bash -c "npm install && npx tsc && node dist/index.js"
     networks:
       net1:
         ipv4_address: 172.222.0.4
@@ -57,6 +62,10 @@ services:
     restart: unless-stopped
     env_file:
       - worker/.env
+    volumes:
+      - ./worker/:/app/
+    working_dir: /app
+    command: bash -c "npm install && npx tsc && ./launch.js"
     networks:
       net1:
         ipv4_address: 172.222.0.6

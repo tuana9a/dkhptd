@@ -17,7 +17,7 @@ export const setup = () => {
 
     rabbitmqConnectionPool.getChannel().consume(q.queue, async (msg) => {
       try {
-        const result = JSON.parse(c(cfg.AMQP_ENCRYPTION_KEY).d(msg.content.toString(), msg.properties.headers.iv));
+        const result = JSON.parse(c(cfg.AMQP_ENCRYPTION_KEY, msg.properties.headers.iv).d(msg.content.toString()));
 
         const doc = await mongoConnectionPool.getClient()
           .db(cfg.DATABASE_NAME)
@@ -35,8 +35,8 @@ export const setup = () => {
           jobId: job._id,
           workerId: result.workerId,
           ownerAccountId: job.ownerAccountId,
-          logs: c(cfg.JOB_ENCRYPTION_KEY).e(toJson(result.logs), newIv),
-          vars: c(cfg.JOB_ENCRYPTION_KEY).e(toJson(result.vars), newIv),
+          logs: c(cfg.JOB_ENCRYPTION_KEY, newIv).e(toJson(result.logs)),
+          vars: c(cfg.JOB_ENCRYPTION_KEY, newIv).e(toJson(result.vars)),
           createdAt: Date.now(),
           iv: newIv,
         });
