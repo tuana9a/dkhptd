@@ -56,6 +56,7 @@ import { SearchSubjectComponent } from "./search-subject/search-subject.componen
 import { PreferenceRowSubjectComponent } from "./preference-row-subject/preference-row-subject.component";
 import { TermIdPreferencePageComponent } from "./term-id-preference-page/term-id-preference-page.component";
 import { NewJobV1RowClassIdComponent } from "./new-job-v1-row-class-id/new-job-v1-row-class-id.component";
+import { CorsInterceptor } from "src/interceptors/cors.interceptor";
 
 const routes: Routes = [
   { path: "login", component: LoginComponent },
@@ -147,6 +148,7 @@ const routes: Routes = [
   exports: [RouterModule],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: BaseUrlInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: CorsInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
