@@ -1,6 +1,6 @@
 @import "../css/color.scss";
 
-a {
+a.nav {
   text-decoration: none;
   color: $neon-color;
   border: 1px solid white;
@@ -11,6 +11,6 @@ a {
   }
 }
 
-a.active {
+a.nav.active {
   color: white;
 }

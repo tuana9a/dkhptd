@@ -2,8 +2,7 @@
   "name": "dkhptd-web",
   "version": "1.0.0",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve --host 0.0.0.0",
+    "dev": "ng serve --host 0.0.0.0 --disable-host-check",
     "build": "ng build --configuration production",
     "test": "ng test"
   },

@@ -48,3 +48,10 @@ export const toSafeString = (input) => String(input);
 export const toSHA256 = (input: string) => crypto.createHash("sha256").update(input).digest("hex");
 
 export const ensureIndex = async (db: Db, collectionName: string, def: IndexSpecification) => db.collection(collectionName).createIndex(def);
+
+let __n = 0;
+
+export const random = {
+  nextInt: () => __n++,
+  nextStr: () => String(__n++)
+}

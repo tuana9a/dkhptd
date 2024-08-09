@@ -8,8 +8,8 @@ import { ParsedClassToRegister } from "./payloads";
 export const dropPassword = (input: unknown) => modify(input, [m.drop(["password"])]);
 
 export const decryptJobV1 = (input: DKHPTDJobV1) => {
-  const dPassword = c(cfg.JOB_ENCRYPTION_KEY).iv(input.iv).decrypt(input.password);
-  const dUsername = c(cfg.JOB_ENCRYPTION_KEY).iv(input.iv).decrypt(input.username);
+  const dPassword = c(cfg.JOB_ENCRYPTION_KEY, input.iv).d(input.password);
+  const dUsername = c(cfg.JOB_ENCRYPTION_KEY, input.iv).d(input.username);
   return {
     _id: input._id,
     ownerAccountId: input.ownerAccountId,
@@ -28,8 +28,8 @@ export const decryptJobV1 = (input: DKHPTDJobV1) => {
 
 export const encryptJobV1 = (input: DKHPTDJobV1) => {
   const iv = crypto.randomBytes(16).toString("hex");
-  const ePassword = c(cfg.JOB_ENCRYPTION_KEY).iv(iv).encrypt(input.password);
-  const eUsername = c(cfg.JOB_ENCRYPTION_KEY).iv(iv).encrypt(input.username);
+  const ePassword = c(cfg.JOB_ENCRYPTION_KEY, iv).e(input.password);
+  const eUsername = c(cfg.JOB_ENCRYPTION_KEY, iv).e(input.username);
   return {
     _id: input._id,
     ownerAccountId: input.ownerAccountId,
@@ -47,8 +47,8 @@ export const encryptJobV1 = (input: DKHPTDJobV1) => {
 };
 
 export const decryptJobV2 = (input: DKHPTDJobV2) => {
-  const dPassword = c(cfg.JOB_ENCRYPTION_KEY).iv(input.iv).decrypt(input.password);
-  const dUsername = c(cfg.JOB_ENCRYPTION_KEY).iv(input.iv).decrypt(input.username);
+  const dPassword = c(cfg.JOB_ENCRYPTION_KEY, input.iv).d(input.password);
+  const dUsername = c(cfg.JOB_ENCRYPTION_KEY, input.iv).d(input.username);
   return new DKHPTDJobV2({
     _id: input._id,
     ownerAccountId: input.ownerAccountId,
@@ -64,8 +64,8 @@ export const decryptJobV2 = (input: DKHPTDJobV2) => {
 
 export const encryptJobV2 = (input: DKHPTDJobV2) => {
   const iv = crypto.randomBytes(16).toString("hex");
-  const ePassword = c(cfg.JOB_ENCRYPTION_KEY).iv(iv).encrypt(input.password);
-  const eUsername = c(cfg.JOB_ENCRYPTION_KEY).iv(iv).encrypt(input.username);
+  const ePassword = c(cfg.JOB_ENCRYPTION_KEY, iv).e(input.password);
+  const eUsername = c(cfg.JOB_ENCRYPTION_KEY, iv).e(input.username);
   return new DKHPTDJobV2({
     _id: input._id,
     ownerAccountId: input.ownerAccountId,
@@ -81,8 +81,8 @@ export const encryptJobV2 = (input: DKHPTDJobV2) => {
 };
 
 export const decryptJobV1Result = (input: DKHPTDJobV1Result) => {
-  const logs: [] = input.logs ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).iv(input.iv).decrypt(input.logs,)) : [];
-  const vars = input.vars ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).iv(input.iv).decrypt(input.vars)) : {};
+  const logs: [] = input.logs ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY, input.iv).d(input.logs,)) : [];
+  const vars = input.vars ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY, input.iv).d(input.vars)) : {};
   return new DKHPTDJobResult({
     _id: input._id,
     jobId: input.jobId,
@@ -95,8 +95,8 @@ export const decryptJobV1Result = (input: DKHPTDJobV1Result) => {
 };
 
 export const decryptJobV2Result = (input: DKHPTDJobV2Result) => {
-  const logs: [] = input.logs ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).iv(input.iv).decrypt(input.logs)) : [];
-  const vars = input.vars ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY).iv(input.iv).decrypt(input.vars)) : {};
+  const logs: [] = input.logs ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY, input.iv).d(input.logs)) : [];
+  const vars = input.vars ? JSON.parse(c(cfg.JOB_ENCRYPTION_KEY, input.iv).d(input.vars)) : {};
   return new DKHPTDJobResult({
     _id: input._id,
     jobId: input.jobId,
