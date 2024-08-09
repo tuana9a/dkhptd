@@ -15,15 +15,15 @@ mặc dù tên project là đăng ký học phần tự động tuy nhiên proje
 project được triển khai dưới dạng nhiều module, được triển khai độc lập
 
 - `web`: web frontend
-- `api-gateway`: api server xử lý các request từ trình duyệt
+- `api-gateway`: api server xử lý các request từ trình duyệt và xử lý kết quả mà worker trả về thông qua message queue để có các logic xử lý như tự động thử đăng ký lại
 - `scheduler`: bộ hẹn giờ liên tục kiểm tra xem đã tới thời điểm hẹn giờ của sinh viên hay chưa, nếu đã đến giờ sẽ gửi yêu cầu này cho worker thông qua message queue
 - `worker`: thực thi các yêu cầu đăng ký tự động, sau khi xử lý xong sẽ gửi kết quả vào message queue cho taskamager xử lý
-- `taskmanager`: xử lý kết quả mà worker trả về để có các logic xử lý như tự động thử đăng ký lại
+- ~~`taskmanager`: xử lý kết quả mà worker trả về để có các logic xử lý như tự động thử đăng ký lại~~ -> ĐÃ BỊ LƯỢC BỎ và THAY THẾ BỞI api-gateway
 - (_**optional**_) `thoi-khoa-bieu-parser`: xử lý file excel thời khóa biểu dự kiến của nhà trường để trích xuất thông tin
-- (_**optional**_) `rabbitmq`: message cho job, kết quả xử lý, ...
-- (_**optional**_) `mongodb`: database
+- (*) `rabbitmq`: message cho job, kết quả xử lý, ...
+- (*) `mongodb`: database
 
-các module trên sẽ truy cập, trao đổi thông tin thông qua database là [MongoDB](https://www.mongodb.com/docs/v5.0/tutorial/getting-started/) và message queue là [RabbitMQ](https://www.rabbitmq.com/getstarted.html)
+các module trên sẽ truy cập, trao đổi thông tin thông qua database là [MongoDB](https://www.mongodb.com/docs/v5.0/tutorial/getting-started/) và message queue là [RabbitMQ](https://www.rabbitmq.com/getstarted.html). Với rabbitmq và mongodb các bạn có thể deploy ở chỗ khác và cập nhật connection string tương ứng trong các thành phần.
 
 chi tiết từng module các bạn hãy click vào module tương ứng
 
