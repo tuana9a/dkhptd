@@ -6,6 +6,7 @@ import {
 } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
+import { environment } from "src/environments/environment";
 
 @Injectable()
 export class CorsInterceptor implements HttpInterceptor {
@@ -14,7 +15,7 @@ export class CorsInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
     httpRequest = httpRequest.clone({
-      withCredentials: true,
+      withCredentials: environment.corsWithCredentials,
     });
     return next.handle(httpRequest);
   }
