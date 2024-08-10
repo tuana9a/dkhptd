@@ -7,6 +7,7 @@ import config from "./config"
 export const environment = {
   production: false,
   baseApiUrl: config.baseApiUrl || "http://localhost:8080",
+  corsWithCredentials: config.corsWithCredentials || false,
 };
 
 /*
