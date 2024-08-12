@@ -37,6 +37,7 @@ async function main() {
   logger.info(`Config: ${toJson(cfg)}`);
 
   const app = express();
+  app.set("trust proxy", true);
   app.use(cors());
   app.use(express.json());
   const server = http.createServer(app);
