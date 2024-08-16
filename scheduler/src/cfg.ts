@@ -47,12 +47,3 @@ export const ExchangeName = {
   MAYBE_STALE_JOB_V1: "maybe-stale-job-v1",
   MAYBE_STALE_JOB_V2: "maybe-stale-job-v2",
 };
-
-export const AppEvent = {
-  NEW_JOB: nextStr(),
-  STALE_JOB: nextStr(),
-  NEW_JOB_V1: nextStr(),
-  STALE_JOB_V1: nextStr(),
-  NEW_JOB_V2: nextStr(),
-  STALE_JOB_V2: nextStr(),
-};
