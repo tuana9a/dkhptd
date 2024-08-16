@@ -4,7 +4,7 @@ import { mongoConnectionPool, rabbitmqConnectionPool } from "../connections";
 import logger from "../loggers/logger";
 
 export const setup = () => {
-  rabbitmqConnectionPool.getChannel().assertQueue("", { autoDelete: true }, (error2, q) => {
+  rabbitmqConnectionPool.getChannel().assertQueue("", { exclusive: true, autoDelete: true }, (error2, q) => {
     if (error2) {
       logger.error(error2);
       return;
