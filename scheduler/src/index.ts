@@ -24,7 +24,6 @@ async function main() {
       }
       rabbitmqConnectionPool.addChannel(channel);
       require("./auto-background-task").setup("./dist/background-tasks");
-      require("./auto-listener").setup("./dist/listeners");
     });
   });
 }
