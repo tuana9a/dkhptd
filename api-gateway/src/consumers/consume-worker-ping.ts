@@ -5,7 +5,7 @@ import { toJson } from "../utils";
 
 export const setup = () => {
   if (cfg.LOG_WORKER_PING) {
-    rabbitmqConnectionPool.getChannel().assertQueue("", { autoDelete: true }, (error2, q) => {
+    rabbitmqConnectionPool.getChannel().assertQueue("", { exclusive: true, autoDelete: true }, (error2, q) => {
       if (error2) {
         logger.error(error2);
         return;
