@@ -16,7 +16,7 @@
     "amqplib": "^0.10.3",
     "axios": "^0.27.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.4.5",
     "express-rate-limit": "^6.11.2",
     "express": "^4.21.0",
     "jsonwebtoken": "^8.5.1",
