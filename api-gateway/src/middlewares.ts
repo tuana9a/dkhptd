@@ -61,5 +61,6 @@ export const ExceptionWrapper = (handler: (req: Request, resp: Response, next?: 
     }
     logger.error(err);
     resp.status(500).send(new BaseResponse().failed(err).m(err.message));
+    throw err;
   }
 };
