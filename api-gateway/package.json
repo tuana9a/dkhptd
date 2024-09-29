@@ -13,7 +13,7 @@
     "src": "dist"
   },
   "dependencies": {
-    "amqplib": "^0.10.3",
+    "amqplib": "^0.10.4",
     "axios": "^0.27.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
