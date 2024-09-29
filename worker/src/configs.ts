@@ -9,7 +9,6 @@ const DEFAULT_LOG_DEST = "cs";
 
 export class Config {
   id?: string = String(Date.now());
-  type?: string = "";
   logDest?: string = DEFAULT_LOG_DEST;
   jobDir?: string = DEFAULT_JOB_DIR;
   tmpDir?: string = DEFAULT_TMP_DIR;
@@ -24,12 +23,6 @@ export class Config {
   // rabbit worker
   rabbitmqConnectionString?: string = "";
   amqpEncryptionKey?: string = "";
-
-  toJson() {
-    return {
-      ...this,
-    };
-  }
 }
 
 export const cfg = new Config();
@@ -60,3 +53,50 @@ export const correctConfig = (c: Config) => {
   c.puppeteerLaunchOptions.userDataDir = c.puppeteerLaunchOptions.userDataDir || DEFAULT_USER_DATA_DIR;
   return c;
 };
+
+export const puppeteerLaunchOptions = {};
+puppeteerLaunchOptions["docker"] = {
+  "args": [
+    "--no-sandbox",
+    "--disable-setuid-sandbox"
+  ],
+  "slowMo": 10,
+  "defaultViewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "executablePath": "google-chrome-stable",
+  "userDataDir": "./userdata.tmp/"
+}
+puppeteerLaunchOptions["linux-headless"] = {
+  "slowMo": 10,
+  "defaultViewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "executablePath": "google-chrome-stable",
+  "userDataDir": "./userdata.tmp/"
+}
+puppeteerLaunchOptions["linux-visible"] = {
+  "slowMo": 10,
+  "headless": false,
+  "defaultViewport": null,
+  "executablePath": "google-chrome-stable",
+  "userDataDir": "./userdata.tmp/"
+}
+puppeteerLaunchOptions["window-headless"] = {
+  "slowMo": 10,
+  "defaultViewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "executablePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "userDataDir": "./userdata.tmp/"
+}
+puppeteerLaunchOptions["window-visible"] = {
+  "headless": false,
+  "slowMo": 10,
+  "defaultViewport": null,
+  "executablePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "userDataDir": "./userdata.tmp/"
+}

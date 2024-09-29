@@ -1,8 +1,23 @@
+import fs from "fs";
+import path from "path";
+import oxias from "axios";
+import FormData from "form-data";
+import _ from "lodash";
+
 import { Browser } from "puppeteer-core";
-import { Context, Job, runContext, DoingInfo } from "./job-builder";
+import { AvailableJobs } from "./repos";
+import { JobRequest, DoingInfo, Context } from "./types";
+import { InvalidJobInfoError, JobNotFoundError } from "./errors";
+import logger from "./logger";
+import { toJson, toPrettyErr } from "./utils";
+import { cfg } from "./configs";
+
+const axios = oxias.create();
 
 export class PuppeteerWorker {
-  constructor(private browser?: Browser) { }
+  private browser: Browser;
+
+  constructor(private availableJobs: AvailableJobs) { }
 
   setBrowser(browser: Browser) {
     this.browser = browser;
@@ -21,22 +36,38 @@ export class PuppeteerWorker {
     return this.getPage(0);
   }
 
-  async do(job: Job, opts: { pageIndex?: number; onDoing?: (info: DoingInfo) => unknown } = { pageIndex: 0, onDoing: () => null }) {
-    const page = await this.getPage(opts?.pageIndex || 0);
-    const rootContext = new Context({
-      job: job.name,
+  async process(request: JobRequest, opts: { onDoing?: (info: DoingInfo) => unknown } = {}) {
+    if (!request) throw new InvalidJobInfoError(request);
+    const job = this.availableJobs.get(request.name);
+    if (!job) throw new JobNotFoundError(request.name);
+
+    const page = await this.getFirstPage();
+    const params = {
+      username: request.username,
+      password: request.password,
+      classIds: request.classIds,
+    };
+    const libs = {
+      fs,
+      axios,
+      FormData,
+      _,
+      path,
+    };
+    const utils = {
+      toPrettyErr,
+    }
+
+    logger.info(`Start job ${request.name} params ${toJson(params)}`);
+    const context = new Context({
+      workDir: cfg.tmpDir,
       page: page,
-      libs: job.libs,
-      params: job.params,
-      currentStepIdx: 0,
-      currentNestingLevel: 0,
-      isBreak: false,
-      logs: [],
-      runContext: runContext,
-      stacks: Array.from(job.actions).reverse(),
+      libs: libs,
+      params: params,
+      utils: utils,
       onDoing: opts?.onDoing,
     });
-    await runContext(rootContext);
-    return rootContext;
+    const output = await job(context);
+    return output;
   }
 }

@@ -65,7 +65,7 @@ services:
     volumes:
       - ./worker/:/app/
     working_dir: /app
-    command: bash -c "npm install && npx tsc && ./launch.js"
+    command: bash -c "npm install && npx tsc && node ./dist/launch-worker-rabbitmq-v1.js"
     networks:
       net1:
         ipv4_address: 172.222.0.6

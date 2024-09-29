@@ -1,7 +1,7 @@
-import { JobSupplier } from "./types";
+import { Job } from "./types";
 
-export class SupportJobsDb {
-  db: Map<string, JobSupplier>;
+export class AvailableJobs {
+  db: Map<string, Job>;
 
   constructor() {
     this.db = new Map();
@@ -11,7 +11,7 @@ export class SupportJobsDb {
     return this.db;
   }
 
-  update(name: string, job: JobSupplier) {
+  update(name: string, job: Job) {
     this.db.set(name, job);
   }
 
