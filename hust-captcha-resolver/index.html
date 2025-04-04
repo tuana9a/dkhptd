@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>hust-captcha-resolver</title>
+  <link rel="shortcut icon" href="https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=hcr" type="image/x-icon">
+</head>
+
+<body>
+  <h1><a href="https://github.com/tuana9a/hust-captcha-resolver">hust-captcha-resolver</a></h1>
+  <form>
+    <label for="file">Choose a file:</label>
+    <input type="file" id="file" name="file" accept=".png, .jpg, .jpeg">
+  </form>
+  <h2>Predict: <span id="result"></span></h2>
+  <h2>Process time: <span id="processTime"></span></h2>
+  <script>
+    const inputElement = document.getElementById("file");
+    const resultElement = document.getElementById("result");
+    const processTimeElement = document.getElementById("processTime");
+    inputElement.addEventListener("change", (event) => {
+      resultElement.innerText = "waiting";
+      processTimeElement.innerText = "waiting";
+      const file = inputElement.files[0];
+      const startTime = Date.now();
+      var data = new FormData()
+      data.append('file', file)
+      return fetch("/", {
+        method: "POST",
+        body: data
+      })
+        .then(res => res.text())
+        .then(text => {
+          const endTime = Date.now();
+          try {
+            const delta = endTime - startTime;
+            processTimeElement.innerText = `${delta / 1000}s`;
+          } catch (err) {
+            // ignored
+          }
+          resultElement.innerText = text;
+        });
+    })
+  </script>
+</body>
+
+</html>
