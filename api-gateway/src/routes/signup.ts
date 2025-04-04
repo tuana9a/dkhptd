@@ -10,7 +10,7 @@ import { BaseResponse, LoginWithUsernamePasswordRequest } from "src/payloads";
 import { toSHA256 } from "src/utils";
 import { dropPassword } from "src/dto";
 
-export const router = express.Router();
+const router = express.Router();
 
 router.post("/api/signup", ExceptionWrapper(async (req, resp) => {
   const body = new LoginWithUsernamePasswordRequest(
@@ -47,3 +47,5 @@ router.post("/api/signup", ExceptionWrapper(async (req, resp) => {
 
   resp.send(new BaseResponse().ok(dropPassword(account)));
 }));
+
+export default router;

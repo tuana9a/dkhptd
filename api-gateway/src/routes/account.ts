@@ -13,7 +13,7 @@ import { modify, m } from "src/modifiers";
 import { dropPassword } from "src/dto";
 import jwt from "jsonwebtoken";
 
-export const router = express.Router();
+const router = express.Router();
 
 router.get("/api/accounts/current", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
@@ -76,3 +76,5 @@ router.get("/api/accounts/current/renew-token", JwtFilter(cfg.SECRET), Exception
   });
   resp.send(new BaseResponse().ok({ token, username: account.username, role: account.role }));
 }));
+
+export default router;
