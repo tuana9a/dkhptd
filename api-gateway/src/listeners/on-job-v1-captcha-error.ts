@@ -5,7 +5,7 @@ import { DKHPTDJobV1 } from "../entities";
 import logger from "../loggers/logger";
 import ms from "ms";
 
-export const setup = () => {
+export default () => {
   bus.on(AppEvent.JOB_V1_CAPTCHA_ERROR, async (result, job: DKHPTDJobV1) => {
     if (job.no > cfg.JOB_MAX_TRY) { // max tries reach
       logger.info(`Max retry reach for job v1 ${job._id}`);

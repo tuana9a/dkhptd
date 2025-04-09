@@ -5,7 +5,7 @@ import { DKHPTDJobV1 } from "../entities";
 import logger from "../loggers/logger";
 import { decryptJobV1, loop, toBuffer } from "../utils";
 
-export const setup = () => {
+export default () => {
   rabbitmqConnectionPool.getChannel().assertExchange(ExchangeName.MAYBE_STALE_JOB_V1, "fanout");
   loop.infinity(async () => {
     const cursor = mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(CollectionName.DKHPTDV1).find({

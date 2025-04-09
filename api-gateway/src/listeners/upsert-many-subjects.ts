@@ -4,7 +4,7 @@ import { mongoConnectionPool } from "src/connections";
 import { Subject } from "src/entities";
 import logger from "src/loggers/logger";
 
-export const setup = () => {
+export default () => {
   bus.on(AppEvent.UPSERT_MANY_SUBJECTS, async (subjects: Subject[]) => {
     logger.info(`Upsert many subjects count ${subjects.length}`);
     try {

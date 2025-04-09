@@ -3,7 +3,7 @@ import { QueueName, AppEvent } from "../cfg";
 import { rabbitmqConnectionPool } from "../connections";
 import logger from "../loggers/logger";
 
-export const setup = () => {
+export default () => {
   rabbitmqConnectionPool.getChannel().assertQueue(QueueName.PROCESS_JOB_RESULT, {}, (error2, q) => {
     if (error2) {
       logger.error(error2);

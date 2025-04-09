@@ -8,7 +8,7 @@ import logger from "../loggers/logger";
 import { toJson } from "../utils";
 import crypto from "crypto";
 
-export const setup = () => {
+export default () => {
   rabbitmqConnectionPool.getChannel().assertQueue(QueueName.PROCESS_JOB_V1_RESULT, {}, (error2, q) => {
     if (error2) {
       logger.error(error2);
