@@ -4,7 +4,7 @@ import { mongoConnectionPool } from "src/connections";
 import { ClassToRegister } from "src/entities";
 import logger from "src/loggers/logger";
 
-export const setup = () => {
+export default () => {
   bus.on(AppEvent.UPSERT_MANY_CTR, async (classes: ClassToRegister[]) => {
     logger.info(`Upsert many class to register count ${classes.length}`);
     try {

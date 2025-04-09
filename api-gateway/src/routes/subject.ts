@@ -10,7 +10,7 @@ import { resolveMongoFilter } from "src/merin";
 import { modify, m } from "src/modifiers";
 import { Filter } from "mongodb";
 
-export const router = express.Router();
+const router = express.Router();
 
 router.get("/api/subjects", ExceptionWrapper(async (req, resp) => {
   const query = modify(req.query, [
@@ -46,3 +46,5 @@ router.get("/api/subjects/subject-ids/:subjectId", ExceptionWrapper(async (req, 
     .findOne(filter);
   resp.send(new BaseResponse().ok(doc));
 }));
+
+export default router;

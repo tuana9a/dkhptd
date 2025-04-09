@@ -7,7 +7,7 @@ import { bus } from "../bus";
 import { rabbitmqConnectionPool } from "../connections";
 import logger from "../loggers/logger";
 
-export const setup = () => {
+export default () => {
   rabbitmqConnectionPool.getChannel().assertQueue(QueueName.PROCESS_PARSE_TKB_XLSX_RESULT, {}, (error2, q) => {
     if (error2) {
       logger.error(error2);

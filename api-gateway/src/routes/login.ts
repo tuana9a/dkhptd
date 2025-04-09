@@ -9,7 +9,7 @@ import { BaseResponse, LoginWithUsernamePasswordRequest } from "src/payloads";
 import { toSHA256 } from "src/utils";
 import { Account } from "src/entities";
 
-export const router = express.Router();
+const router = express.Router();
 
 router.post("/api/login", ExceptionWrapper(async (req, resp) => {
   const body = new LoginWithUsernamePasswordRequest(
@@ -41,3 +41,5 @@ router.post("/api/login", ExceptionWrapper(async (req, resp) => {
   });
   resp.send(new BaseResponse().ok({ token, username: account.username, role: account.role }));
 }));
+
+export default router;

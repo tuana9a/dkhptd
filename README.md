@@ -10,6 +10,8 @@ mặc dù tên project là đăng ký học phần tự động tuy nhiên proje
 - crawl thời khóa biểu của sinh viên trên trang [https://ctt-sis.hust.edu.vn](https://ctt-sis.hust.edu.vn)
 - crawl chương trình học của sinh viên trên trang [https://ctt-sis.hust.edu.vn](https://ctt-sis.hust.edu.vn)
 
+ngoài ra các bạn có thể viết thêm job để có thể chạy automation với hệ thống của nhà trường
+
 # architechture
 
 project được triển khai dưới dạng nhiều module, được triển khai độc lập
@@ -18,14 +20,14 @@ project được triển khai dưới dạng nhiều module, được triển kh
 - `api-gateway`: api server xử lý các request từ trình duyệt và xử lý kết quả mà worker trả về thông qua message queue để có các logic xử lý như tự động thử đăng ký lại
 - `scheduler`: bộ hẹn giờ liên tục kiểm tra xem đã tới thời điểm hẹn giờ của sinh viên hay chưa, nếu đã đến giờ sẽ gửi yêu cầu này cho worker thông qua message queue
 - `worker`: thực thi các yêu cầu đăng ký tự động, sau khi xử lý xong sẽ gửi kết quả vào message queue cho taskamager xử lý
-- ~~`taskmanager`: xử lý kết quả mà worker trả về để có các logic xử lý như tự động thử đăng ký lại~~ -> ĐÃ BỊ LƯỢC BỎ và THAY THẾ BỞI api-gateway
+- ~~`taskmanager`: xử lý kết quả mà worker trả về để có các logic xử lý như tự động thử đăng ký lại~~
+  - ĐÃ BỊ LƯỢC BỎ và THAY THẾ BỞI api-gateway
+- `hust-captcha-resolver`: nhận diện hust captcha, từ ảnh thành text
 - (_**optional**_) `thoi-khoa-bieu-parser`: xử lý file excel thời khóa biểu dự kiến của nhà trường để trích xuất thông tin
-- (*) `rabbitmq`: message cho job, kết quả xử lý, ...
-- (*) `mongodb`: database
+- `rabbitmq`: message cho job, kết quả xử lý, ...
+- `mongodb`: database
 
-các module trên sẽ truy cập, trao đổi thông tin thông qua database là [MongoDB](https://www.mongodb.com/docs/v5.0/tutorial/getting-started/) và message queue là [RabbitMQ](https://www.rabbitmq.com/getstarted.html). Với rabbitmq và mongodb các bạn có thể deploy ở chỗ khác và cập nhật connection string tương ứng trong các thành phần.
-
-chi tiết từng module các bạn hãy click vào module tương ứng
+các module trên sẽ truy cập, trao đổi thông tin thông qua database là [MongoDB](https://www.mongodb.com/docs/v5.0/tutorial/getting-started/) và message queue là [RabbitMQ](https://www.rabbitmq.com/getstarted.html).
 
 ![so-do-trien-khai.png](./so-do-trien-khai.png)
 

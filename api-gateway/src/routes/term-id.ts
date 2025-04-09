@@ -8,7 +8,7 @@ import { BaseResponse } from "src/payloads";
 import { isFalsy } from "src/utils";
 import { cachedSettings } from "src/services";
 
-export const router = express.Router();
+const router = express.Router();
 
 router.get("/api/term-ids", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(cachedSettings.getTermIds()));
@@ -31,3 +31,5 @@ router.put("/api/term-ids", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWra
   await cachedSettings.save();
   resp.send(new BaseResponse().ok(cachedSettings.getTermIds()));
 }));
+
+export default router;

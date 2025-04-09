@@ -7,7 +7,7 @@ import { IsAdminFilter } from "src/middlewares";
 import { JwtFilter } from "src/middlewares";
 import { BaseResponse } from "src/payloads";
 
-export const router = express.Router();
+const router = express.Router();
 
 router.put("/api/accounts/:otherAccountId/role", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async (req, resp) => {
   const body = req.body;
@@ -15,3 +15,5 @@ router.put("/api/accounts/:otherAccountId/role", JwtFilter(cfg.SECRET), IsAdminF
   await mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(CollectionName.ACCOUNT).updateOne({ _id: new ObjectId(otherAccountId) }, { $set: { role: body.role } });
   return resp.send(new BaseResponse().ok({}));
 }));
+
+export default router;
