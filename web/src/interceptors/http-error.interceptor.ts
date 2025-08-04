@@ -17,7 +17,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler) {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
-        this.toast.push(error.statusText);
+        this.toast.push(error.message);
         // If you want to return a new response:
         //return of(new HttpResponse({body: [{name: "Default value..."}]}));
 

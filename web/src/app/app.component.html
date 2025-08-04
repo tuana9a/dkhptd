@@ -11,7 +11,7 @@
     <div class="p-1"><a class="nav" routerLink="/term-ids" routerLinkActive="active" ariaCurrentWhenActive="page">Chọn Kỳ Học</a></div>
     <div *ngIf="showIfAuthorized()" class="p-1"><a class="nav" routerLink="/manage-job-v1" routerLinkActive="active" ariaCurrentWhenActive="page">Quản Lý Hẹn Giờ (Toàn Bộ)</a></div>
     <div *ngIf="showIfAuthorized()" class="p-1"><a class="nav" routerLink="/new-job-v1" routerLinkActive="active" ariaCurrentWhenActive="page">Tạo Mới Hẹn Giờ</a></div>
-    <div *ngIf="showIfAdmin()" class="p-1"><a class="nav" routerLink="/upload-tkb-xlsx" routerLinkActive="active" ariaCurrentWhenActive="page">Upload TKB.xlsx</a></div>
+    <div *ngIf="showAnyway()" class="p-1"><a class="nav" routerLink="/upload-tkb-xlsx" routerLinkActive="active" ariaCurrentWhenActive="page">Upload TKB.xlsx</a></div>
     <div *ngIf="showIfAdmin()" class="p-1"><a class="nav" routerLink="/manage-term-id" routerLinkActive="active" ariaCurrentWhenActive="page">Quản lý kỳ học</a></div>
     <div *ngIf="showAnyway()" class="p-1"><a class="nav" routerLink="/messages" routerLinkActive="active" ariaCurrentWhenActive="page">Thông Báo ({{toast.messages.length}})</a></div>
     <div *ngIf="showIfAuthorized()" class="p-1"><a class="nav" routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page">Cá Nhân ({{currentUsername()}})</a></div>
