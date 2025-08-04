@@ -40,7 +40,20 @@ export const IsAdminFilter = (): Handler => async (req, resp, next) => {
     .collection(CollectionName.ACCOUNT)
     .findOne({ _id: new ObjectId(accountId) });
   const account = new Account(doc);
-  if (String(account.role).toUpperCase() == Role.ADMIN) {
+  if (String(account.role).split(',').map(x => x.toUpperCase()).some(x => x == Role.ADMIN)) {
+    return next();
+  }
+  resp.sendStatus(403);
+};
+
+export const ClassRegisterFileUploaderFilter = (): Handler => async (req, resp, next) => {
+  const accountId = req.__accountId;
+  const doc = await mongoConnectionPool.getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(CollectionName.ACCOUNT)
+    .findOne({ _id: new ObjectId(accountId) });
+  const account = new Account(doc);
+  if (String(account.role).split(',').map(x => x.toUpperCase()).some(x => x == Role.CLASS_REGISTER_FILE_UPLOADER || x == Role.ADMIN)) {
     return next();
   }
   resp.sendStatus(403);
