@@ -119,11 +119,14 @@ class Parser:
 
 def on_message(ch, method, properties, body):
     print(f" [*] Received new job {type(body)}")
-    classes = Parser().parse(BytesIO(body))
-    payload = {"data": list(map(lambda x: vars(x), classes))}
-    ch.basic_publish(exchange="",
-                     routing_key=QueueName.PROCESS_PARSE_TKD_XLSX_RESULT,
-                     body=json.dumps(payload))
+    try:
+        classes = Parser().parse(BytesIO(body))
+        payload = {"data": list(map(lambda x: vars(x), classes))}
+        ch.basic_publish(exchange="",
+                        routing_key=QueueName.PROCESS_PARSE_TKD_XLSX_RESULT,
+                        body=json.dumps(payload))
+    except Exception as e:
+        print(f" [ERROR] {str(e)}")
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 

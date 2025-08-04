@@ -16,7 +16,12 @@ export default () => {
 
     rabbitmqConnectionPool.getChannel().consume(q.queue, async (msg) => {
       try {
-        const result: { data: ParsedClassToRegister[] } = JSON.parse(msg.content.toString());
+        const result: { data: ParsedClassToRegister[], error: any } = JSON.parse(msg.content.toString());
+        if (result.error) {
+          logger.error(result.error);
+          rabbitmqConnectionPool.getChannel().ack(msg);
+          return;
+        }
         try {
           logger.info(`Received parsed class to register, count: ${result.data.length}`);
           const classes = result.data
