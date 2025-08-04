@@ -168,14 +168,16 @@ export class NotAnArrayError extends SafeError {
 
 export class RequireLengthFailed extends SafeError {
   path: string;
-  input;
-  comparator;
+  input: any;
+  comparator: string;
+  length: number;
 
-  constructor(name: string, input?, comparator?) {
-    super("REQUIRE_LENGTH_FAILED");
+  constructor(name: string, input: any, comparator: string, length: number) {
+    super(`REQUIRE_LENGTH_FAILED ${name} ${input} ${comparator} ${length}`);
     this.path = name;
     this.input = input;
     this.comparator = comparator;
+    this.length = length;
   }
 
   toBaseResponse() {

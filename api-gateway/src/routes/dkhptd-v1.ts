@@ -135,13 +135,13 @@ router.post("/api/accounts/current/term-ids/:termId/v1/dkhptd-s", JwtFilter(cfg.
 
       if (isFalsy(job.username)) throw new FaslyValueError("job.username", job.username);
       if (isEmpty(job.username)) throw new EmptyStringError("job.username", job.username);
-      if (job.username.length < 8) throw new RequireLengthFailed("job.username", job.username);
+      if (job.username.length < 8) throw new RequireLengthFailed("job.username", job.username, "<", 8);
 
       if (isFalsy(job.password)) throw new FaslyValueError("job.password", job.password);
       if (isEmpty(job.password)) throw new EmptyStringError("job.password", job.password);
 
       if (isFalsy(job.classIds)) throw new FaslyValueError("job.classIds");
-      if (job.classIds.length == 0) throw new RequireLengthFailed("job.classIds");
+      if (job.classIds.length == 0) throw new RequireLengthFailed("job.classIds", job.classIds, "==", 0);
 
       if (isFalsy(job.timeToStart)) throw new FaslyValueError("job.timeToStart");
       if (isFalsy(job.termId)) throw new FaslyValueError("job.termId");
@@ -257,13 +257,13 @@ router.post("/api/accounts/current/term-ids/:termId/v1/dkhptd", JwtFilter(cfg.SE
 
   if (isFalsy(job.username)) throw new FaslyValueError("job.username", job.username);
   if (isEmpty(job.username)) throw new EmptyStringError("job.username", job.username);
-  if (job.username.length < 8) throw new RequireLengthFailed("job.username", job.username);
+  if (job.username.length < 8) throw new RequireLengthFailed("job.username", job.username, ",", 8);
 
   if (isFalsy(job.password)) throw new FaslyValueError("job.password", job.password);
   if (isEmpty(job.password)) throw new EmptyStringError("job.password", job.password);
 
   if (isFalsy(job.classIds)) throw new FaslyValueError("job.classIds");
-  if (job.classIds.length == 0) throw new RequireLengthFailed("job.classIds");
+  if (job.classIds.length == 0) throw new RequireLengthFailed("job.classIds", job.classIds, "==", 0);
 
   if (isFalsy(job.timeToStart)) throw new FaslyValueError("job.timeToStart");
   if (isFalsy(job.termId)) throw new FaslyValueError("job.termId");
@@ -390,13 +390,13 @@ router.post("/api/accounts/current/v1/dkhptd-s", JwtFilter(cfg.SECRET), RateLimi
 
       if (isFalsy(job.username)) throw new FaslyValueError("job.username", job.username);
       if (isEmpty(job.username)) throw new EmptyStringError("job.username", job.username);
-      if (job.username.length < 8) throw new RequireLengthFailed("job.username", job.username);
+      if (job.username.length < 8) throw new RequireLengthFailed("job.username", job.username, "<", 8);
 
       if (isFalsy(job.password)) throw new FaslyValueError("job.password", job.password);
       if (isEmpty(job.password)) throw new EmptyStringError("job.password", job.password);
 
       if (isFalsy(job.classIds)) throw new FaslyValueError("job.classIds");
-      if (job.classIds.length == 0) throw new RequireLengthFailed("job.classIds");
+      if (job.classIds.length == 0) throw new RequireLengthFailed("job.classIds", job.classIds, "==", 0);
 
       if (isFalsy(job.timeToStart)) throw new FaslyValueError("job.timeToStart");
       if (isFalsy(job.termId)) throw new FaslyValueError("job.termId");
@@ -499,13 +499,13 @@ router.post("/api/accounts/current/v1/dkhptd", JwtFilter(cfg.SECRET), RateLimit(
 
   if (isFalsy(job.username)) throw new FaslyValueError("job.username", job.username);
   if (isEmpty(job.username)) throw new EmptyStringError("job.username", job.username);
-  if (job.username.length < 8) throw new RequireLengthFailed("job.username", job.username);
+  if (job.username.length < 8) throw new RequireLengthFailed("job.username", job.username, "<", 8);
 
   if (isFalsy(job.password)) throw new FaslyValueError("job.password", job.password);
   if (isEmpty(job.password)) throw new EmptyStringError("job.password", job.password);
 
   if (isFalsy(job.classIds)) throw new FaslyValueError("job.classIds");
-  if (job.classIds.length == 0) throw new RequireLengthFailed("job.classIds");
+  if (job.classIds.length == 0) throw new RequireLengthFailed("job.classIds", job.classIds, "==", 0);
 
   if (isFalsy(job.timeToStart)) throw new FaslyValueError("job.timeToStart");
 

@@ -32,6 +32,7 @@ export const JobStatus = {
 
 export const Role = {
   ADMIN: "ADMIN",
+  CLASS_REGISTER_FILE_UPLOADER: "CLASS_REGISTER_FILE_UPLOADER",
 };
 
 export const CollectionName = {

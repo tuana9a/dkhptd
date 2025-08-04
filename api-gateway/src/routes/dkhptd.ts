@@ -35,14 +35,14 @@ router.post("/api/accounts/current/dkhptd", JwtFilter(cfg.SECRET), RateLimit({ w
 
   if (isFalsy(job.username)) throw new FaslyValueError("job.username");
   if (isEmpty(job.username)) throw new EmptyStringError("job.username");
-  if (job.username.length < 8) throw new RequireLengthFailed("job.username", job.username);
+  if (job.username.length < 8) throw new RequireLengthFailed("job.username", job.username, "<", 8);
 
   if (isFalsy(job.password)) throw new FaslyValueError("job.password");
   if (isEmpty(job.password)) throw new EmptyStringError("job.password");
 
   if (isFalsy(job.classIds)) throw new FaslyValueError("job.classIds");
   if (!Array.isArray(job.classIds)) throw new NotAnArrayError("job.classIds");
-  if (job.classIds.length == 0) throw new RequireLengthFailed("job.classIds", job.username);
+  if (job.classIds.length == 0) throw new RequireLengthFailed("job.classIds", job.classIds, "==", 0);
 
   if (isFalsy(job.timeToStart)) throw new FaslyValueError("job.timeToStart");
 
@@ -97,13 +97,13 @@ router.post("/api/accounts/current/dkhptd-s", RateLimit({ windowMs: 5 * 60 * 100
 
       if (isFalsy(job.username)) throw new FaslyValueError("job.username", job.username);
       if (isEmpty(job.username)) throw new EmptyStringError("job.username", job.username);
-      if (job.username.length < 8) throw new RequireLengthFailed("job.username", job.username);
+      if (job.username.length < 8) throw new RequireLengthFailed("job.username", job.username, "<", 8);
 
       if (isFalsy(job.password)) throw new FaslyValueError("job.password", job.password);
       if (isEmpty(job.password)) throw new EmptyStringError("job.password", job.password);
 
       if (isFalsy(job.classIds)) throw new FaslyValueError("job.classIds");
-      if (job.classIds.length == 0) throw new RequireLengthFailed("job.classIds");
+      if (job.classIds.length == 0) throw new RequireLengthFailed("job.classIds", job.classIds, "==", 0);
 
       if (isFalsy(job.timeToStart)) throw new FaslyValueError("job.timeToStart");
 
