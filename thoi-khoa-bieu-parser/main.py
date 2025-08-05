@@ -5,6 +5,8 @@ import json
 import openpyxl
 import dotenv
 import uuid
+import traceback
+import datetime
 
 from io import BytesIO
 from dataclasses import dataclass
@@ -102,7 +104,10 @@ class Parser:
         for row in iterator:
             construct_opts = {}
             for key in self.attribute_indexes:
-                construct_opts[key] = row[self.attribute_indexes[key]]
+                v = row[self.attribute_indexes[key]]
+                if type(v) is datetime.datetime:
+                    v = str(v)
+                construct_opts[key] = v
             c = ClassToRegister(**construct_opts)
             term_ids.add(c.term_id)
             class_list.append(c)
@@ -127,6 +132,7 @@ def on_message(ch, method, properties, body):
                         body=json.dumps(payload))
     except Exception as e:
         print(f" [ERROR] {str(e)}")
+        print(traceback.format_exc())
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
