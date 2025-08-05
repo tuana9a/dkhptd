@@ -50,6 +50,8 @@ services:
     restart: unless-stopped
     env_file:
       - thoi-khoa-bieu-parser/.env
+    environment:
+      - PYTHONUNBUFFERED=1
     networks:
       net1:
         ipv4_address: 172.222.0.5
@@ -93,6 +95,8 @@ services:
     hostname: rabbitmq
     volumes:
       - ./rabbitmq/data/mnesia:/var/lib/rabbitmq/mnesia
+    ports:
+      - 15672:15672
     networks:
       net1:
         ipv4_address: 172.222.0.8
