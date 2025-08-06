@@ -34,7 +34,6 @@ export default () => loop.infinity(async () => {
         $set: {
           status: JobStatus.DOING,
           doingAt: Date.now(),
-          no: job.no + 1,
         },
       });
   }
