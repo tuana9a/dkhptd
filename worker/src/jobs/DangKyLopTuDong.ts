@@ -54,12 +54,11 @@ export default async (ctx: Context) => {
 
     logs.push({ msg: `click login button` })
     await page.click("button");
-    await page.waitForTimeout(3000);
 
     let currentUrl = page.url();
     logs.push({ msg: `check current url`, data: currentUrl })
-
-    if (
+    let checkCurrentUrlCount = 0;
+    while (
       currentUrl == "https://dk-sis.hust.edu.vn/Users/Login.aspx"
       || currentUrl == "http://dk-sis.hust.edu.vn/"
       || currentUrl == "http://www.dk-sis.hust.edu.vn/"
@@ -70,10 +69,16 @@ export default async (ctx: Context) => {
       || currentUrl == "https://dk-sis.hust.edu.vn"
       || currentUrl == "https://www.dk-sis.hust.edu.vn"
     ) {
-      _.set(ctx.vars, "userError", await page.$eval("#lbStatus", (e: Element) => e.textContent)); //sai tai khoan
-      _.set(ctx.vars, "captchaError", await page.$eval("#ccCaptcha_TB_EC", (e: Element) => e.textContent)); //sai captcha
-      logs.push({ msg: `finished early` })
-      return ctx;
+      if (checkCurrentUrlCount > 10) {
+        _.set(ctx.vars, "userError", await page.$eval("#lbStatus", (e: Element) => e.textContent)); //sai tai khoan
+        _.set(ctx.vars, "captchaError", await page.$eval("#ccCaptcha_TB_EC", (e: Element) => e.textContent)); //sai captcha
+        logs.push({ msg: `finished early` })
+        return ctx;
+      }
+      checkCurrentUrlCount += 1;
+      await page.waitForTimeout(3000);
+      currentUrl = page.url();
+      logs.push({ msg: `check current url`, data: currentUrl })
     }
 
     logs.push({ msg: `start register classes` })
