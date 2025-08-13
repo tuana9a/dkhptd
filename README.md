@@ -23,7 +23,7 @@ project được triển khai dưới dạng nhiều module, được triển kh
 - ~~`taskmanager`: xử lý kết quả mà worker trả về để có các logic xử lý như tự động thử đăng ký lại~~
   - ĐÃ BỊ LƯỢC BỎ và THAY THẾ BỞI api-gateway
 - `hust-captcha-resolver`: nhận diện hust captcha, từ ảnh thành text
-- (_**optional**_) `thoi-khoa-bieu-parser`: xử lý file excel thời khóa biểu dự kiến của nhà trường để trích xuất thông tin
+- (_**optional**_) `thoi-khoa-bieu-parser`: xử lý file excel thời khóa biểu dự kiến của nhà trường để trích xuất thông tin lớp học phục vụ quá trình tìm kiếm lớp đăng ký.
 - `rabbitmq`: message cho job, kết quả xử lý, ...
 - `mongodb`: database
 
@@ -46,3 +46,7 @@ node -e 'console.log(require("crypto").randomBytes(32).toString("hex"))'
 ```
 
 kết quả sẽ có dạng như sau `f47dd9f62a7f112daf2e4b77e2f9bbc7ac50c9f56b8ee8d25f9aa58771d5690e` các bạn lấy giá trị này và điền vào trong file `.env`
+
+# jobs
+
+jobs để đăng ký lớp tự động mình để hết trong này [./worker/src/jobs/](./worker/src/jobs/)
