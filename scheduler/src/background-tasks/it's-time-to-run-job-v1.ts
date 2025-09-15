@@ -11,7 +11,7 @@ import { decryptJobV1, toJobV1WorkerMessage, loop } from "../utils";
 import { c } from "../cypher";
 import { toJson, toBuffer } from "../utils";
 
-export const setup = () => loop.infinity(async () => {
+export default () => loop.infinity(async () => {
   rabbitmqConnectionPool.getChannel().assertQueue(QueueName.RUN_JOB_V1, {});
   const cursor = mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(CollectionName.DKHPTDV1).find({
     timeToStart: { $lt: Date.now() }, /* less than now then it's time to run */
@@ -20,7 +20,7 @@ export const setup = () => loop.infinity(async () => {
   while (await cursor.hasNext()) {
     const entry = await cursor.next();
     const job = decryptJobV1(new DKHPTDJobV1(entry));
-    logger.info("New job V1: " + job._id)
+    logger.info("New job V1: " + job._id);
     const iv = crypto.randomBytes(16).toString("hex");
     rabbitmqConnectionPool.getChannel().sendToQueue(QueueName.RUN_JOB_V1, toBuffer(c(cfg.AMQP_ENCRYPTION_KEY).e(toJson(toJobV1WorkerMessage(job)), iv)), {
       headers: {
@@ -34,7 +34,6 @@ export const setup = () => loop.infinity(async () => {
         $set: {
           status: JobStatus.DOING,
           doingAt: Date.now(),
-          no: job.no + 1,
         },
       });
   }

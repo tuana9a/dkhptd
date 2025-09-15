@@ -54,4 +54,4 @@ let __n = 0;
 export const random = {
   nextInt: () => __n++,
   nextStr: () => String(__n++)
-}
+};

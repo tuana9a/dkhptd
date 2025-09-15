@@ -4,7 +4,7 @@ import express from "express";
 import { Filter, ObjectId } from "mongodb";
 import { cfg, CollectionName } from "src/cfg";
 import { mongoConnectionPool } from "src/connections";
-import { ExceptionWrapper } from "src/middlewares";
+import { ExceptionWrapper, InjectTermId } from "src/middlewares";
 import { BaseResponse } from "src/payloads";
 import { JwtFilter } from "src/middlewares";
 import { isFalsy } from "src/utils";
@@ -12,7 +12,7 @@ import { MissingRequestBodyDataError } from "src/exceptions";
 import { AccountPreference } from "src/entities";
 import { modify, m } from "src/modifiers";
 
-export const router = express.Router();
+const router = express.Router();
 
 router.get("/api/accounts/current/preferences", JwtFilter(cfg.SECRET), ExceptionWrapper(async (req, resp) => {
   const accountId = req.__accountId;
@@ -96,3 +96,81 @@ router.delete("/api/accounts/current/preferences/:preferenceId", JwtFilter(cfg.S
     .deleteMany(filter);
   resp.send(new BaseResponse().ok());
 }));
+
+router.post("/api/accounts/current/term-ids/:termId/preference", JwtFilter(cfg.SECRET), InjectTermId(), ExceptionWrapper(async (req, resp) => {
+  const accountId = req.__accountId;
+  const data = req.body;
+  const termId = req.__termId;
+
+  if (isFalsy(data)) throw new MissingRequestBodyDataError();
+
+  const body = modify(data, [
+    m.pick(["wantedSubjectIds"]),
+    m.normalizeArray("wantedSubjectIds", "string"),
+    m.set("ownerAccountId", new ObjectId(accountId)),
+  ]);
+
+  const newPreference = new AccountPreference(body);
+  newPreference.termId = termId;
+
+  await mongoConnectionPool
+    .getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(CollectionName.PREFERENCE)
+    .insertOne(newPreference);
+
+  resp.send(new BaseResponse().ok());
+}));
+
+router.get("/api/accounts/current/term-ids/:termId/preferences", JwtFilter(cfg.SECRET), InjectTermId(), ExceptionWrapper(async (req, resp) => {
+  const accountId = req.__accountId;
+  const termId = req.__termId;
+
+  const filter: Filter<AccountPreference> = {
+    ownerAccountId: new ObjectId(accountId),
+    termId: termId,
+  };
+
+  const preferences = await mongoConnectionPool
+    .getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(CollectionName.PREFERENCE)
+    .find(filter)
+    .toArray();
+  resp.send(new BaseResponse().ok(preferences));
+}));
+
+router.put("/api/accounts/current/term-ids/:termId/preferences/:preferenceId", JwtFilter(cfg.SECRET), InjectTermId(), ExceptionWrapper(async (req, resp) => {
+  const accountId = req.__accountId;
+  const preferenceId = new ObjectId(req.params.preferenceId);
+  const termId = req.__termId;
+
+  const data = req.body;
+
+  if (isFalsy(data)) throw new MissingRequestBodyDataError();
+
+  const body = modify(data, [
+    m.pick(["wantedSubjectIds"]),
+    m.normalizeArray("wantedSubjectIds", "string"),
+  ]);
+
+  const filter: Filter<AccountPreference> = {
+    _id: preferenceId,
+    ownerAccountId: new ObjectId(accountId),
+    termId: termId,
+  };
+
+  await mongoConnectionPool
+    .getClient()
+    .db(cfg.DATABASE_NAME)
+    .collection(CollectionName.PREFERENCE)
+    .updateOne(filter, {
+      $set: {
+        termId: termId,
+        wantedSubjectIds: body.wantedSubjectIds,
+      },
+    });
+  resp.send(new BaseResponse().ok());
+}));
+
+export default router;

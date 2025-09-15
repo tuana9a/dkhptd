@@ -4,7 +4,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "dev": "nodemon ./dist/index.js",
+    "dev": "nodemon --watch ./dist/ ./dist/index.js",
     "start": "node ./dist/index.js",
     "test": "jest tests",
     "test:watch": "jest tests --watch"
@@ -15,6 +15,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
+    "express": "^4.21.1",
     "express-rate-limit": "^6.11.2",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",

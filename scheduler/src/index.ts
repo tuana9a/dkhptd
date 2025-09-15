@@ -5,6 +5,11 @@ import { cfg } from "./cfg";
 import { mongoConnectionPool, rabbitmqConnectionPool } from "./connections";
 import logger from "./loggers/logger";
 import { toJson } from "./utils";
+import ifJobIsDoingTooLong from "./background-tasks/if-job-is-doing-too-long";
+import ifJobV1IsDoingTooLong from "./background-tasks/if-job-v1-is-doing-too-long";
+import itSTimeToRunJob from "./background-tasks/it's-time-to-run-job";
+import itSTimeToRunJobV1 from "./background-tasks/it's-time-to-run-job-v1";
+import itSTimeToRunJobV2 from "./background-tasks/it's-time-to-run-job-v2";
 
 async function main() {
   logger.info(`Config: ${toJson(cfg)}`);
@@ -23,7 +28,11 @@ async function main() {
         return;
       }
       rabbitmqConnectionPool.addChannel(channel);
-      require("./auto-background-task").setup("./dist/background-tasks");
+      ifJobIsDoingTooLong();
+      ifJobV1IsDoingTooLong();
+      itSTimeToRunJob();
+      itSTimeToRunJobV1();
+      itSTimeToRunJobV2();
     });
   });
 }

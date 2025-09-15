@@ -7,7 +7,7 @@ import { bus } from "../bus";
 import { rabbitmqConnectionPool } from "../connections";
 import logger from "../loggers/logger";
 
-export const setup = () => {
+export default () => {
   rabbitmqConnectionPool.getChannel().assertQueue(QueueName.PROCESS_PARSE_TKB_XLSX_RESULT, {}, (error2, q) => {
     if (error2) {
       logger.error(error2);
@@ -16,7 +16,12 @@ export const setup = () => {
 
     rabbitmqConnectionPool.getChannel().consume(q.queue, async (msg) => {
       try {
-        const result: { data: ParsedClassToRegister[] } = JSON.parse(msg.content.toString());
+        const result: { data: ParsedClassToRegister[], error: any } = JSON.parse(msg.content.toString());
+        if (result.error) {
+          logger.error(result.error);
+          rabbitmqConnectionPool.getChannel().ack(msg);
+          return;
+        }
         try {
           logger.info(`Received parsed class to register, count: ${result.data.length}`);
           const classes = result.data

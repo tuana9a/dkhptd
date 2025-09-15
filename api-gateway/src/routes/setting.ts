@@ -6,7 +6,7 @@ import { ExceptionWrapper, IsAdminFilter, JwtFilter } from "src/middlewares";
 import { BaseResponse } from "src/payloads";
 import { cachedSettings } from "src/services";
 
-export const router = express.Router();
+const router = express.Router();
 
 router.get("/api/settings/renew-token-every", ExceptionWrapper(async (req, resp) => {
   resp.send(new BaseResponse().ok(cachedSettings.settings.renewTokenEvery));
@@ -29,3 +29,5 @@ router.put("/api/settings/refresh-job-every", JwtFilter(cfg.SECRET), IsAdminFilt
   await cachedSettings.save();
   resp.send(new BaseResponse().ok(cachedSettings.settings.refreshJobEvery));
 }));
+
+export default router;

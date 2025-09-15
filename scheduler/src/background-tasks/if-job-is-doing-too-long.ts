@@ -5,7 +5,7 @@ import { DKHPTDJob } from "../entities";
 import logger from "../loggers/logger";
 import { loop, toBuffer } from "../utils";
 
-export const setup = () => {
+export default () => {
   rabbitmqConnectionPool.getChannel().assertExchange(ExchangeName.MAYBE_STALE_JOB, "fanout");
   loop.infinity(async () => {
     const cursor = mongoConnectionPool.getClient().db(cfg.DATABASE_NAME).collection(CollectionName.DKHPTD).find({
@@ -20,4 +20,4 @@ export const setup = () => {
       rabbitmqConnectionPool.getChannel().publish(ExchangeName.MAYBE_STALE_JOB, "", toBuffer(jobId.toHexString()));
     }
   }, ms("10s"));
-}
+};

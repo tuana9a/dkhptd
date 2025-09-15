@@ -3,7 +3,7 @@ import { ExchangeName, cfg, CollectionName, JobStatus } from "../cfg";
 import { mongoConnectionPool, rabbitmqConnectionPool } from "../connections";
 import logger from "../loggers/logger";
 
-export const setup = () => {
+export default () => {
   rabbitmqConnectionPool.getChannel().assertQueue("", { exclusive: true, autoDelete: true }, (error2, q) => {
     if (error2) {
       logger.error(error2);

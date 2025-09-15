@@ -22,12 +22,22 @@ services:
     working_dir: /app
     volumes:
       - ./web/:/app/
-    ports:
-      - ${WEB_PORT:-4200}:4200
-    command: bash -c "npm install && npm run dev"
+    command: bash -c "npm install && npm run build-watch"
     networks:
       net1:
         ipv4_address: 172.222.0.3
+
+  nginx:
+    image: nginx:1.29.0
+    restart: unless-stopped
+    volumes:
+      - ./web/dist/:/var/www/html
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - ${NGINX_PORT:-4200}:80
+    networks:
+      net1:
+        ipv4_address: 172.222.0.42
 
   scheduler:
     image: node:16-slim
@@ -50,6 +60,8 @@ services:
     restart: unless-stopped
     env_file:
       - thoi-khoa-bieu-parser/.env
+    environment:
+      - PYTHONUNBUFFERED=1
     networks:
       net1:
         ipv4_address: 172.222.0.5
@@ -71,7 +83,7 @@ services:
         ipv4_address: 172.222.0.6
 
   mongo:
-    image: mongo:7.0
+    image: mongo:4.2
     command:
       - --config
       - /etc/mongod.conf
@@ -93,6 +105,8 @@ services:
     hostname: rabbitmq
     volumes:
       - ./rabbitmq/data/mnesia:/var/lib/rabbitmq/mnesia
+    ports:
+      - 15672:15672
     networks:
       net1:
         ipv4_address: 172.222.0.8

@@ -3,7 +3,7 @@ import { rabbitmqConnectionPool } from "../connections";
 import logger from "../loggers/logger";
 import { toJson } from "../utils";
 
-export const setup = () => {
+export default () => {
   if (cfg.LOG_WORKER_PING) {
     rabbitmqConnectionPool.getChannel().assertQueue("", { exclusive: true, autoDelete: true }, (error2, q) => {
       if (error2) {

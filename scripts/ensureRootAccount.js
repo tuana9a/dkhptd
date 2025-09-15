@@ -33,12 +33,12 @@ async function main() {
   const client = await new MongoClient(cfg.MONGODB_CONNECTION_STRING).connect();
   const password = cfg.INIT_ROOT_PASSWORD;
 
-  await client
+  const result = await client
     .db(cfg.DATABASE_NAME)
     .collection(CollectionName.ACCOUNT)
-    .updateOne({ username: "root" }, { $set: { password: toSHA256(password), role: Role.ADMIN } });
+    .updateOne({ username: "root" }, { $set: { password: toSHA256(password), role: Role.ADMIN } }, { upsert: true });
 
-  console.log(`ensure root account with password ${password}`);
+  console.log(`ensure root account with password "${password}" result ${JSON.stringify(result)}`);
 
   process.exit(0);
 }
