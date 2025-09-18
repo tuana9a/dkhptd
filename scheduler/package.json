@@ -22,6 +22,7 @@
   "devDependencies": {
     "@types/amqplib": "^0.10.1",
     "@types/ms": "^0.7.31",
+    "@types/node": "^20.9.5",
     "@typescript-eslint/eslint-plugin": "^5.48.2",
     "@typescript-eslint/parser": "^5.48.2",
     "eslint": "^8.32.0",

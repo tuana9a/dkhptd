@@ -2,14 +2,13 @@ version: "3.1"
 
 services:
   api-gateway:
-    image: node:16-slim
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    image: tuana9a/dkhptd-api-gateway
     restart: unless-stopped
     env_file:
       - api-gateway/.env
-    volumes:
-      - ./api-gateway/:/app/
-    working_dir: /app
-    command: bash -c "npm install && npx tsc && node dist/index.js"
     ports:
       - ${API_PORT:-8080:8080}
     networks:
@@ -17,15 +16,16 @@ services:
         ipv4_address: 172.222.0.2
 
   web:
-    image: node:16-slim
+    image: node:20.19-slim
     restart: unless-stopped
     working_dir: /app
+    entrypoint: "/usr/bin/bash"
     volumes:
       - ./web/:/app/
-    command: bash -c "npm install && npm run build-watch"
+    command: -c "npm install && npm run build-watch"
     networks:
       net1:
-        ipv4_address: 172.222.0.3
+        ipv4_address: 172.222.0.42
 
   nginx:
     image: nginx:1.29.0
@@ -37,17 +37,16 @@ services:
       - ${NGINX_PORT:-4200}:80
     networks:
       net1:
-        ipv4_address: 172.222.0.42
+        ipv4_address: 172.222.0.80
 
   scheduler:
-    image: node:16-slim
+    build:
+      context: ./scheduler
+      dockerfile: Dockerfile
+    image: tuana9a/dkhptd-scheduler
     restart: unless-stopped
     env_file:
       - scheduler/.env
-    volumes:
-      - ./scheduler/:/app/
-    working_dir: /app
-    command: bash -c "npm install && npx tsc && node dist/index.js"
     networks:
       net1:
         ipv4_address: 172.222.0.4
@@ -74,10 +73,7 @@ services:
     restart: unless-stopped
     env_file:
       - worker/.env
-    volumes:
-      - ./worker/:/app/
-    working_dir: /app
-    command: bash -c "npm install && npx tsc && node ./dist/launch-worker-rabbitmq-v1.js"
+    command: ["node", "./dist/launch-worker-rabbitmq-v1.js"]
     networks:
       net1:
         ipv4_address: 172.222.0.6
