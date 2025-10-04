@@ -13,9 +13,10 @@ export const cfg = {
   RABBITMQ_CONNECTION_STRING: process.env.RABBITMQ_CONNECTION_STRING || "amqp://localhost:5672",
   MONGODB_CONNECTION_STRING: process.env.MONGODB_CONNECTION_STRING || "mongodb://localhost:27017",
   DATABASE_NAME: process.env.DATABASE_NAME || "dkhptd",
-  JOB_MAX_TRY: 10,
+  JOB_MAX_TRY: 20,
   LOG_WORKER_DOING: parseInt(process.env.LOG_WORKER_DOING),
   LOG_WORKER_PING: parseInt(process.env.LOG_WORKER_PING),
+  TKB_PARSER_URL: process.env.TKB_PARSER_URL,
 };
 
 export const JobStatus = {
@@ -32,6 +33,7 @@ export const JobStatus = {
 
 export const Role = {
   ADMIN: "ADMIN",
+  CLASS_REGISTER_FILE_UPLOADER: "CLASS_REGISTER_FILE_UPLOADER",
 };
 
 export const CollectionName = {
@@ -49,8 +51,6 @@ export const CollectionName = {
 };
 
 export const QueueName = {
-  PARSE_TKB_XLSX: "parse-tkb-xslx",
-  PROCESS_PARSE_TKB_XLSX_RESULT: "process-parse-tkb-xlsx-result",
   RUN_JOB: "run-job",
   PROCESS_JOB_RESULT: "process-job-result",
   RUN_JOB_V1: "run-job-v1",
