@@ -5,7 +5,6 @@ services:
     build:
       context: ./api-gateway
       dockerfile: Dockerfile
-    image: tuana9a/dkhptd-api-gateway
     restart: unless-stopped
     env_file:
       - api-gateway/.env
@@ -43,7 +42,6 @@ services:
     build:
       context: ./scheduler
       dockerfile: Dockerfile
-    image: tuana9a/dkhptd-scheduler
     restart: unless-stopped
     env_file:
       - scheduler/.env
@@ -55,12 +53,10 @@ services:
     build:
       context: ./thoi-khoa-bieu-parser
       dockerfile: Dockerfile
-    image: tuana9a/dkhptd-thoi-khoa-bieu-parser
     restart: unless-stopped
-    env_file:
-      - thoi-khoa-bieu-parser/.env
     environment:
       - PYTHONUNBUFFERED=1
+      - DEBUG=1
     networks:
       net1:
         ipv4_address: 172.222.0.5
@@ -69,7 +65,6 @@ services:
     build:
       context: ./worker
       dockerfile: Dockerfile
-    image: tuana9a/dkhptd-worker
     restart: unless-stopped
     env_file:
       - worker/.env

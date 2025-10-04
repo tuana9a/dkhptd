@@ -1,58 +1,70 @@
 import json
 import os
 import sys
+import logging
 import traceback
-from io import BytesIO
 
-import dotenv
 import openpyxl
-import pika
 
-from tkb_parser import Parser
+from flask import Flask, request, redirect, url_for, render_template, abort
+from werkzeug.utils import secure_filename
+from parser import TKBParser
 
-dotenv.load_dotenv()
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] [%(process)d] [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S %z",
+)
 
-RABBITMQ_CONNECTION_STRING = os.getenv("RABBITMQ_CONNECTION_STRING")
-PROCESS_PARSE_TKD_XLSX_RESULT_QUEUE_NAME = "process-parse-tkb-xlsx-result"
-PARSE_TKB_XLSX_QUEUE_NAME = "parse-tkb-xslx"
+logger = logging.getLogger(__name__)
+
+ALLOWED_EXTENSIONS = {"xlsx"}
+
+app = Flask(__name__)
+# app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024
 
 
-def on_message(ch, method, properties, body):
-    print(f" [*] Received new job {type(body)}")
+def allowed_file(filename):
+    """Check if the file extension is in the allowed set."""
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route("/", methods=["GET"])
+def index():
+    return "up"
+
+
+@app.route("/", methods=["POST"])
+def upload_file():
+    logger.info("processing")
+    if "file" not in request.files:
+        return "file not found", 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        return "invalid file name", 400
+
+    if not allowed_file(file.filename):
+        return "Invalid file type. Allowed extensions are: xlsx", 400
+
     try:
-        work_book = openpyxl.load_workbook(BytesIO(body))
-        classes = Parser().parse(work_book)
-        payload = json.dumps({"data": classes})
-        ch.basic_publish(
-            exchange="",
-            routing_key=PROCESS_PARSE_TKD_XLSX_RESULT_QUEUE_NAME,
-            body=payload,
-        )
+        workbook = openpyxl.load_workbook(file)
+        parsed_classes = TKBParser().parse(workbook)
+        return {"data": parsed_classes}, 200
     except Exception as e:
         print(f" [ERROR] {str(e)}")
         print(traceback.format_exc())
-    ch.basic_ack(delivery_tag=method.delivery_tag)
-
-
-def main():
-    print(f"rabbitmq_connection_string = {RABBITMQ_CONNECTION_STRING}")
-    connection = pika.BlockingConnection(pika.URLParameters(RABBITMQ_CONNECTION_STRING))
-
-    channel = connection.channel()
-    channel.queue_declare(queue=PARSE_TKB_XLSX_QUEUE_NAME, durable=True)
-    channel.queue_declare(queue=PROCESS_PARSE_TKD_XLSX_RESULT_QUEUE_NAME, durable=True)
-    channel.basic_qos(prefetch_count=10)
-    channel.basic_consume(
-        queue=PARSE_TKB_XLSX_QUEUE_NAME, auto_ack=False, on_message_callback=on_message
-    )
-
-    print(" [*] Waiting for messages. To exit press CTRL+C")
-    channel.start_consuming()
+        return "Internal err", 500
 
 
 if __name__ == "__main__":
     try:
-        main()
+        app.run(
+            host=(os.getenv("BIND") or "0.0.0.0"),
+            port=(os.getenv("PORT") or "5000"),
+            debug=(os.getenv("DEBUG") or False),
+        )
     except KeyboardInterrupt:
         print("Interrupted")
         try:

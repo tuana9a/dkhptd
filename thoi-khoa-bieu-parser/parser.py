@@ -1,5 +1,6 @@
+import random
 import datetime
-
+import logging
 
 MAP_COLUMN_NAME__PROP_NAME = {
     "Kỳ": "term_id",
@@ -17,10 +18,12 @@ MAP_COLUMN_NAME__PROP_NAME = {
 }
 
 
-class Parser:
+logger = logging.getLogger(__name__)
 
-    def __init__(self, timestamp=datetime.datetime.now()):
-        self.timestamp = timestamp
+
+class TKBParser:
+
+    def __init__(self):
         self.prop_at_column_number = {
             "term_id": -1,
             "class_id": -1,
@@ -42,13 +45,13 @@ class Parser:
                 return True
         return False
 
-    def parse(self, work_book):
-        work_sheet = work_book.active
-        max_column = work_sheet.max_column
-        max_row = work_sheet.max_row
-        ctr_list = []
+    def parse(self, workbook):
+        worksheet = workbook.active
+        max_column = worksheet.max_column
+        max_row = worksheet.max_row
+        parsed_classes = []
         term_ids = set()
-        iterator = work_sheet.iter_rows(min_row=0, values_only=True)
+        iterator = worksheet.iter_rows(min_row=0, values_only=True)
 
         # detect headers
         for row in iterator:
@@ -65,20 +68,26 @@ class Parser:
 
         # following headers row is class to register rows
         for row in iterator:
-            ctr = {}
+            parsed_class = {}
             for key, col_num in self.prop_at_column_number.items():
                 v = row[col_num]
                 if isinstance(v, datetime.datetime):
                     v = str(v)
-                ctr[key] = v
-            term_ids.add(ctr["term_id"])
-            ctr_list.append(ctr)
+                parsed_class[key] = v
+            term_ids.add(parsed_class["term_id"])
+            parsed_classes.append(parsed_class)
 
-        print(f"{datetime.datetime.now(datetime.timezone.utc)}")
-        print(f" [*] max_column={max_column}")
-        print(f" [*] max_row={max_row}")
-        print(f" [*] ctr_count={len(ctr_list)}")
-        print(f" [*] term_ids={list(term_ids)}")
-        print(f" [*] ctr_list[0]={ctr_list[0]}")
-
-        return ctr_list
+        parsed_count = len(parsed_classes)
+        sample_index = random.randint(0, parsed_count - 1)
+        sample_parsed_class = parsed_classes[sample_index]
+        metadata = {
+            "max_column": max_column,
+            "max_row": max_row,
+            "parsed_count": parsed_count,
+            "term_ids": list(term_ids),
+            "sample_class_id": sample_parsed_class["class_id"],
+            "sample_subject_id": sample_parsed_class["subject_id"],
+            "sample_learn_room": sample_parsed_class["learn_room"],
+        }
+        logger.info(f"{metadata}")
+        return parsed_classes
