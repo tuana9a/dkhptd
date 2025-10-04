@@ -6,30 +6,30 @@ import { FaslyValueError, NotAnArrayError } from "src/exceptions";
 import { ExceptionWrapper, IsAdminFilter, JwtFilter } from "src/middlewares";
 import { BaseResponse } from "src/payloads";
 import { isFalsy } from "src/utils";
-import { cachedSettings } from "src/services";
+import { settingsService } from "src/services";
 
 const router = express.Router();
 
 router.get("/api/term-ids", ExceptionWrapper(async (req, resp) => {
-  resp.send(new BaseResponse().ok(cachedSettings.getTermIds()));
+  resp.send(new BaseResponse().ok(settingsService.getTermIds()));
 }));
 
 router.post("/api/term-ids", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async (req, resp) => {
   const termIds = req.body.data;
   if (isFalsy(termIds)) throw new FaslyValueError("body.data");
   if (!Array.isArray(termIds)) throw new NotAnArrayError("body.data");
-  cachedSettings.addTermIds(termIds);
-  await cachedSettings.save();
-  resp.send(new BaseResponse().ok(cachedSettings.getTermIds()));
+  settingsService.addTermIds(termIds);
+  await settingsService.save();
+  resp.send(new BaseResponse().ok(settingsService.getTermIds()));
 }));
 
 router.put("/api/term-ids", JwtFilter(cfg.SECRET), IsAdminFilter(), ExceptionWrapper(async (req, resp) => {
   const termIds = req.body.data;
   if (isFalsy(termIds)) throw new FaslyValueError("body.data");
   if (!Array.isArray(termIds)) throw new NotAnArrayError("body.data");
-  cachedSettings.replaceTermIds(termIds);
-  await cachedSettings.save();
-  resp.send(new BaseResponse().ok(cachedSettings.getTermIds()));
+  settingsService.setTermIds(termIds);
+  await settingsService.save();
+  resp.send(new BaseResponse().ok(settingsService.getTermIds()));
 }));
 
 export default router;

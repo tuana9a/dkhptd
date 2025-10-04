@@ -336,15 +336,6 @@ export class Settings {
     this.renewTokenEvery = o?.renewTokenEvery || "1m"; // 1 minute
     this.refreshJobEvery = o?.refreshJobEvery || "1s"; // 1 second
   }
-
-  addTermIds(termIds: string[]) {
-    this.termIds.push(...termIds);
-    this.termIds = Array.from(new Set(this.termIds)).sort(((a, b) => a.localeCompare(b)));
-  }
-
-  replaceTermIds(termIds: string[]) {
-    this.termIds = Array.from(new Set(termIds)).sort(((a, b) => a.localeCompare(b)));
-  }
 }
 
 export class Subject {

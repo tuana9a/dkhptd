@@ -2,14 +2,12 @@ version: "3.1"
 
 services:
   api-gateway:
-    image: node:16-slim
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
       - api-gateway/.env
-    volumes:
-      - ./api-gateway/:/app/
-    working_dir: /app
-    command: bash -c "npm install && npx tsc && node dist/index.js"
     ports:
       - ${API_PORT:-8080:8080}
     networks:
@@ -17,27 +15,36 @@ services:
         ipv4_address: 172.222.0.2
 
   web:
-    image: node:16-slim
+    image: node:20.19-slim
     restart: unless-stopped
     working_dir: /app
+    entrypoint: "/usr/bin/bash"
     volumes:
       - ./web/:/app/
-    ports:
-      - ${WEB_PORT:-4200}:4200
-    command: bash -c "npm install && npm run dev"
+    command: -c "npm install && npm run build-watch"
     networks:
       net1:
-        ipv4_address: 172.222.0.3
+        ipv4_address: 172.222.0.42
+
+  nginx:
+    image: nginx:1.29.0
+    restart: unless-stopped
+    volumes:
+      - ./web/dist/:/var/www/html
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - ${NGINX_PORT:-4200}:80
+    networks:
+      net1:
+        ipv4_address: 172.222.0.80
 
   scheduler:
-    image: node:16-slim
+    build:
+      context: ./scheduler
+      dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
       - scheduler/.env
-    volumes:
-      - ./scheduler/:/app/
-    working_dir: /app
-    command: bash -c "npm install && npx tsc && node dist/index.js"
     networks:
       net1:
         ipv4_address: 172.222.0.4
@@ -46,10 +53,10 @@ services:
     build:
       context: ./thoi-khoa-bieu-parser
       dockerfile: Dockerfile
-    image: tuana9a/dkhptd-thoi-khoa-bieu-parser
     restart: unless-stopped
-    env_file:
-      - thoi-khoa-bieu-parser/.env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DEBUG=1
     networks:
       net1:
         ipv4_address: 172.222.0.5
@@ -58,20 +65,16 @@ services:
     build:
       context: ./worker
       dockerfile: Dockerfile
-    image: tuana9a/dkhptd-worker
     restart: unless-stopped
     env_file:
       - worker/.env
-    volumes:
-      - ./worker/:/app/
-    working_dir: /app
-    command: bash -c "npm install && npx tsc && node ./dist/launch-worker-rabbitmq-v1.js"
+    command: ["node", "./dist/launch-worker-rabbitmq-v1.js"]
     networks:
       net1:
         ipv4_address: 172.222.0.6
 
   mongo:
-    image: mongo:7.0
+    image: mongo:4.2
     command:
       - --config
       - /etc/mongod.conf
@@ -93,6 +96,8 @@ services:
     hostname: rabbitmq
     volumes:
       - ./rabbitmq/data/mnesia:/var/lib/rabbitmq/mnesia
+    ports:
+      - 15672:15672
     networks:
       net1:
         ipv4_address: 172.222.0.8

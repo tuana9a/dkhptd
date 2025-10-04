@@ -1,17 +1,22 @@
 import express from "express";
 import { Filter, ObjectId } from "mongodb";
 import multer from "multer";
-import { cfg, CollectionName, QueueName } from "src/cfg";
+import { AppEvent, cfg, CollectionName, QueueName } from "src/cfg";
 import { mongoConnectionPool, rabbitmqConnectionPool } from "src/connections";
-import { ExceptionWrapper, InjectTermId, IsAdminFilter, JwtFilter } from "src/middlewares";
+import { ExceptionWrapper, ClassRegisterFileUploaderFilter, InjectTermId, IsAdminFilter, JwtFilter } from "src/middlewares";
 import { modify, m } from "src/modifiers";
-import { BaseResponse } from "src/payloads";
+import { BaseResponse, ParsedClassToRegister } from "src/payloads";
 import { toBuffer, toNormalizedString, toSafeInt } from "src/utils";
 import { resolveMongoFilter } from "src/merin";
 import { FaslyValueError, NotAnArrayError } from "src/exceptions";
 import { isFalsy } from "src/utils";
-import { ClassToRegister } from "src/entities";
+import { ClassToRegister, Subject } from "src/entities";
 import logger from "src/loggers/logger";
+import axios from "axios";
+import FormData from "form-data";
+import fs from "fs";
+import { toCTR } from "src/dto";
+import { bus } from "src/bus";
 
 const router = express.Router();
 
@@ -76,11 +81,54 @@ router.post("/api/class-to-registers", JwtFilter(cfg.SECRET), IsAdminFilter(), E
   resp.send(new BaseResponse().ok(result));
 }));
 
-router.post("/api/class-to-registers/file", JwtFilter(cfg.SECRET), IsAdminFilter(), multer({ limits: { fileSize: 5 * 1000 * 1000 /* 5mb */ } }).single("file"), ExceptionWrapper(async (req, resp) => {
+const uploadTmp = './uploads.tmp/'
+
+if (fs.existsSync(uploadTmp)) fs.rmSync(uploadTmp, { recursive: true })
+fs.mkdirSync(uploadTmp)
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadTmp)
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + Math.round(Math.random() * 1E9) + '-' + file.originalname)
+  }
+})
+const upload = multer({ storage: storage, limits: { fileSize: 5 * 1000 * 1000 /* 5mb */ } }).single("file")
+
+router.post("/api/class-to-registers/file", JwtFilter(cfg.SECRET), ClassRegisterFileUploaderFilter(), upload, ExceptionWrapper(async (req, resp) => {
   const file = req.file;
-  logger.info(`Received uploaded TKB xlsx length ${file.buffer.length}`);
-  rabbitmqConnectionPool.getChannel().sendToQueue(QueueName.PARSE_TKB_XLSX, toBuffer(file.buffer));
-  resp.send(new BaseResponse().ok());
+  logger.info(`uploaded ${file.path}`);
+  const formdata = new FormData();
+  formdata.append("file", fs.createReadStream(file.path));
+  const response = await axios.post(cfg.TKB_PARSER_URL, formdata)
+
+  const rawParsedClasses = response.data.data
+  logger.info(`Received parsed class to register, count: ${rawParsedClasses.length}`);
+  const parsedClasses = rawParsedClasses.map((x) => new ParsedClassToRegister(x))
+    .map((x) => toCTR(x))
+    .map((x) => modify(x, [
+      m.normalizeInt("classId"),
+      m.normalizeInt("secondClassId"),
+      m.normalizeString("subjectId"),
+      m.normalizeString("subjectName"),
+      m.normalizeString("classType"),
+      m.normalizeInt("learnDayNumber"),
+      m.normalizeInt("learnAtDayOfWeek"),
+      m.normalizeString("learnTime"),
+      m.normalizeString("learnRoom"),
+      m.normalizeString("learnWeek"),
+      m.normalizeString("describe"),
+      m.normalizeString("termId"),
+      m.set("createdAt", Date.now()),
+    ]))
+    .map((x) => new ClassToRegister(x));
+  const termIds = Array.from(parsedClasses.reduce((t, c) => t.add(c.termId), new Set<string>()));
+  const subjects = Array.from(parsedClasses.reduce((t, c) => t.set(c.subjectId, new Subject({ subjectId: c.subjectId, subjectName: c.subjectName })), new Map<string, Subject>()).values());
+  bus.emit(AppEvent.ADD_TERM_IDS, termIds);
+  bus.emit(AppEvent.UPSERT_MANY_CTR, parsedClasses);
+  bus.emit(AppEvent.UPSERT_MANY_SUBJECTS, subjects)
+  return resp.send(new BaseResponse().ok({ parsedCount: parsedClasses.length }));
 }));
 
 router.get("/api/class-to-registers", ExceptionWrapper(async (req, resp) => {

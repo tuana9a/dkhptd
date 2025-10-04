@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "ng serve --host 0.0.0.0 --disable-host-check",
     "build": "ng build --configuration production",
+    "build-watch": "ng build --configuration development --watch",
     "test": "ng test"
   },
   "private": true,

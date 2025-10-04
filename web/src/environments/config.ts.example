@@ -1,4 +1,0 @@
-export default {
-    baseApiUrl: "http://api-gateway:8080",
-    corsWithCredentials: false,
-}

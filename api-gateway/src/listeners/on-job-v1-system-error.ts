@@ -19,6 +19,12 @@ export default () => {
     await mongoConnectionPool.getClient()
       .db(cfg.DATABASE_NAME)
       .collection(CollectionName.DKHPTDV1)
-      .updateOne({ _id: job._id }, { $set: { status: JobStatus.READY, timeToStart: Date.now() + ms("1m") } }); // set READY and delay 1p for scheduler retry it
+      .updateOne({ _id: job._id }, {
+        $set: {
+          status: JobStatus.READY,
+          timeToStart: Date.now() + ms("10m"),
+          no: job.no + 1, // set READY and delay for scheduler retry it
+        }
+      });
   });
 };
