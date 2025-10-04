@@ -3,7 +3,7 @@ import { mongoConnectionPool } from "./connections";
 import { Settings } from "./entities";
 import { toNormalizedString } from "./utils";
 
-class CachedSettings {
+class SettingsService {
   settings: Settings;
 
   constructor() {
@@ -19,11 +19,11 @@ class CachedSettings {
   }
 
   addTermIds(termIds: string[]) {
-    this.settings.addTermIds(Array.from(new Set(termIds.map(x => toNormalizedString(x)))).sort(((a, b) => a.localeCompare(b))));
+    this.settings.termIds = Array.from(new Set([...this.settings.termIds, ...termIds].map(x => toNormalizedString(x)).filter(x => x).sort(((a, b) => a.localeCompare(b)))))
   }
 
-  replaceTermIds(termIds: string[]) {
-    this.settings.replaceTermIds(Array.from(new Set(termIds.map(x => toNormalizedString(x)))).sort(((a, b) => a.localeCompare(b))));
+  setTermIds(termIds: string[]) {
+    this.settings.termIds = termIds;
   }
 
   getTermIds() {
@@ -38,4 +38,4 @@ class CachedSettings {
   }
 }
 
-export const cachedSettings = new CachedSettings();
+export const settingsService = new SettingsService();

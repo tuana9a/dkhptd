@@ -4,5 +4,5 @@ COPY package*.json .
 COPY tsconfig.json .
 RUN npm ci
 COPY src src
-RUN npx tsc
+RUN npm run build
 CMD ["node", "dist/index.js"]

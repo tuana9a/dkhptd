@@ -10,7 +10,7 @@ import { cfg, CollectionName, QueueName } from "./cfg";
 import logger from "./loggers/logger";
 import { ensureIndex, toJson } from "./utils";
 import { mongoConnectionPool, rabbitmqConnectionPool } from "./connections";
-import { cachedSettings } from "./services";
+import { settingsService } from "./services";
 
 import dkhptdRouter from "./routes/dkhptd";
 import dkhptdRouterV1 from "./routes/dkhptd-v1";
@@ -30,7 +30,6 @@ import consumeMaybeStaleJob from "./consumers/consume-maybe-stale-job";
 import consumeMaybeStaleJobV1 from "./consumers/consume-maybe-stale-job-v1";
 import consumeWorkerDoing from "./consumers/consume-worker-doing";
 import consumeWorkerPing from "./consumers/consume-worker-ping";
-import consumeParseTkbResult from "./consumers/process-parse-tkb-result";
 import addTermIdsListener from "./listeners/add-term-ids";
 import onJobV1CaptchaErrorListener from "./listeners/on-job-v1-captcha-error";
 import onJobV1DoneListener from "./listeners/on-job-v1-done";
@@ -64,7 +63,7 @@ async function main() {
 
   const client = await new MongoClient(cfg.MONGODB_CONNECTION_STRING).connect();
   mongoConnectionPool.addClient(client);
-  cachedSettings.loadFromDb();
+  settingsService.loadFromDb();
   ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.ACCOUNT, { username: 1, password: 1 });
   ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.CTR, { classId: 1 });
   ensureIndex(client.db(cfg.DATABASE_NAME), CollectionName.CTR, { termId: 1 });
@@ -92,15 +91,12 @@ async function main() {
         return process.exit(0);
       }
       rabbitmqConnectionPool.addChannel(channel);
-      channel.assertQueue(QueueName.PARSE_TKB_XLSX);
-      channel.assertQueue(QueueName.PROCESS_PARSE_TKB_XLSX_RESULT);
       consumeJobResult();
       consumeJobV1Result();
       consumeMaybeStaleJob();
       consumeMaybeStaleJobV1();
       consumeWorkerDoing();
       consumeWorkerPing();
-      consumeParseTkbResult();
 
       addTermIdsListener();
       onJobV1DoneListener();
