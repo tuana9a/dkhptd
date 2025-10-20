@@ -1,0 +1,126 @@
+name: build-push-deploy
+
+on:
+  workflow_call:
+    inputs:
+      IMAGE_NAME:
+        type: string
+        required: true
+      workdir:
+        type: string
+        required: true
+        description: "Example: ./worker"
+      manifest-path:
+        type: string
+        required: true
+        description: "Example: ./511-dkhptd-manifests/30-worker.yaml"
+    secrets:
+      DOCKER_HUB_USERNAME:
+        required: true
+      DOCKER_HUB_PASSWORD:
+        required: true
+      TELEGRAM_BOT_TOKEN:
+        required: true
+      TELEGRAM_CHAT_ID:
+        required: true
+      TUANA9A_PLATFORM_CI_GITHUB_TOKEN:
+        required: true
+
+env:
+  IMAGE_NAME: "${{ inputs.IMAGE_NAME }}"
+  svc_name: "${{ inputs.workdir }}"
+  manifest_path: "${{ inputs.manifest-path }}"
+  manifest_base_branch: rock-n-roll
+
+jobs:
+  build-push:
+    runs-on: ubuntu-24.04
+    steps:
+      - id: checkout
+        uses: actions/checkout@v3
+
+      - id: set-env
+        run: |
+          echo IMAGE_TAG_YYYYMM=$(date +"%Y.%m") >> $GITHUB_ENV
+          echo IMAGE_TAG_YYYYMMDD=$(date +"%Y.%m.%d") >> $GITHUB_ENV
+          echo IMAGE_TAG_YYYYMMDDHHMMSS=$(date +"%Y.%m.%d.%H%M%S") >> $GITHUB_ENV
+          echo RUN_URL=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID >> $GITHUB_ENV
+
+      - name: set up docker buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: login docker hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: build push
+        uses: docker/build-push-action@v4
+        with:
+          context: ${{ inputs.workdir }}
+          file: ${{ inputs.workdir }}/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_YYYYMMDDHHMMSS }}
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_YYYYMMDD }}
+            ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_YYYYMM }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: noti
+        if: always()
+        shell: bash
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"chat_id\":\"${{ secrets.TELEGRAM_CHAT_ID }}\",
+              \"disable_notification\":false,
+              \"text\":\"${{ job.status }} ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_YYYYMMDDHHMMSS }} $RUN_URL\"
+            }"
+    outputs:
+      image_tag: "${{ env.IMAGE_TAG_YYYYMMDDHHMMSS }}"
+
+  deploy:
+    needs: ["build-push"]
+    runs-on: ubuntu-24.04
+    env:
+      IMAGE_TAG: ${{ needs.build-push.outputs.image_tag }}
+    steps:
+      - id: set-env
+        run: |
+          echo RUN_URL=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID >> $GITHUB_ENV
+      - name: Clone, new branch, change, commit and push
+        run: |
+          NEW_BRANCH_NAME=bump-dkhptd-$svc_name-$IMAGE_TAG
+          echo NEW_BRANCH_NAME=$NEW_BRANCH_NAME >> $GITHUB_ENV
+          git clone -b $manifest_base_branch https://tuana9a:${{ secrets.TUANA9A_PLATFORM_CI_GITHUB_TOKEN }}@github.com/tuana9a/platform.git /tmp/platform
+          set -x
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          cd /tmp/platform/
+          git checkout -b $NEW_BRANCH_NAME
+          sed -i -E "s|image: $IMAGE_NAME:.+|image: $IMAGE_NAME:$IMAGE_TAG|" $manifest_path
+          git diff
+          git add $manifest_path
+          git commit -m "chore: Bump dkhptd $svc_name $IMAGE_TAG"
+          git push -u origin $NEW_BRANCH_NAME
+      - id: create-pr
+        run: |
+          pr_url=$(gh pr --repo tuana9a/platform create -B $manifest_base_branch -H $NEW_BRANCH_NAME --title "[auto] Bump dkhptd $svc_name $IMAGE_TAG" --body "$RUN_URL")
+          echo pr_url=$pr_url >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.TUANA9A_PLATFORM_CI_GITHUB_TOKEN }}
+      - name: noti
+        if: always()
+        shell: bash
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"chat_id\":\"${{ secrets.TELEGRAM_CHAT_ID }}\",
+              \"disable_notification\":false,
+              \"text\":\"${{ job.status }} ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ steps.create-pr.outputs.pr_url }}\"
+            }"

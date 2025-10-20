@@ -1,0 +1,23 @@
+name: build-push-deploy-worker
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "worker/**"
+
+jobs:
+  main:
+    uses: ./.github/workflows/build-push-deploy.yaml
+    with:
+      IMAGE_NAME: tuana9a/dkhptd-worker
+      workdir: worker
+      manifest-path: ./511-dkhptd-manifests/30-worker.yaml
+    secrets:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      TUANA9A_PLATFORM_CI_GITHUB_TOKEN: ${{ secrets.TUANA9A_PLATFORM_CI_GITHUB_TOKEN }}
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
