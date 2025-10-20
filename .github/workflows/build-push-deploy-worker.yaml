@@ -15,6 +15,7 @@ jobs:
       IMAGE_NAME: tuana9a/dkhptd-worker
       workdir: worker
       manifest-path: ./511-dkhptd-manifests/30-worker.yaml
+      deploy: true
     secrets:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

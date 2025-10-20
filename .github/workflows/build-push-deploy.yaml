@@ -14,6 +14,9 @@ on:
         type: string
         required: true
         description: "Example: ./511-dkhptd-manifests/30-worker.yaml"
+      deploy:
+        type: boolean
+        default: false
     secrets:
       DOCKER_HUB_USERNAME:
         required: true
@@ -86,6 +89,7 @@ jobs:
   deploy:
     needs: ["build-push"]
     runs-on: ubuntu-24.04
+    if: "${{ inputs.deploy }}"
     env:
       IMAGE_TAG: ${{ needs.build-push.outputs.image_tag }}
     steps:
