@@ -1,0 +1,24 @@
+name: build-push-thoi-khoa-bieu-parser
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "thoi-khoa-bieu-parser/**"
+
+jobs:
+  main:
+    uses: ./.github/workflows/build-push-deploy.yaml
+    with:
+      IMAGE_NAME: tuana9a/dkhptd-thoi-khoa-bieu-parser
+      workdir: thoi-khoa-bieu-parser
+      manifest-path: ./notexist
+      deploy: false
+    secrets:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      TUANA9A_PLATFORM_CI_GITHUB_TOKEN: ${{ secrets.TUANA9A_PLATFORM_CI_GITHUB_TOKEN }}
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
