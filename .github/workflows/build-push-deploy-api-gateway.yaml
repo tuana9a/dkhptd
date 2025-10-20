@@ -1,0 +1,28 @@
+name: build-push-deploy-api-gateway
+
+env:
+  DOCKER_HUB_USERNAME: tuana9a
+  IMAGE_NAME: tuana9a/dkhptd-api-gateway
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "api-gateway/**"
+
+jobs:
+  main:
+    uses: ./.github/workflows/build-push-deploy.yaml
+    with:
+      IMAGE_NAME: tuana9a/dkhptd-api-gateway
+      workdir: api-gateway
+      manifest-path: ./511-dkhptd-manifests/20-api-gateway.yaml
+      deploy: true
+    secrets:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      TUANA9A_PLATFORM_CI_GITHUB_TOKEN: ${{ secrets.TUANA9A_PLATFORM_CI_GITHUB_TOKEN }}
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
