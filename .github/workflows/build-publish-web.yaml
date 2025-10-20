@@ -1,6 +1,7 @@
-name: build-and-push-web
+name: build-publish-web
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - "main"
@@ -8,28 +9,28 @@ on:
       - "web/**"
 
 jobs:
-  build-and-push:
+  build-publish:
     runs-on: ubuntu-24.04
     permissions:
       contents: read
       deployments: write
     steps:
-      - name: Checkout
+      - name: checkout
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: setup node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Build
+      - name: build
         working-directory: ./web
         shell: bash
         run: |
           npm i
           npm run build
 
-      - name: Publish to Cloudflare Pages
+      - name: publish cloudflare pages
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -38,7 +39,7 @@ jobs:
           directory: ./web/dist/dkhptd-web/
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Send notification
+      - name: noti
         if: always()
         shell: bash
         run: |
