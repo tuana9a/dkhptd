@@ -31,10 +31,6 @@ export async function launch(initConfig: Config) {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const browser: Browser = await require("puppeteer-core").launch(cfg.puppeteerLaunchOptions);
   await ensurePageCount(browser, 1);
-  const pages = await browser.pages();
-  // init userdata
-  await pages[0].goto("http://dk-sis.hust.edu.vn/");
-  await pages[0].reload();
   puppeteerWorker.setBrowser(browser);
 
   browser.on("disconnected", () => logger.error(new PuppeteerDisconnectedError()));

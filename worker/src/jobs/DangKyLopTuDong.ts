@@ -35,6 +35,12 @@ export default async (ctx: Context) => {
   try {
     logs.push({ msg: `go to login page` });
     await page.bringToFront();
+
+    // init userdata
+    await page.goto("http://dk-sis.hust.edu.vn/");
+    await page.reload();
+    await page.reload();
+
     await page.goto("https://dk-sis.hust.edu.vn/Users/Login.aspx");
     await page.waitForTimeout(3000);
     await page.reload();
